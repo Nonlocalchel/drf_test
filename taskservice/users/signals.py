@@ -6,10 +6,10 @@ from .models import *
 
 @receiver(post_save, sender=User)
 def create_company_profile(sender, instance, created, **kwargs):
-    print(f"{instance} is created!")
+    print(kwargs)
+    print(f"{type(instance)} is created!")
 
 
-print(1)
 # @receiver(post_save, sender=User)
 # def create_company_profile(sender, instance, created, **kwargs):
 #     if instance.is_company:
