@@ -1,16 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from django.utils.translation import gettext_lazy as _
-
 
 # Create your models here.
 
 
 class User(AbstractUser):
     class UserType(models.TextChoices):
-        CUSTOMER = "customer", _("Customer")
-        WORKER = "worker", _("Worker")
+        CUSTOMER = "customer", "Customer"
+        WORKER = "worker", "Worker"
 
     phone = models.CharField(max_length=50, unique=True, null=True, verbose_name="Номер телефона")
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
