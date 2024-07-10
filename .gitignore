@@ -84,6 +84,7 @@ target/
 *.pyc
 __pycache__/
 settings.py
+migrations/
 
 dj-drf-venv/
 db.sqlite3
