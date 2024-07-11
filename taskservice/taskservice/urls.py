@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from tasks.views import TaskAPIView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/tasklist', TaskAPIView.as_view())
 ]
 
 admin.site.site_header = "Панель админа"
