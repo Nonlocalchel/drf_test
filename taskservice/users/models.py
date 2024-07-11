@@ -27,16 +27,14 @@ class Worker(models.Model):
     exp = models.IntegerField(null=True)
     is_super_worker = models.BooleanField(default=False)
 
-
-#
-#
-#     is_super_worker = models.BooleanField(default=False)
-#     #override save()?
-#
-#
+    def __str__(self):
+        return self.user.username
 
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='customer')
     discount = models.IntegerField(null=True)
     is_super_consumer = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
