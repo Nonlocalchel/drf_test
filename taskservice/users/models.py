@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -14,26 +15,44 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
     type = models.CharField(max_length=50,
                             choices=UserType,
-                            default=UserType.CUSTOMER,
+                            default=UserType.CUSTOMER
                             )
 
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
 
+    def save(self, *args, **kwargs):
+        if hasattr(self, 'customer'):
+            self.worker = None
+
+        if hasattr(self, 'worker'):
+            self.customer = None
+
+        return super(User, self).save(*args, **kwargs)
+
+
+    # def clean(self):
+    #     if self.user.type != 'worker':
+    #         raise ValidationError(
+    #             {'type': 'Пользователь уже тип'}
+    #         )
+
+
 
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='worker')
-    exp = models.IntegerField(null=True)
+    exp = models.IntegerField(blank=True, null=True)
     is_super_worker = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
 
 
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='customer')
-    discount = models.IntegerField(null=True)
+    discount = models.IntegerField(blank=True, null=True)
     is_super_consumer = models.BooleanField(default=False)
 
     def __str__(self):

@@ -21,14 +21,14 @@ def create_special_profile(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def save_special_profile(sender, instance, **kwargs):
-    if instance.type == 'customer':
-        instance.customer.save()
-    elif instance.type == 'worker':
-        instance.worker.save()
+def save_special_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.type == 'customer':
+            instance.customer.save()
+        elif instance.type == 'worker':
+            instance.worker.save()
     else:
         pass
-
 
 # @receiver(post_save, sender=User)
 # def create_company_profile(sender, instance, created, **kwargs):
