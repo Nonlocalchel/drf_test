@@ -22,21 +22,11 @@ class User(AbstractUser):
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
 
-    def save(self, *args, **kwargs):
-        if hasattr(self, 'customer'):
-            self.worker = None
-
-        if hasattr(self, 'worker'):
-            self.customer = None
-
-        return super(User, self).save(*args, **kwargs)
-
-
-    # def clean(self):
-    #     if self.user.type != 'worker':
-    #         raise ValidationError(
-    #             {'type': 'Пользователь уже тип'}
-    #         )
+    def clean(self):
+        if hasattr(self, str(self.type)): #hasattr(self,'worker') and self.type == worker
+            raise ValidationError(
+                {'type': f'Пользователь уже имеет тип {self.type}'}
+            )
 
 
 
