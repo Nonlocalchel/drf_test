@@ -28,8 +28,6 @@ from .serializer import *
 #         return Response(UserCustomerSerializer(customers, many=True).data)
 
 class UsersViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.ListModelMixin,
                    GenericViewSet):
     pass
 
