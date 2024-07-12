@@ -17,12 +17,12 @@ class UserViewSet(mixins.CreateModelMixin,
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['get', 'post'], detail=False)
     def workers(self, request, pk=None):
         workers = User.objects.filter(type='worker')
         return Response(UserWorkerSerializer(workers, many=True).data)
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['get', 'post'], detail=False)
     def customers(self, request, pk=None):
         customers = User.objects.filter(type='customer')
         return Response(UserCustomerSerializer(customers, many=True).data)

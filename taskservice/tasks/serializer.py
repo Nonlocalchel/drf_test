@@ -3,6 +3,7 @@ from .models import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    #customer = serializers.HiddenField(default=serializers.CurrentUserDefault())#для заказчика
     class Meta:
         model = Task
         fields = ['id', 'title', 'time_create', 'time_close', 'status', 'customer', 'worker']
@@ -11,4 +12,4 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'status', 'worker']
+        fields = ['status', 'worker']
