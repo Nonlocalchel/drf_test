@@ -9,7 +9,27 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'time_create', 'time_close', 'status', 'customer', 'worker']
 
 
-class TaskUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = ['status', 'worker']
+class TaskReportUpdateSerializer(serializers.Serializer):
+    status = serializers.HiddenField(default='done')
+    report = serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance.status = validated_data.get("status", instance.status)
+        instance.report = validated_data.get("report", instance.report)
+        instance.clean()
+        instance.save()
+        return instance
+
+
+class TaskCloseSerializer(serializers.Serializer):
+    status = serializers.HiddenField(default='done')
+    report = serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance.status = validated_data.get("status", instance.status)
+        instance.report = validated_data.get("report", instance.report)
+        instance.clean()
+        instance.save()
+        return instance
+
+

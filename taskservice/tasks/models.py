@@ -49,12 +49,12 @@ class Task(models.Model):
             self.is_done = True
 
         if not self.worker:
-            if self.state != 'wait' or len(self.report) == 0:
+            if self.status != 'wait' or len(self.report) != 0:
                 raise ValidationError(
-                    {'state': 'Сначала задача должна быть взята сотрудником в разработку'})
+                    {'status': 'Сначала задача должна быть взята сотрудником в разработку'})
 
         if self.worker:
-            self.state = 'worker'
+            self.status = 'worker'
 
 
 

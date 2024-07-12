@@ -23,7 +23,8 @@ from users.views import *
 
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet)
-router.register(r'users', UserViewSet)
+router.register(r'workers', WorkerViewSet, basename='workers')
+router.register(r'customers', CustomersViewSet, basename='customers')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

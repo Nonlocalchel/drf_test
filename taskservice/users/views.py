@@ -9,21 +9,38 @@ from .serializer import *
 
 
 # Create your views here.
-class UserViewSet(mixins.CreateModelMixin,
+# class UserViewSet(mixins.CreateModelMixin,
+#                    mixins.RetrieveModelMixin,
+#                    mixins.ListModelMixin,
+#                    GenericViewSet):
+#
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#
+#     @action(methods=['get', 'post'], detail=False)
+#     def workers(self, request, pk=None):
+#         workers = User.objects.filter(type='worker')
+#         return Response(UserWorkerSerializer(workers, many=True).data)
+#
+#     @action(methods=['get', 'post'], detail=False)
+#     def customers(self, request, pk=None):
+#         customers = User.objects.filter(type='customer')
+#         return Response(UserCustomerSerializer(customers, many=True).data)
+
+class UsersViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
+    pass
 
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
-    @action(methods=['get', 'post'], detail=False)
-    def workers(self, request, pk=None):
-        workers = User.objects.filter(type='worker')
-        return Response(UserWorkerSerializer(workers, many=True).data)
+class WorkerViewSet(UsersViewSet):
+    queryset = User.objects.filter(type='worker')
+    serializer_class = UserWorkerSerializer
 
-    @action(methods=['get', 'post'], detail=False)
-    def customers(self, request, pk=None):
-        customers = User.objects.filter(type='customer')
-        return Response(UserCustomerSerializer(customers, many=True).data)
+
+class CustomersViewSet(UsersViewSet):
+    queryset = User.objects.filter(type='customer')
+    serializer_class = UserCustomerSerializer
+
 
