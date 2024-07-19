@@ -19,7 +19,7 @@ class TaskViewSet(mixins.CreateModelMixin,
     #permission_classes = (IsAuthenticated, IsTaskInvolvedPerson)
 
     def get_serializer_class(self):
-        if self.action == 'update':
+        if self.request.method == 'PUT':
             return TaskReportUpdateSerializer
 
         return self.serializer_class
