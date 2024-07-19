@@ -13,20 +13,19 @@ class User(AbstractUser):
 
     phone = models.CharField(max_length=50, unique=True, null=True, verbose_name="Номер телефона")
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
-    type = models.CharField(max_length=50,
-                            choices=UserType,
-                            default=UserType.CUSTOMER
-                            )
+    type = models.CharField(max_length=50, choices=UserType, default=UserType.CUSTOMER)
 
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
 
     def clean(self):
-        if hasattr(self, str(self.type)): #hasattr(self,'worker') and self.type == worker
+        if hasattr(self, str(self.type)):
             raise ValidationError(
                 {'type': f'Пользователь уже имеет тип {self.type}'}
             )
+
+        return super().clean()
 
 
 

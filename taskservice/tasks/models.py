@@ -29,3 +29,5 @@ class Task(models.Model):
         validate_changes(self)
         check_worker(self)
         validate_report(self)
+
+        return super().clean()
