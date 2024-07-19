@@ -8,7 +8,7 @@ from users.models import Worker, Customer
 class Task(models.Model):
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
-        IN_PROCESS = "worker", "Worker"
+        IN_PROCESS = "in_process", "In_process"
         DONE = "done", "Done"
 
     title = models.CharField(max_length=255, verbose_name="Заголовок")

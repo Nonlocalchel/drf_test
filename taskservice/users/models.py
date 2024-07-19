@@ -28,7 +28,6 @@ class User(AbstractUser):
         return super().clean()
 
 
-
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='worker')
     exp = models.IntegerField(blank=True, null=True)
@@ -36,7 +35,6 @@ class Worker(models.Model):
 
     def __str__(self):
         return self.user.username
-
 
 
 class Customer(models.Model):
