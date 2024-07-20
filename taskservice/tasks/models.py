@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
+from tasks.collectors import collect_all_errors
 from users.models import Worker, Customer
 
 
@@ -26,8 +28,9 @@ class Task(models.Model):
 
     def clean(self):
         from .validators import validate_changes, validate_report, check_worker
-        validate_changes(self)
-        check_worker(self)
-        validate_report(self)
+        validators = [validate_changes, check_worker, validate_report]
+        errors = collect_all_errors(validators, self)
+        if errors:
+            raise ValidationError(errors)
 
         return super().clean()

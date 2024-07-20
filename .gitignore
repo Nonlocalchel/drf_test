@@ -85,6 +85,7 @@ target/
 __pycache__/
 settings.py
 migrations/
+fixtures/
 
 dj-drf-venv/
 db.sqlite3

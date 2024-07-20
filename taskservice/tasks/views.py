@@ -5,7 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from .models import Task
 from .permissions import IsTaskInvolvedPerson
-from .serializer import *
+from .serializers import *
 
 
 # Create your views here.

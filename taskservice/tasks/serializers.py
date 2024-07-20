@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import Task
 
@@ -14,20 +15,6 @@ class TaskReportUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['id', 'title', 'report', 'time_create', 'time_close', 'status', 'customer', 'worker']
-
-    def validate(self, data):
-        # try:
-            self.instance.clean()
-            return super().validate(data)
-        # except:
-        #     raise serializers.ValidationError("finish must occur after start")
-
-        # """
-        # Check that start is before finish.
-        # """
-        # if True:
-        #     raise serializers.ValidationError("finish must occur after start")
-        # return data
 
 
 class TaskCloseSerializer(serializers.Serializer):

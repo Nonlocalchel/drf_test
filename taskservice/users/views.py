@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .models import *
-from .serializer import *
+from .serializers import *
 
 
 # Create your views here.
