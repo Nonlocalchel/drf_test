@@ -17,6 +17,8 @@ class TaskReportUpdateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'report', 'time_create', 'time_close', 'status', 'customer', 'worker']
 
 
+
+
 class TaskCloseSerializer(serializers.Serializer):
     status = serializers.HiddenField(default='done')
     report = serializers.CharField()
