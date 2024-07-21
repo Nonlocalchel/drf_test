@@ -37,4 +37,4 @@ urlpatterns = [
 ]
 
 admin.site.site_header = "Панель админа"
-admin.site.index_title  = "Сервис работ"
+admin.site.index_title = "Сервис работ"

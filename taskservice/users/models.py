@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
-
 # Create your models here.
 
 
@@ -15,15 +14,17 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
     type = models.CharField(max_length=50, choices=UserType, default=UserType.CUSTOMER)
 
+    # objects = CustomUserManager()
+
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
 
     def clean(self):
-        if hasattr(self, str(self.type)):
-            raise ValidationError(
-                {'type': f'Пользователь уже имеет тип {self.type}'}
-            )
+        # if hasattr(self, str(self.type)): тупизм
+        #     raise ValidationError(
+        #         {'type': f'Пользователь уже имеет тип {self.type}'}
+        #     )
 
         return super().clean()
 

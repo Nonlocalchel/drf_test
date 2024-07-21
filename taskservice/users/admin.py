@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from .models import *
 
 
@@ -17,9 +19,17 @@ class CustomerInline(admin.StackedInline):
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'username', 'email', 'first_name', 'last_name', 'photo', 'phone', 'is_active']
-    list_display_links = list_display[:2]
+class UserAdmin(UserAdmin):
+    list_display = ('username', 'last_name', 'first_name', 'is_active')
+    fieldsets = None
+    fields = (
+        'username',
+        ('last_name', 'first_name'),
+        'email', 'password',
+        ('is_superuser', 'is_staff', 'is_active'),
+        ('date_joined', 'last_login'),
+        'groups'
+    )
     inlines = [
         WorkerInline,
         CustomerInline

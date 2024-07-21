@@ -9,42 +9,24 @@ from .serializers import *
 
 
 # Create your views here.
-class TaskViewSet(mixins.CreateModelMixin,
-                  mixins.RetrieveModelMixin,
-                  mixins.ListModelMixin,
-                  mixins.UpdateModelMixin,
+class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin,
                   GenericViewSet):
+
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    #permission_classes = (IsAuthenticated, IsTaskInvolvedPerson)
 
-    def get_serializer_class(self):
-        if self.request.method == 'PUT':
-            return TaskReportUpdateSerializer
+    def get_queryset(self):
+        user = self.request.user
+        if user.type == 'customer':
+            return self.queryset.filter(customer=36)
 
-        return self.serializer_class
+        return super().get_queryset()
+    # def get_serializer_class(self):
+    #     if self.request.method in ['PUT', 'PATCH']:
 
     # def get_permissions(self):
     #     if self.action == 'update':
-    #         return [permission() for permission in (IsWorkerAndTaskIsFree)]
-    #
-    #     return [permission() for permission in self.permission_classes]
 
-    @action(methods=['put'], detail=True,
-            url_path='close-task', url_name='close-task')
-    def close_task(self, request, pk=None):
-        if not pk:
-            return Response({"error": "Method PUT not allowed"})
-
-        try:
-            instance = Task.objects.get(pk=pk)
-        except:
-            return Response({"error": "Object does not exists"})
-
-        if instance.status != 'worker':
-            return
-
-        serializer = TaskCloseSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    # @action(methods=['put'], detail=True,
+    #         url_path='close-task', url_name='close-task')
+    # def close_task(self, request, pk=None):
