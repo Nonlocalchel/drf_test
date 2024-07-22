@@ -18,7 +18,7 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
     def get_queryset(self):
         user = self.request.user
         if user.type == 'customer':
-            return self.queryset.filter(customer=36)
+            return self.queryset.filter(customer=user.id)
 
         return super().get_queryset()
     # def get_serializer_class(self):

@@ -22,7 +22,7 @@ class User(AbstractUser, ModelWithOriginal):
         verbose_name_plural = "Пользователи"
 
     def clean(self):
-        if 'type' in self.changed_fields or not self.pk:
+        if 'type' in self.changed_fields and not self.pk is None:
             raise ValidationError(
                 {'type': f'Пользователь уже имеет тип!'}
             )
