@@ -4,11 +4,13 @@ from django.dispatch import receiver
 from .models import *
 
 
-# @receiver(pre_save, sender=User)
-# def change_user_data(sender, instance,create **kwargs):
-#     if created:
-#         instance.set_password(instance.password)
+@receiver(pre_save, sender=User)
+def create_special_profile(sender, instance, **kwargs):
+    user_password = instance.password
+    if user_password.startswith('pbkdf2_sha256'):
+        return
 
+    instance.set_password(user_password)
 
 @receiver(post_save, sender=User)
 def create_special_profile(sender, instance, created, **kwargs):
