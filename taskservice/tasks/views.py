@@ -1,5 +1,6 @@
 from rest_framework import mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -20,9 +21,17 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
         if user.type == 'customer':
             return self.queryset.filter(customer=user.id)
 
+        if user.type == 'worker':
+            return self.queryset.filter(worker=user.id)
+
         return super().get_queryset()
-    # def get_serializer_class(self):
-    #     if self.request.method in ['PUT', 'PATCH']:
+
+    def get_serializer_class(self):
+        if self.request.method not in SAFE_METHODS:
+            return TaskCreateSerializer
+
+        return super().get_serializer_class()
+
 
     # def get_permissions(self):
     #     if self.action == 'update':
