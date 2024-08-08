@@ -9,7 +9,7 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class TaskCreateSerializer(serializers.ModelSerializer):
+class CustomerTaskCreateSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -24,6 +24,12 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         return super().save(**kwargs)
 
 
+class WorkerTaskCreateSerializer(serializers.ModelSerializer):
+    customer = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = '__all__'
 
 # class TaskCreateSerializer(serializers.ModelSerializer):
 #     def __init__(self, *args, **kwargs):

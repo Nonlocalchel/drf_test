@@ -29,10 +29,20 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
     #метод для получения всех записей по отд. адресу
 
     def get_serializer_class(self):
-        if self.request.method not in SAFE_METHODS: #ругое условие
-            return TaskCreateSerializer
+        if self.request.method == "POST":
+            user = self.request.user
+            if user.type == 'customer':
+                return CustomerTaskCreateSerializer
+
+            if user.type == 'worker':
+                return WorkerTaskCreateSerializer
 
         return super().get_serializer_class()
+
+    @action(detail=False, methods=['get'])
+    def all(self, request):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
     # def get_permissions(self):
