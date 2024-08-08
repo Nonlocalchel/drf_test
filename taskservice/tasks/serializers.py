@@ -10,11 +10,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
-    def __init__(self, *args, **kwargs):
-        print(1)
-        super().__init__(*args, **kwargs)
-
-    customer = serializers.Field()
+    customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Task

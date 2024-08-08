@@ -26,8 +26,10 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
 
         return super().get_queryset()
 
+    #метод для получения всех записей по отд. адресу
+
     def get_serializer_class(self):
-        if self.request.method not in SAFE_METHODS:
+        if self.request.method not in SAFE_METHODS: #ругое условие
             return TaskCreateSerializer
 
         return super().get_serializer_class()
