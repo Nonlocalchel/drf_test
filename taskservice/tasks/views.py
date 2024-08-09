@@ -26,10 +26,9 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
 
         return super().get_queryset()
 
-    #метод для получения всех записей по отд. адресу
-
     def get_serializer_class(self):
-        if self.request.method == "POST":
+        req_method = self.request.method
+        if req_method == "POST":
             user = self.request.user
             if user.type == 'customer':
                 return CustomerTaskCreateSerializer
@@ -37,17 +36,20 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Lis
             if user.type == 'worker':
                 return WorkerTaskCreateSerializer
 
+        if req_method in ["PUT", "PATCH"]:
+            print(1)
+            return TaskUpdateSerializer
+
         return super().get_serializer_class()
 
-    @action(detail=False, methods=['get'])
-    def all(self, request):
+    @action(detail=False, methods=['get'], url_path='all', url_name='all')
+    def all_tasks(self, request):
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
 
-    # def get_permissions(self):
-    #     if self.action == 'update':
-
-    # @action(methods=['put'], detail=True,
-    #         url_path='close-task', url_name='close-task')
+    # @action(methods=['putch'], detail=True, url_path='close', url_name='close')
     # def close_task(self, request, pk=None):
+
+# def get_permissions(self):
+#     if self.action == 'update':

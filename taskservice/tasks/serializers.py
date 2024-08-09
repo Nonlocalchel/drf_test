@@ -31,6 +31,13 @@ class WorkerTaskCreateSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
+
+class TaskUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+        read_only_fields = ("title", )
+
 # class TaskCreateSerializer(serializers.ModelSerializer):
 #     def __init__(self, *args, **kwargs):
 #         super().__init__(*args, **kwargs)
