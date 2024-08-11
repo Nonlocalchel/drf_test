@@ -2,14 +2,27 @@ from rest_framework import serializers
 from .models import Task
 
 
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+        read_only_fields = ['title', 'customer', 'worker']
+
+
 class TaskSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['title', 'customer', 'worker']
+        read_only_fields = ['report', 'status', 'worker']
 
+    def save(self, **kwargs):
+        user = self.context["request"].user
+        if user.type == "customer":
+            kwargs['customer'] = user.customer
+
+        return super().save(**kwargs)
 
 
     # def update(self, instance, validated_data):

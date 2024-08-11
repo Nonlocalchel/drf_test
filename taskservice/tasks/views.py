@@ -5,7 +5,7 @@ from rest_framework.permissions import SAFE_METHODS
 
 from .models import Task
 from .permissions import IsTaskInvolvedPerson
-from .serializers import TaskSerializer
+from .serializers import JobSerializer, TaskSerializer
 
 from .services.utils import get_safe_methods
 
@@ -17,7 +17,7 @@ class WorkerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                         GenericViewSet):
 
     queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    serializer_class = JobSerializer
     http_method_names = [*get_safe_methods(SAFE_METHODS), "patch"]
 
     def get_queryset(self):
