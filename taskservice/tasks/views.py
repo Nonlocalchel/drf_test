@@ -1,12 +1,13 @@
 from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS
-from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from .models import Task
 from .permissions import IsTaskInvolvedPerson
-from .serializers import *
+from .serializers import TaskSerializer
+
+from .services.utils import get_safe_methods
 
 
 # Create your views here.
@@ -17,11 +18,25 @@ class WorkerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    http_method_names = ['get', 'patch', 'head', 'options']
+    http_method_names = [*get_safe_methods(SAFE_METHODS), "patch"]
 
     def get_queryset(self):
         user = self.request.user
         queryset = self.queryset.filter(worker=user.id)
+        return queryset
+
+
+class CustomerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                        mixins.ListModelMixin, mixins.UpdateModelMixin,
+                        GenericViewSet):
+
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    http_method_names = [*get_safe_methods(SAFE_METHODS), "put", "post"]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = self.queryset.filter(customer=user.id)
         return queryset
 
 # class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin,
