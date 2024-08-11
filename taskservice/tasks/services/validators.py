@@ -2,7 +2,7 @@ from tasks.models import Task
 
 def validate_changes(instance):
     if instance.time_close:
-        return {'status': 'Завершенную задачу менять нельзя!'}
+        return {'status': 'Завершенную задачу изменить нельзя!'}
 
 
 def check_worker(instance):

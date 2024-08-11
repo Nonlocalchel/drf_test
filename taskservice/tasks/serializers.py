@@ -3,40 +3,50 @@ from .models import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    # customer = serializers.HiddenField(default=serializers.CurrentUserDefault())#для заказчика
-    class Meta:
-        model = Task
-        fields = "__all__"
-
-
-class CustomerTaskCreateSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Task
         fields = '__all__'
-
-    def save(self, **kwargs):
-        user = self.context["request"].user
-        if user.type == "customer":
-            kwargs['customer'] = user.customer
-
-        return super().save(**kwargs)
+        read_only_fields = ['title', 'customer', 'worker']
 
 
-class WorkerTaskCreateSerializer(serializers.ModelSerializer):
-    customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    class Meta:
-        model = Task
-        fields = '__all__'
+    # def update(self, instance, validated_data):
 
 
-class TaskUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = '__all__'
-        read_only_fields = ("title", )
+# class WorkerTaskCreateSerializer(serializers.ModelSerializer):
+
+
+#
+# class CustomerTaskCreateSerializer(serializers.ModelSerializer):
+#     customer = serializers.PrimaryKeyRelatedField(read_only=True)
+#
+#     class Meta:
+#         model = Task
+#         fields = '__all__'
+#
+#     def save(self, **kwargs):
+#         user = self.context["request"].user
+#         if user.type == "customer":
+#             kwargs['customer'] = user.customer
+#
+#         return super().save(**kwargs)
+#
+#
+# class WorkerTaskCreateSerializer(serializers.ModelSerializer):
+#     customer = serializers.PrimaryKeyRelatedField(read_only=True)
+#
+#     class Meta:
+#         model = Task
+#         fields = '__all__'
+#
+#
+# class TaskUpdateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Task
+#         fields = '__all__'
+#         read_only_fields = ("title", )
 
 # class TaskCreateSerializer(serializers.ModelSerializer):
 #     def __init__(self, *args, **kwargs):

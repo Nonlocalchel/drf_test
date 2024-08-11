@@ -1,6 +1,6 @@
 def collect_all_validators() -> list:
     from tasks.services.validators import validate_changes, validate_report, check_worker
-    return [validate_changes, check_worker, validate_report]
+    return [check_worker, validate_report, validate_changes]
 
 
 def collect_all_errors(validators: list, validate_obj: object) -> dict[str: str] | None:

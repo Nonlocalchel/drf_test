@@ -10,42 +10,56 @@ from .serializers import *
 
 
 # Create your views here.
-class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin,
-                  GenericViewSet):
+
+class WorkerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                        mixins.ListModelMixin, mixins.UpdateModelMixin,
+                        GenericViewSet):
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    http_method_names = ['get', 'patch', 'head', 'options']
 
     def get_queryset(self):
         user = self.request.user
-        if user.type == 'customer':
-            return self.queryset.filter(customer=user.id)
+        queryset = self.queryset.filter(worker=user.id)
+        return queryset
 
-        if user.type == 'worker':
-            return self.queryset.filter(worker=user.id)
-
-        return super().get_queryset()
-
-    def get_serializer_class(self):
-        req_method = self.request.method
-        if req_method == "POST":
-            user = self.request.user
-            if user.type == 'customer':
-                return CustomerTaskCreateSerializer
-
-            if user.type == 'worker':
-                return WorkerTaskCreateSerializer
-
-        if req_method in ["PUT", "PATCH"]:
-            print(1)
-            return TaskUpdateSerializer
-
-        return super().get_serializer_class()
-
-    @action(detail=False, methods=['get'], url_path='all', url_name='all')
-    def all_tasks(self, request):
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+# class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin,
+#                   GenericViewSet):
+#
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.type == 'customer':
+#             return self.queryset.filter(customer=user.id)
+#
+#         if user.type == 'worker':
+#             return self.queryset.filter(worker=user.id)
+#
+#         return super().get_queryset()
+#
+#     def get_serializer_class(self):
+#         req_method = self.request.method
+#         if req_method == "POST":
+#             user = self.request.user
+#             if user.type == 'customer':
+#                 return CustomerTaskCreateSerializer
+#
+#             if user.type == 'worker':
+#                 return WorkerTaskCreateSerializer
+#
+#         if req_method in ["PUT", "PATCH"]:
+#             print(1)
+#             return TaskUpdateSerializer
+#
+#         return super().get_serializer_class()
+#
+#     @action(detail=False, methods=['get'], url_path='all', url_name='all')
+#     def all_tasks(self, request):
+#         serializer = self.get_serializer(self.get_queryset(), many=True)
+#         return Response(serializer.data)
 
 
     # @action(methods=['putch'], detail=True, url_path='close', url_name='close')
