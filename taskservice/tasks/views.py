@@ -1,32 +1,51 @@
 from rest_framework import mixins
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS
 
 from .models import Task
 from .permissions import IsTaskInvolvedPerson
-from .serializers import JobSerializer, TaskSerializer
+from .serializers import JobSerializer, JobCreateSerializer, TaskSerializer
 
 from .services.utils import get_safe_methods
 
 
 # Create your views here.
 
-class WorkerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                         mixins.ListModelMixin, mixins.UpdateModelMixin,
                         GenericViewSet):
 
     queryset = Task.objects.all()
     serializer_class = JobSerializer
-    http_method_names = [*get_safe_methods(SAFE_METHODS), "patch"]
+    http_method_names = [*get_safe_methods(SAFE_METHODS), "patch", "post"]
 
     def get_queryset(self):
         user = self.request.user
         queryset = self.queryset.filter(worker=user.id)
         return queryset
 
+    @action(detail=False, methods=['get'], url_path='all', url_name='all')
+    def all_tasks(self, request):
+        pk = request.GET.get('pk')
+        queryset = self.get_queryset()
+        if pk:
+            queryset = queryset.filter(pk=pk)
 
-class CustomerTaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(methods=['POST'], detail=False, url_path='create', url_name='create')
+    def create_job(self, request):
+        serializer = JobCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+
+
+class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                         mixins.ListModelMixin, mixins.UpdateModelMixin,
                         GenericViewSet):
 

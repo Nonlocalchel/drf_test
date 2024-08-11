@@ -9,6 +9,12 @@ class JobSerializer(serializers.ModelSerializer):
         read_only_fields = ['title', 'customer', 'worker']
 
 
+class JobCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
 class TaskSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(read_only=True)
 
