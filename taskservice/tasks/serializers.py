@@ -7,9 +7,10 @@ class JobSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
         read_only_fields = ['title', 'customer', 'worker']
-    #
-    # def create(self, validated_data):
-    #     raise serializers.ValidationError({'Error': 'у мужлан нет прав'})
+
+    def create(self, validated_data):
+        raise serializers.ValidationError({'Error': 'у мужлан нет прав'})
+
 
 class JobCreateSerializer(serializers.ModelSerializer):
     class Meta:

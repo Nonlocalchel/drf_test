@@ -1,3 +1,6 @@
+from http import HTTPMethod
+
+from django.db.models import Q
 from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -8,7 +11,7 @@ from .models import Task
 from .permissions import *
 from .serializers import JobSerializer, JobCreateSerializer, TaskSerializer
 
-from .services.utils import get_safe_methods, get_user_id
+from .services.utils import *
 
 
 # Create your views here.
@@ -19,13 +22,19 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     queryset = Task.objects.all()
     serializer_class = JobSerializer
     http_method_names = [*get_safe_methods(SAFE_METHODS), "patch", "post"]
+    permission_classes = (IsWorker,)
 
     def get_queryset(self):
-        user_id = get_user_id(self.request)
-        queryset = self.queryset.filter(worker=user_id)
-        return queryset
+        request = self.request
+        user_id = get_user_id(request)
+        query_type = request.GET.get("q")
+        queryset = self.queryset
+        queryset_1 = get_right_query(queryset.filter(worker=user_id), query_type == 'free')
+        queryset_2 = get_right_query(queryset.filter(status=Task.StatusType.WAIT), query_type == 'main')
 
-    @action(detail=False, methods=['get'], url_path='all', url_name='all')
+        return compare_query(queryset_1, queryset_2)
+
+    @action(detail=False, methods=[HTTPMethod.GET], url_path='all', permission_classes=[IsSuperWorker])
     def all_tasks(self, request):
         pk = request.GET.get('pk')
         queryset = self.queryset
@@ -35,7 +44,7 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(methods=['POST'], detail=False, url_path='create', url_name='create')
+    @action(methods=[HTTPMethod.POST], detail=False, url_path='create', permission_classes=[IsSuperWorker])
     def create_job(self, request):
         serializer = JobCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

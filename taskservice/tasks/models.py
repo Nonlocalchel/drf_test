@@ -23,6 +23,8 @@ class Task(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL,
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
 
+    objects = models.Manager()
+
     def __str__(self):
         return self.title
 
