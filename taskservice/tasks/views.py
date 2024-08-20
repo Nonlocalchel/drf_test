@@ -8,22 +8,21 @@ from .models import Task
 from .permissions import IsTaskInvolvedPerson
 from .serializers import JobSerializer, JobCreateSerializer, TaskSerializer
 
-from .services.utils import get_safe_methods
+from .services.utils import get_safe_methods, get_user_id
 
 
 # Create your views here.
 
 class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                        mixins.ListModelMixin, mixins.UpdateModelMixin,
-                        GenericViewSet):
-
+                 mixins.ListModelMixin, mixins.UpdateModelMixin,
+                 GenericViewSet):
     queryset = Task.objects.all()
     serializer_class = JobSerializer
     http_method_names = [*get_safe_methods(SAFE_METHODS), "patch", "post"]
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = self.queryset.filter(worker=user.id)
+        user_id = get_user_id(self.request)
+        queryset = self.queryset.filter(worker=user_id)
         return queryset
 
     @action(detail=False, methods=['get'], url_path='all', url_name='all')
@@ -41,22 +40,20 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
         serializer = JobCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data)
 
 
 class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                        mixins.ListModelMixin, mixins.UpdateModelMixin,
-                        GenericViewSet):
-
+                  mixins.ListModelMixin, mixins.UpdateModelMixin,
+                  GenericViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     http_method_names = [*get_safe_methods(SAFE_METHODS), "put", "post"]
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = self.queryset.filter(customer=user.id)
-        return queryset
+        user_id = get_user_id(self.request)
+        queryset = self.queryset.filter(customer=user_id)
+        return self.queryset.filter(customer=user_id)
 
 # class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin,
 #                   GenericViewSet):
@@ -96,8 +93,8 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 #         return Response(serializer.data)
 
 
-    # @action(methods=['putch'], detail=True, url_path='close', url_name='close')
-    # def close_task(self, request, pk=None):
+# @action(methods=['putch'], detail=True, url_path='close', url_name='close')
+# def close_task(self, request, pk=None):
 
 # def get_permissions(self):
 #     if self.action == 'update':
