@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS
 
 from .models import Task
-from .permissions import IsTaskInvolvedPerson
+from .permissions import *
 from .serializers import JobSerializer, JobCreateSerializer, TaskSerializer
 
 from .services.utils import get_safe_methods, get_user_id
@@ -28,7 +28,7 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     @action(detail=False, methods=['get'], url_path='all', url_name='all')
     def all_tasks(self, request):
         pk = request.GET.get('pk')
-        queryset = self.get_queryset()
+        queryset = self.queryset
         if pk:
             queryset = queryset.filter(pk=pk)
 
@@ -49,6 +49,7 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     http_method_names = [*get_safe_methods(SAFE_METHODS), "put", "post"]
+    permission_classes = (IsCustomer, )
 
     def get_queryset(self):
         user_id = get_user_id(self.request)

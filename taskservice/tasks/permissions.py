@@ -1,7 +1,21 @@
 from rest_framework import permissions
+from .services.utils import check_user_type
 
 
-class IsTaskInvolvedPerson(permissions.BasePermission):
+class IsWorker(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        user = request.user
+        return check_user_type(user, 'worker')
+
+
+class IsCustomer(permissions.BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+        return check_user_type(user, 'customer')
+
+
+class IsPostInvolvedPerson(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
         if user.id == obj.customer:
@@ -13,8 +27,8 @@ class IsTaskInvolvedPerson(permissions.BasePermission):
         if hasattr(user, 'worker'):
             return user.worker.is_super_worker
 
-
-class IsWorkerAndTaskIsFree(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        user = request.user
-        return user.type == 'worker' and not obj.worker
+#
+# class IsWorkerAndTaskIsFree(permissions.BasePermission):
+#     def has_object_permission(self, request, view, obj):
+#         user = request.user
+#         return user.type == 'worker' and not obj.worker
