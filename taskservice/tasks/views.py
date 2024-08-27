@@ -30,10 +30,12 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
         queryset = super().get_queryset()
         query_type = request.GET.get("q")
-        queryset_1 = get_right_query(queryset.filter(worker=user_id), query_type == 'free')
-        queryset_2 = get_right_query(queryset.filter(worker=None), query_type == 'main')
-
-        return queryset_1 | queryset_2
+       # get_job_query(queryset, query_type, user_id)
+        return get_job_query(queryset, query_type, user_id)
+        # queryset_1 = get_right_query(queryset.filter(worker=user_id), query_type == 'free')
+        # queryset_2 = get_right_query(queryset.filter(worker=None), query_type == 'main')
+        #
+        # return queryset_1 | queryset_2
 
     @action(detail=False, methods=[HTTPMethod.GET], url_path='all', permission_classes=[IsSuperWorker])
     def all_tasks(self, request):
