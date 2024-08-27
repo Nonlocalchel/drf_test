@@ -34,11 +34,11 @@ class UsersViewSet(mixins.CreateModelMixin,
 
 class WorkerViewSet(UsersViewSet):
     queryset = User.objects.filter(type='worker')
-    serializer_class = UserWorkerSerializer
-
-
-class CustomersViewSet(UsersViewSet):
-    queryset = User.objects.filter(type='customer')
-    serializer_class = UserCustomerSerializer
+    serializer_class = WorkerSerializer
+#
+#
+# class CustomersViewSet(UsersViewSet):
+#     queryset = User.objects.filter(type='customer')
+#     serializer_class = CustomerSerializer
 
 
