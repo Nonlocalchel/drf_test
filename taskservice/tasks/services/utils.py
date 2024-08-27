@@ -14,9 +14,5 @@ def get_right_query(queryset, case):
     return queryset if not case else empty_query
 
 
-def compare_query(query_1, query_2):
-    return list(chain(query_1, query_2))
-
-
 def check_user_type(user, verifiable_type):
     return user.type == verifiable_type

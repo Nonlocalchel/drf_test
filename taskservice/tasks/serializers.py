@@ -11,6 +11,11 @@ class JobSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         raise serializers.ValidationError({'Error': 'у мужлан нет прав'})
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        instance.worker = user.worker
+        return super().update(instance, validated_data)
+
 
 class JobCreateSerializer(serializers.ModelSerializer):
     class Meta:
