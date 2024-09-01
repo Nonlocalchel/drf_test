@@ -8,4 +8,5 @@ def django_error_handler(exc, context):
     response = exception_handler(exc, context)
     if response is None and isinstance(exc, ValidationError):
         return Response(status=400, data=exc.message_dict)
+
     return response

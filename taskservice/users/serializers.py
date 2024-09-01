@@ -2,36 +2,37 @@ from rest_framework import serializers
 from .models import *
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserReadSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email", "is_staff", "is_active", "is_superuser",
-                  "phone", "photo", "type"]
+        fields = ('phone', 'username', 'password')
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ["password", "last_login", "groups", "user_permissions"]
 
 
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
-        fields = ['exp']
-
-
-class UserWorkerSerializer(serializers.ModelSerializer):
-    worker = WorkerSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'worker']
+        fields = ['exp', 'is_super_worker']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['discount']
+        fields = "__all__"
 
 
-class UserCustomerSerializer(serializers.ModelSerializer):
+class UserWorkerSerializer(UserReadSerializer):
+    worker = WorkerSerializer(many=False, read_only=True)
+
+
+class UserCustomerSerializer(UserReadSerializer):
     customer = CustomerSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'customer']

@@ -1,18 +1,8 @@
 from django.db.models import Q, QuerySet
 
-from users.models import User
-
 
 def get_safe_methods(methods: list[str]) -> list[str]:
     return [method.lower() for method in methods]
-
-
-def get_user_id(request: any) -> int:
-    return request.user.id
-
-
-def check_user_type(user: User, verifiable_type: str) -> bool:
-    return user.type == verifiable_type
 
 
 def get_job_query(default_queryset: QuerySet, query_type: str, user_id: int) -> QuerySet:

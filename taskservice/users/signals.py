@@ -12,6 +12,7 @@ def create_special_profile(sender, instance, **kwargs):
 
     instance.set_password(user_password)
 
+
 @receiver(post_save, sender=User)
 def create_special_profile(sender, instance, created, **kwargs):
     if created:
