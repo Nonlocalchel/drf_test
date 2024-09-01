@@ -1,8 +1,9 @@
 from django.db.models import Q, QuerySet
+from rest_framework.permissions import SAFE_METHODS
 
 
-def get_safe_methods(methods: list[str]) -> list[str]:
-    return [method.lower() for method in methods]
+def get_safe_methods() -> list[str]:
+    return [method.lower() for method in SAFE_METHODS]
 
 
 def get_job_query(default_queryset: QuerySet, query_type: str, user_id: int) -> QuerySet:

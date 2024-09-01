@@ -3,19 +3,32 @@ from .models import *
 
 
 class UserReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ["password", "last_login", "groups", "user_permissions"]
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ('phone', 'username', 'password')
+        fields = ('email', 'username', 'phone', 'password', 'password2')
 
+    def validate(self, attrs):
+        data = super(UserCreateSerializer, self).validate(attrs)
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError('Password mismatch')
+        del data['password2']
+        return data
 
-class UserCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        exclude = ["password", "last_login", "groups", "user_permissions"]
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 
 class WorkerSerializer(serializers.ModelSerializer):

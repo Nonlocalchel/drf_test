@@ -28,6 +28,10 @@ class User(AbstractUser, ModelWithOriginal):
             )
 
         return super().clean()
+    #
+    # def save(self, *args, **kwargs):
+    #     self.clean()
+    #     super().save(*args, **kwargs)
 
 
 class Worker(models.Model):
@@ -42,7 +46,7 @@ class Worker(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='customer')
     discount = models.IntegerField(blank=True, null=True)
-    is_super_consumer = models.BooleanField(default=False)
+    is_super_customer = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
