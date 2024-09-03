@@ -2,13 +2,6 @@ from rest_framework import serializers
 from .models import *
 
 
-class UserReadSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        exclude = ["password", "last_login", "groups", "user_permissions"]
-
-
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -29,6 +22,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UserReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = ["password", "last_login", "groups", "user_permissions"]
 
 
 class WorkerSerializer(serializers.ModelSerializer):
