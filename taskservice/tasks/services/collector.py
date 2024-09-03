@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 
 
 def collect_all_validators() -> list:
-    from tasks.services.validators import validate_changes, validate_report, check_worker
+    from tasks.validators import validate_changes, validate_report, check_worker
     return [check_worker, validate_report, validate_changes]
 
 

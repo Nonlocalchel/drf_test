@@ -1,44 +1,65 @@
 from django.forms import model_to_dict
 from rest_framework import mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from tasks.services.utils import get_safe_methods
 from .models import *
 from .serializers import *
+from .permissions import IsSuperWorker, IsSuperCustomer, IsSuperWorkerOrReadOnly
 
-
-# Create your views here.
-# class UserViewSet(mixins.CreateModelMixin,
-#                    mixins.RetrieveModelMixin,
-#                    mixins.ListModelMixin,
-#                    GenericViewSet):
-#
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#
-#     @action(methods=['get', 'post'], detail=False)
-#     def workers(self, request, pk=None):
-#         workers = User.objects.filter(type='worker')
-#         return Response(UserWorkerSerializer(workers, many=True).data)
-#
-#     @action(methods=['get', 'post'], detail=False)
-#     def customers(self, request, pk=None):
-#         customers = User.objects.filter(type='customer')
-#         return Response(UserCustomerSerializer(customers, many=True).data)
 
 class UsersViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.RetrieveModelMixin,
                    GenericViewSet):
-    pass
+
+    def get_serializer_class(self):
+        request_method = self.request.method
+        if request_method not in SAFE_METHODS:
+            return UserCreateSerializer
+
+        return super().get_serializer_class()
 
 
 class WorkerViewSet(UsersViewSet):
     queryset = User.objects.filter(type='worker')
-    serializer_class = WorkerSerializer
-#
-#
-# class CustomersViewSet(UsersViewSet):
-#     queryset = User.objects.filter(type='customer')
-#     serializer_class = CustomerSerializer
+    serializer_class = UserWorkerSerializer
+    permission_classes = [IsSuperCustomer | IsSuperWorkerOrReadOnly]
 
 
+class CustomersViewSet(UsersViewSet):
+    queryset = User.objects.filter(type='customer')
+    serializer_class = UserCustomerSerializer
+    permission_class = IsSuperWorker
+#
+#
+# class NewUsersViewSet(mixins.CreateModelMixin,
+#                       mixins.ListModelMixin,
+#                       mixins.RetrieveModelMixin,
+#                       GenericViewSet):
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.type == "customer":
+#             return User.objects.filter(type='customer')
+#
+#         if user.type == "worker":
+#             return User.objects.filter(type='worker')
+#
+#     def get_serializer_class(self):
+#         request = self.request
+#         request_method = request.method
+#         if request_method not in SAFE_METHODS:
+#             return UserCreateSerializer
+#
+#         user = request.method
+#         if user.type == "customer":
+#             return UserCustomerSerializer
+#
+#         if user.type == "worker":
+#             return UserWorkerSerializer
+#
+#         return super().get_serializer_class()

@@ -4,10 +4,11 @@ from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
-from rest_framework.permissions import SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated
 
+from users.permissions import IsWorker, IsSuperWorker, IsCustomer
+from users.services.utils import get_user_id
 from .models import Task
-from .permissions import *
 from .serializers import JobSerializer, JobCreateSerializer, TaskSerializer
 
 from .services.utils import *
@@ -20,8 +21,8 @@ class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                  GenericViewSet):
     queryset = Task.objects.all()
     serializer_class = JobSerializer
-    http_method_names = [*get_safe_methods(SAFE_METHODS), "patch", "post"]
-    permission_classes = (IsWorker,)
+    http_method_names = [*get_safe_methods(), "patch", "post"]
+    permission_classes = (IsAuthenticated, IsWorker,)
 
     def get_queryset(self):
         request = self.request
@@ -55,8 +56,8 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                   GenericViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    http_method_names = [*get_safe_methods(SAFE_METHODS), "put", "post"]
-    permission_classes = (IsCustomer, )
+    http_method_names = [*get_safe_methods(), "put", "post"]
+    permission_classes = (IsAuthenticated, IsCustomer, )
 
     def get_queryset(self):
         user_id = get_user_id(self.request)
