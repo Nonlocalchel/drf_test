@@ -33,3 +33,10 @@ def validate_report(instance):
         raise ValidationError(
             {'status': 'Задачу нужно завершить'}
         )
+
+
+def validate_type_field(user_type, type_data):
+    if user_type != 'customer' and type_data:
+        raise ValidationError(
+            {'customer': 'Нельзя назначать заказчика'}
+        )

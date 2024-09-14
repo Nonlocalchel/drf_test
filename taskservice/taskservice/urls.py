@@ -23,7 +23,8 @@ from tasks.views import *
 from users.views import *
 
 router = routers.DefaultRouter()
-router.register(r'jobs', JobViewSet, basename='jobs')
+# router.register(r'jobs', JobViewSet, basename='jobs')
+# router.register(r'tasks', TaskViewSet, basename='tasks')
 router.register(r'tasks', TaskViewSet, basename='tasks')
 
 # router.register(r'workers', WorkerViewSet, basename='workers')
