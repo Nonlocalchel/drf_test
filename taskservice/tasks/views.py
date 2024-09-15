@@ -41,7 +41,7 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
             'patch': TaskPartialUpdateSerializer
         }
 
-        req_method = self.request.action
+        req_method = self.request.method.lower()
         serializer_class = serializer_classes_by_action[req_method]
         return serializer_class
 
@@ -64,14 +64,14 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        user = self.request.user
-        user_type = user.type
-        validate_type_field(user_type, serializer.data.user.customer)
-        if user_type == 'customer':
-            serializer.validated_data['customer'] = user.customer
-
-        serializer.save()
+    # def perform_create(self, serializer):
+    #     user = self.request.user
+    #     user_type = user.type
+    #     validate_type_field(user_type, serializer.data.user.customer)
+    #     if user_type == 'customer':
+    #         serializer.validated_data['customer'] = user.customer
+    #
+    #     serializer.save()
 
 
 # class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
