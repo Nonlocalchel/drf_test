@@ -1,20 +1,24 @@
 from django.db.models import Q, QuerySet
 from rest_framework.permissions import SAFE_METHODS
+from rest_framework.request import Request
 
 
 def get_safe_methods() -> list[str]:
     return [method.lower() for method in SAFE_METHODS]
 
 
-def get_job_query(default_queryset: QuerySet, query_type: str, user_id: int) -> QuerySet:
+def get_customer_queryset(default_queryset: QuerySet, user_id: int):
+    """При проблемах с оптимизациецй можно возвращать только параметры с фильтрацией"""
+
+    customer_task = Q(customer=user_id)
+    filter_params = customer_task
+    return default_queryset.filter(filter_params)
+
+
+def get_worker_queryset(default_queryset: QuerySet, user_id: int) -> QuerySet:
+    """При проблемах с оптимизациецй можно возвращать только параметры с фильтрацией"""
+
     worker_task = Q(worker=user_id)
     free_tasks = Q(worker__isnull=True)
     filter_params = worker_task | free_tasks
-
-    if query_type == 'free':
-        filter_params = free_tasks
-
-    if query_type == 'main':
-        filter_params = worker_task
-
     return default_queryset.filter(filter_params)

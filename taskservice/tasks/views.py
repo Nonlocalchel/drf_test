@@ -18,6 +18,7 @@ from .serializers import (
 )
 
 from .services.utils import *
+from .validators import validate_type_field
 
 
 # Create your views here.
@@ -44,12 +45,31 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
         serializer_class = serializer_classes_by_action[req_method]
         return serializer_class
 
+    def get_queryset(self):
+        queryset = self.queryset
+        user = self.request.user
+        user_id = user.id
+        if user.type == 'customer':
+            return get_customer_queryset(queryset, user_id)
+
+        return get_worker_queryset(queryset, user_id)
+
+    @action(detail=False, methods=[HTTPMethod.GET], url_path='all', permission_classes=[IsSuperWorker])
+    def all_tasks(self, request):
+        pk = request.GET.get('pk')
+        queryset = self.queryset
+        if pk:
+            queryset = queryset.filter(pk=pk)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
         user = self.request.user
         user_type = user.type
         validate_type_field(user_type, serializer.data.user.customer)
         if user_type == 'customer':
-            serializer.data.user.customer = user.customer
+            serializer.validated_data['customer'] = user.customer
 
         serializer.save()
 
