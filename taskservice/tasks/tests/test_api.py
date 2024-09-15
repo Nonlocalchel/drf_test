@@ -7,24 +7,27 @@ from users.models import User
 
 
 class WorkerTaskAPITestCase(APITestCase):
+    fixtures = ['users_backup.json', 'customer_backup.json', 'worker_backup.json', 'running_tasks_backup.json']
+
     def setUp(self):
         self.test_user_data = {
             'password': 'worker_super_ps_387',
             'username': 'Test_1',
-            'phone': '+37529542173',
+            'phone': '+375291850665',
             'type': 'worker'
         }
         self.test_user = User.objects.create_user(password=self.test_user_data['password'],
-                                             username=self.test_user_data['username'],
-                                             phone=self.test_user_data['phone'], type=self.test_user_data['type']
-                                             )
-        user = User.objects.create_user(password='customer_super_ps_387',
-                                            username='customer_1',
-                                            phone='+3752981343', type='customer'
-                                            )
-        self.task_1 = Task.objects.create(title='Test task 1', customer=user.customer)
-        self.task_2 = Task.objects.create(title='Test task 2', customer=user.customer)
-        self.task_3 = Task.objects.create(title='Test task 3', customer=user.customer)
+                                                  username=self.test_user_data['username'],
+                                                  phone=self.test_user_data['phone'],
+                                                  type=self.test_user_data['type']
+                                                  )
+        # user = User.objects.create_user(password='customer_super_ps_387',
+        #                                     username='customer_1',
+        #                                     phone='+3752981343', type='customer'
+        #                                     )
+        # self.task_1 = Task.objects.create(title='Test task 1', customer=user.customer)
+        # self.task_2 = Task.objects.create(title='Test task 2', customer=user.customer)
+        # self.task_3 = Task.objects.create(title='Test task 3', customer=user.customer)
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
@@ -50,5 +53,3 @@ class WorkerTaskAPITestCase(APITestCase):
 
         token = auth.data['access']
         self.client.credentials(HTTP_AUTHORIZATION='Bearer {0}'.format(token))
-
-

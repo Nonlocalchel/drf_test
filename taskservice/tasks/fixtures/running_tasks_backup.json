@@ -1,0 +1,44 @@
+[
+  {
+    "model": "tasks.task",
+    "pk": 29,
+    "fields": {
+      "title": "Устроить набег",
+      "time_create": "2024-07-19T21:54:10.715Z",
+      "time_update": "2024-07-22T18:52:27.327Z",
+      "time_close": null,
+      "status": "wait",
+      "report": "",
+      "customer": 36,
+      "worker": null
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 61,
+    "fields": {
+      "title": "new",
+      "time_create": "2024-08-27T21:58:35.502Z",
+      "time_update": "2024-08-27T21:58:35.502Z",
+      "time_close": null,
+      "status": "wait",
+      "report": "",
+      "customer": 36,
+      "worker": null
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 62,
+    "fields": {
+      "title": "new",
+      "time_create": "2024-08-27T22:18:13.478Z",
+      "time_update": "2024-08-27T22:18:13.478Z",
+      "time_close": null,
+      "status": "wait",
+      "report": "",
+      "customer": 36,
+      "worker": null
+    }
+  }
+]

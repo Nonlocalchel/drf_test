@@ -1,0 +1,170 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$YufYNfYCHT8mPpuT2NZBMi$QkPkxEI5fueUOkxzSsYhIbuLA9mQRZZqX7vhPidHvxM=",
+      "last_login": "2024-07-22T12:03:43.288Z",
+      "is_superuser": true,
+      "username": "adminchik",
+      "first_name": "",
+      "last_name": "",
+      "email": "v4slava.guk@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-07-10T09:20:35Z",
+      "phone": "+375 29 482 06 12",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 36,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$nEBz9WgkSQOqkcLFwIYzOj$ksYCgXSW/AsoWbnuf9MUS/HyPo3/WBHo4nGOuCgSG9s=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "customer_1",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-19T21:37:04Z",
+      "phone": "+375 29 485 06 65",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 37,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$hPaT7KK8p7sk1yGz7b5nxR$jTgUhuH0EHs+zGRTpLvdMaG2l0vVFCM92+YEF1H1bNg=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "worker_1",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-19T21:55:37Z",
+      "phone": "+375 29 482 06 65",
+      "photo": "",
+      "type": "worker",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 55,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$wb7Qqee5Pc2p0d1cikaQ6L$3IC9q7OtrlTnoviwIkD8dEAJpumZ+4MGC3LY66jZSEg=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "customer_2",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-22T22:50:47.266Z",
+      "phone": "+375 29 432 06 65",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 56,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$qeaWek8SmLLOU5dECot9Ev$y97KYqICQ7jEGL8h9dB5i4kEoCGF8lh62aBuLgSqHVw=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "worker_2",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-22T23:11:34.945Z",
+      "phone": "+375 29 125 06 65",
+      "photo": "",
+      "type": "worker",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 57,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$f1vDRBbFvVXqaXkvwNdyWT$+NdtHNlUaH8fFvvNmamolSbf7TNoF3a1356FvMQUu5E=",
+      "last_login": "2024-08-11T13:23:00.033Z",
+      "is_superuser": true,
+      "username": "new_admin_1",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-08-11T13:22:27.857Z",
+      "phone": "758938323",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 58,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$oJn5ry82t0VlNmfQRPAiN5$kiQWw/AHqtB/mUZPfPhOzCT3CPed4ZpdXxkxb8iw6q0=",
+      "last_login": "2024-08-27T20:29:32.662Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-08-27T20:29:10.220Z",
+      "phone": "5478490434",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 75,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$JdaQlZjMDWQs5mIljciJha$zpx7mmHDsc5r5eSVVTFruSXGuVIgwbU1tTX/ZwAC9GA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "test",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-09-01T19:29:55.545Z",
+      "phone": "43758678",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
