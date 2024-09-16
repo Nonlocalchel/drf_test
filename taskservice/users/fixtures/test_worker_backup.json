@@ -1,0 +1,18 @@
+[
+  {
+    "model": "users.worker",
+    "pk": 37,
+    "fields": {
+      "exp": null,
+      "is_super_worker": false
+    }
+  },
+  {
+    "model": "users.worker",
+    "pk": 56,
+    "fields": {
+      "exp": null,
+      "is_super_worker": true
+    }
+  }
+]

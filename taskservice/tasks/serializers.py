@@ -26,15 +26,30 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['title', 'customer', 'worker']
+        read_only_fields = ['report', 'customer', 'worker', 'status']
 
 
 class TaskPartialUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=Task.StatusType)
+
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['report', 'status', 'worker']
+        read_only_fields = ['title', 'customer']
 
+    def update(self, instance, validated_data):
+        if instance.status == Task.StatusType.WAIT:
+            user = self.context["request"].user
+            instance.worker = user.worker
+
+        return super().update(instance, validated_data)
+
+    # def get_worker(self):
+    #     if self.context["worker"]:
+    #         return self.context["worker"]
+    #
+    #     user = self.context["request"].user
+    #     return user.worker
 
 # class JobSerializer(serializers.ModelSerializer):
 #     class Meta:

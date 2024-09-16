@@ -1,0 +1,86 @@
+[
+  {
+    "model": "users.user",
+    "pk": 36,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$nEBz9WgkSQOqkcLFwIYzOj$ksYCgXSW/AsoWbnuf9MUS/HyPo3/WBHo4nGOuCgSG9s=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "customer_1",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-19T21:37:04Z",
+      "phone": "+375 29 485 06 65",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 37,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$hPaT7KK8p7sk1yGz7b5nxR$jTgUhuH0EHs+zGRTpLvdMaG2l0vVFCM92+YEF1H1bNg=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "worker_1",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-19T21:55:37Z",
+      "phone": "+375 29 482 06 65",
+      "photo": "",
+      "type": "worker",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 55,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$wb7Qqee5Pc2p0d1cikaQ6L$3IC9q7OtrlTnoviwIkD8dEAJpumZ+4MGC3LY66jZSEg=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "customer_2",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-22T22:50:47.266Z",
+      "phone": "+375 29 432 06 65",
+      "photo": "",
+      "type": "customer",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 56,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$qeaWek8SmLLOU5dECot9Ev$y97KYqICQ7jEGL8h9dB5i4kEoCGF8lh62aBuLgSqHVw=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "worker_2",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-22T23:11:34.945Z",
+      "phone": "+375 29 125 06 65",
+      "photo": "",
+      "type": "worker",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

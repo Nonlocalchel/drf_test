@@ -21,10 +21,10 @@
       "time_create": "2024-08-27T21:58:35.502Z",
       "time_update": "2024-08-27T21:58:35.502Z",
       "time_close": null,
-      "status": "wait",
+      "status": "in_process",
       "report": "",
       "customer": 36,
-      "worker": null
+      "worker": 37
     }
   },
   {
