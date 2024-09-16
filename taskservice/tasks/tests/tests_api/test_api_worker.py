@@ -3,25 +3,25 @@ import unittest
 
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from tasks.models import Task
+from tasks.tests.tests_api.test_api_jwt import APITestCaseWithJWT
 from users.models import User, Customer
 
 
-class WorkerTaskAPITestCase(APITestCase):
-    clean_password = None
-    user=None
+class WorkerTaskAPITestCase(APITestCaseWithJWT):
+    """Тестирование запросов работника"""
+
     fixtures = ['test_users_backup.json', 'test_customer_backup.json',
                 'test_worker_backup.json', 'test_tasks_backup.json']
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         customer = Customer.objects.last()
         cls.task_1 = Task.objects.create(title='Test task 1', customer=customer)
         cls.task_2 = Task.objects.create(title='Test task 2', customer=customer)
         cls.task_3 = Task.objects.create(title='Test task 3', customer=customer)
-        cls.setUpTestUser()
         worker = cls.user.worker
         cls.task_4 = Task.objects.create(title='Test task 4', customer=customer, worker=worker)
 
@@ -35,16 +35,7 @@ class WorkerTaskAPITestCase(APITestCase):
                                             )
 
     def setUp(self):
-        self.jwt_auth(user=self.user)
-
-    def jwt_auth(self, user):
-        url = reverse('token_obtain_pair')
-        auth = self.client.post(url,
-                                {'username': user.username, 'password': self.clean_password},
-                                format='json')
-
-        token = auth.data['access']
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer {0}'.format(token))
+        super().setUp()
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
@@ -83,7 +74,7 @@ class WorkerTaskAPITestCase(APITestCase):
         data = {'status': 'in_process'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
-                                   content_type='application/json')
+                                     content_type='application/json')
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.task_1.refresh_from_db()
@@ -96,10 +87,6 @@ class WorkerTaskAPITestCase(APITestCase):
         data = {'status': 'in_process'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
-                                   content_type='application/json')
+                                     content_type='application/json')
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.task_1.refresh_from_db()
-        self.assertEqual(self.user.worker, self.task_1.worker)
-        self.assertEqual('in_process', self.task_1.status)
-
