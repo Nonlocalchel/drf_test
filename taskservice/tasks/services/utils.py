@@ -8,7 +8,7 @@ def get_safe_methods() -> list[str]:
 
 
 def get_customer_queryset(default_queryset: QuerySet, user_id: int):
-    """При проблемах с оптимизациецй можно возвращать только параметры с фильтрацией"""
+    """При проблемах с оптимизациецй можно возвращать только параметры фильтрации"""
 
     customer_task = Q(customer=user_id)
     filter_params = customer_task
@@ -16,7 +16,7 @@ def get_customer_queryset(default_queryset: QuerySet, user_id: int):
 
 
 def get_worker_queryset(default_queryset: QuerySet, user_id: int) -> QuerySet:
-    """При проблемах с оптимизациецй можно возвращать только параметры с фильтрацией"""
+    """При проблемах с оптимизациецй можно возвращать только параметры фильтрации"""
 
     worker_task = Q(worker=user_id)
     free_tasks = Q(worker__isnull=True)
