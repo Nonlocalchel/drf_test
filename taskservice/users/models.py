@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -9,6 +9,10 @@ from users.services.ModelWithOriginal import ModelWithOriginal
 
 
 class User(AbstractUser, ModelWithOriginal):
+    class Meta:
+        verbose_name = "Пользователи"
+        verbose_name_plural = "Пользователи"
+
     class UserType(models.TextChoices):
         CUSTOMER = "customer", "Customer"
         WORKER = "worker", "Worker"
@@ -17,9 +21,8 @@ class User(AbstractUser, ModelWithOriginal):
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
     type = models.CharField(max_length=50, choices=UserType, default=UserType.CUSTOMER)
 
-    class Meta:
-        verbose_name = "Пользователи"
-        verbose_name_plural = "Пользователи"
+    def check_user_type(self, verifiable_type: str) -> bool:
+        return self.type == verifiable_type
 
     def clean(self):
         if 'type' in self.changed_fields and not self.pk is None:
@@ -28,10 +31,12 @@ class User(AbstractUser, ModelWithOriginal):
             )
 
         return super().clean()
-    #
-    # def save(self, *args, **kwargs):
-    #     self.clean()
-    #     super().save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    objects = UserManager()
 
 
 class Worker(models.Model):

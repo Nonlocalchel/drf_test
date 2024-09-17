@@ -9,7 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 
 from services.viewsets_classes import SelectPermissionByActionMixin
 from users.permissions import IsWorker, IsSuperWorker, IsCustomer
-from users.services.utils import get_user_id
 from .filters import TaskFilter
 from .models import Task
 from .serializers import (
@@ -34,17 +33,19 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
     filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['worker', 'customer', 'status']
     filterset_class = TaskFilter
-    permission_classes_by_action = None
+    permission_classes_by_action = {'list': [],
+                                    'retrieve': [],
+                                    'update': [],
+                                    'create': []}
 
-    def get_permissions(self):
-        req_method = self.request.method
-        if req_method == HTTPMethod.GET:
-            "огика будет отдавать прва в зависимомти от запроса.Дальше права буду проверять тип пользователя"
-            return [permission() for permission in self.permission_classes]
-
-        return super().get_permissions()
+    # def get_permissions(self):
+    #     req_method = self.request.method
+    #     if req_method == HTTPMethod.GET:
+    #         "огика будет отдавать прва в зависимомти от запроса.Дальше права буду проверять тип пользователя"
+    #         return [permission() for permission in self.permission_classes]
+    #
+    #     return super().get_permissions()
 
     def get_serializer_class(self):
         serializer_classes_by_action = {

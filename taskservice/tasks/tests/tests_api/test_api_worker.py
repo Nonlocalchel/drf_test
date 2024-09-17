@@ -68,6 +68,11 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                 worker = task['worker']
                 self.assertIn(worker, [user_id, None])
 
+    def test_get_list_fail(self):
+        url = reverse('tasks-list')+f'?worker=37'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_get_detail(self):
         url = reverse('tasks-detail', args=(self.task.id,))
         response = self.client.get(url)
