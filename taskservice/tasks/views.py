@@ -1,5 +1,6 @@
 from http import HTTPMethod
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -9,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from services.viewsets_classes import SelectPermissionByActionMixin
 from users.permissions import IsWorker, IsSuperWorker, IsCustomer
 from users.services.utils import get_user_id
+from .filters import TaskFilter
 from .models import Task
 from .serializers import (
     TaskReadSerializer,
@@ -31,7 +33,18 @@ class CRUViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
+    filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['worker', 'customer', 'status']
+    filterset_class = TaskFilter
     permission_classes_by_action = None
+
+    def get_permissions(self):
+        req_method = self.request.method
+        if req_method == HTTPMethod.GET:
+            "огика будет отдавать прва в зависимомти от запроса.Дальше права буду проверять тип пользователя"
+            return [permission() for permission in self.permission_classes]
+
+        return super().get_permissions()
 
     def get_serializer_class(self):
         serializer_classes_by_action = {
@@ -45,24 +58,24 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
         serializer_class = serializer_classes_by_action[req_method]
         return serializer_class
 
-    def get_queryset(self):
-        queryset = self.queryset
-        user = self.request.user
-        user_id = user.id
-        if user.type == 'customer':
-            return get_customer_queryset(queryset, user_id)
+    # def get_queryset(self):
+    #     queryset = self.queryset
+    #     user = self.request.user
+    #     user_id = user.id
+    #     if user.type == 'customer':
+    #         return get_customer_queryset(queryset, user_id)
+    #
+    #     return get_worker_queryset(queryset, user_id)
 
-        return get_worker_queryset(queryset, user_id)
-
-    @action(detail=False, methods=[HTTPMethod.GET], url_path='all', permission_classes=[IsSuperWorker])
-    def all_tasks(self, request):
-        pk = request.GET.get('pk')
-        queryset = self.queryset
-        if pk:
-            queryset = queryset.filter(pk=pk)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # @action(detail=False, methods=[HTTPMethod.GET], url_path='all', permission_classes=[IsSuperWorker])
+    # def all_tasks(self, request):
+    #     pk = request.GET.get('pk')
+    #     queryset = self.queryset
+    #     if pk:
+    #         queryset = queryset.filter(pk=pk)
+    #
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
 
     # def perform_create(self, serializer):
     #     user = self.request.user

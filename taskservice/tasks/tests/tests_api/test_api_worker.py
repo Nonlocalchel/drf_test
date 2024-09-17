@@ -1,4 +1,5 @@
 import json
+import unittest
 
 from django.urls import reverse
 from rest_framework import status
@@ -56,7 +57,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        url = reverse('tasks-list')
+        url = reverse('tasks-list')+f'?worker={self.user.id},null'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -75,7 +76,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_get_detail_fail(self):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -88,6 +89,15 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.task.refresh_from_db()
         self.assertEqual(self.user.worker, self.task.worker)
         self.assertEqual(Task.StatusType.IN_PROCESS, self.task.status)
+
+    def test_patch_take_process_task_in_process(self):
+        url = reverse('tasks-detail', args=(61,))
+        data = {'status': Task.StatusType.IN_PROCESS}
+        json_data = json.dumps(data)
+        response = self.client.patch(url, data=json_data,
+                                     content_type='application/json')
+
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
 
     def test_patch_done(self):
         url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
@@ -121,19 +131,6 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-
-
-
-    # @unittest.expectedFailure
-    # def test_patch_take_process_task_in_process(self):
-    #     url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
-    #     data = {'status': Task.StatusType.IN_PROCESS}
-    #     json_data = json.dumps(data)
-    #     response = self.client.patch(url, data=json_data,
-    #                                  content_type='application/json')
-    #
-    #     print(response.data)
-    #     self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     # def test_post(self):
     ## def test_put(self):
