@@ -14,6 +14,9 @@ class TaskFilter(filters.FilterSet):
 
     @staticmethod
     def find_results_maybe_include_null(queryset, name, value):
+        """
+        refactor: filter_params обирает в себя значения в главном цикле
+        """
         params_list = []
         filter_params = Q()
 

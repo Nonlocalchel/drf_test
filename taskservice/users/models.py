@@ -2,13 +2,29 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from users.services.ModelWithOriginal import ModelWithOriginal
+from services.ModelWithOriginal import ModelWithOriginal
+from services.SelfCleaningModel import SelfCleaningModel
 
 
 # Create your models here.
 
+class CustomUserManager(UserManager):
+    def create_user(self, username, email=None, password=None, **extra_fields):
+        return super().create_user(username, email, password, **extra_fields)
+        """
+        user=super().create_user(username, email, password, **extra_fields)
+        if user.type == 'customer':
+            customer = Customer.objects.create(user=user)
+            customer.save()
+        elif user.type == 'worker':
+            worker = Worker.objects.create(user=user)
+            worker.save()
+            
+        return user
+        """
 
-class User(AbstractUser, ModelWithOriginal):
+
+class User(AbstractUser, ModelWithOriginal, SelfCleaningModel):
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
@@ -36,7 +52,7 @@ class User(AbstractUser, ModelWithOriginal):
         self.clean()
         super().save(*args, **kwargs)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
 
 class Worker(models.Model):

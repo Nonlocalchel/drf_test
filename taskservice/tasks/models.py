@@ -1,5 +1,6 @@
-from django.core.exceptions import ValidationError
 from django.db import models
+
+from services.SelfCleaningModel import SelfCleaningModel
 
 from tasks.services.collector import *
 from users.models import Worker, Customer
@@ -7,7 +8,7 @@ from users.models import Worker, Customer
 
 # Create your models here.
 
-class Task(models.Model):
+class Task(models.Model, SelfCleaningModel):
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
         IN_PROCESS = "in_process", "In_process"
@@ -22,8 +23,6 @@ class Task(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='task', verbose_name="Заказчик")
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL,
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
-
-    objects = models.Manager()
 
     def __str__(self):
         return self.title

@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
-from services.viewsets_classes import SelectPermissionByActionMixin
+from services.SelectPermissionByActionMixin import SelectPermissionByActionMixin
 from users.permissions import IsWorker, IsSuperWorker, IsCustomer
 from .filters import TaskFilter
 from .models import Task
