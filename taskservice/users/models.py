@@ -7,23 +7,6 @@ from services.SelfCleaningModel import SelfCleaningModel
 
 
 # Create your models here.
-
-class CustomUserManager(UserManager):
-    def create_user(self, username, email=None, password=None, **extra_fields):
-        return super().create_user(username, email, password, **extra_fields)
-        """
-        user=super().create_user(username, email, password, **extra_fields)
-        if user.type == 'customer':
-            customer = Customer.objects.create(user=user)
-            customer.save()
-        elif user.type == 'worker':
-            worker = Worker.objects.create(user=user)
-            worker.save()
-            
-        return user
-        """
-
-
 class User(AbstractUser, ModelWithOriginal, SelfCleaningModel):
     class Meta:
         verbose_name = "Пользователи"
@@ -47,12 +30,6 @@ class User(AbstractUser, ModelWithOriginal, SelfCleaningModel):
             )
 
         return super().clean()
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-
-    objects = CustomUserManager()
 
 
 class Worker(models.Model):

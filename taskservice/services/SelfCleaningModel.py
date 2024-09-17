@@ -1,6 +1,3 @@
-from django.db import models
-
-
 class SelfCleaningModel:
     """Модель которая запускает проерки перед сохранением"""
 

@@ -7,7 +7,6 @@ from users.models import Worker, Customer
 
 
 # Create your models here.
-
 class Task(models.Model, SelfCleaningModel):
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
