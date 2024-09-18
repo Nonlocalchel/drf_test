@@ -1,4 +1,4 @@
-class SelfCleaningModel:
+class ModelWithSelfCleaning:
     """Модель которая запускает проерки перед сохранением"""
 
     def save(self, *args, **kwargs):

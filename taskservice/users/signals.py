@@ -17,12 +17,12 @@ def create_special_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def create_special_profile(sender, instance, created, **kwargs):
-    if created:
-        if instance.type == 'customer':
-            customer = Customer.objects.create(user=instance)
-            customer.save()
-        elif instance.type == 'worker':
-            worker = Worker.objects.create(user=instance)
-            worker.save()
-    else:
-        pass
+    if not created:
+        return
+
+    if instance.type == 'customer':
+        customer = Customer.objects.create(user=instance)
+        customer.save()
+    elif instance.type == 'worker':
+        worker = Worker.objects.create(user=instance)
+        worker.save()

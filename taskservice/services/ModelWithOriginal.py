@@ -2,6 +2,7 @@ from django.db import models
 
 
 class ModelWithOriginal(models.Model):
+    """Проверяет были ли изменения в Модели"""
     def __init__(self, *args, **kwargs):
         super(ModelWithOriginal, self).__init__(*args, **kwargs)
         # Store initial field values into self._original

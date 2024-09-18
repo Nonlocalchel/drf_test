@@ -1,11 +1,8 @@
-from django.forms import model_to_dict
 from rest_framework import mixins
-from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from tasks.services.utils import get_safe_methods
+
 from .models import *
 from .serializers import *
 from .permissions import IsSuperWorker, IsSuperCustomer, IsSuperWorkerOrReadOnly

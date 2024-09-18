@@ -1,13 +1,13 @@
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from services.ModelWithOriginal import ModelWithOriginal
-from services.SelfCleaningModel import SelfCleaningModel
+from services.ModelWithSelfCleaning import ModelWithSelfCleaning
 
 
 # Create your models here.
-class User(AbstractUser, ModelWithOriginal, SelfCleaningModel):
+class User(AbstractUser, ModelWithOriginal, ModelWithSelfCleaning):
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"

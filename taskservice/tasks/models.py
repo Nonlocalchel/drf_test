@@ -1,13 +1,13 @@
 from django.db import models
 
-from services.SelfCleaningModel import SelfCleaningModel
+from services.ModelWithSelfCleaning import ModelWithSelfCleaning
 
 from tasks.services.collector import *
 from users.models import Worker, Customer
 
 
 # Create your models here.
-class Task(models.Model, SelfCleaningModel):
+class Task(ModelWithSelfCleaning, models.Model):
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
         IN_PROCESS = "in_process", "In_process"

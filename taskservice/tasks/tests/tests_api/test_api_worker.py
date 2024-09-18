@@ -1,5 +1,4 @@
 import json
-import unittest
 
 from django.urls import reverse
 from rest_framework import status
@@ -57,7 +56,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        url = reverse('tasks-list')+f'?worker={self.user.id},null'
+        url = reverse('tasks-list') + f'?worker={self.user.id},null'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -68,20 +67,30 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                 worker = task['worker']
                 self.assertIn(worker, [user_id, None])
 
-    def test_get_list_fail(self):
-        url = reverse('tasks-list')+f'?worker=37'
+    def test_get_list_other_worker(self):
+        url = reverse('tasks-list') + f'?worker=37'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_get_detail(self):
+    def test_get_list_all(self):
+        url = reverse('tasks-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_detail_nobody_task(self):
         url = reverse('tasks-detail', args=(self.task.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_detail_worker_task(self):
+        url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_detail_fail(self):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -102,7 +111,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_done(self):
         url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
@@ -126,7 +135,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_patch_done_task(self):
         url = reverse('tasks-detail', args=(self.task_done.id,))
@@ -135,7 +144,15 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_put(self):
+        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
+        data = {'title': 'new_title'}
+        json_data = json.dumps(data)
+        response = self.client.put(url, data=json_data,
+                                     content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     # def test_post(self):
     ## def test_put(self):

@@ -6,26 +6,26 @@ from users.services.utils import *
 class IsWorker(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        return check_user_type(user, 'worker')
+        return user.check_user_type('worker')
 
 
 class IsCustomer(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        return check_user_type(user, 'customer')
+        return user.check_user_type('customer')
 
 
 class IsSuperCustomer(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        if check_user_type(user, 'customer'):
+        if user.check_user_type('customer'):
             return is_super_customer(user)
 
 
 class IsSuperWorker(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        if check_user_type(user, 'worker'):
+        if user.check_user_type('worker'):
             return is_super_worker(user)
 
 
@@ -35,5 +35,5 @@ class IsSuperWorkerOrReadOnly(permissions.BasePermission):
             return True
 
         user = request.user
-        if check_user_type(user, 'worker'):
+        if user.check_user_type('worker'):
             return is_super_worker(user)

@@ -1,16 +1,11 @@
-from http import HTTPMethod
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 
 from services.SelectPermissionByActionMixin import SelectPermissionByActionMixin
-from users.permissions import IsWorker, IsSuperWorker, IsCustomer
 from .filters import TaskFilter
 from .models import Task
+from tasks.permissions import *
 from .serializers import (
     TaskReadSerializer,
     TaskCreateSerializer,
@@ -18,26 +13,25 @@ from .serializers import (
     TaskPartialUpdateSerializer
 )
 
-from .services.utils import *
-from .validators import validate_type_field
-
 
 # Create your views here.
 class CRUViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                  mixins.ListModelMixin, mixins.UpdateModelMixin,
-                  GenericViewSet):
+                 mixins.ListModelMixin, mixins.UpdateModelMixin,
+                 GenericViewSet):
     pass
 
 
-class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
+class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = TaskFilter
-    permission_classes_by_action = {'list': [],
-                                    'retrieve': [],
-                                    'update': [],
-                                    'create': []}
+    # permission_classes = [IsWorkerOrNobodyTask]
+    permission_classes_by_action = {'list': [WorkerTasksAccessPermission | CustomerTasksAccessPermission | IsSuperWorker],
+                                    'retrieve': [IsWorkerOrNobodyTask | IsCustomerTask | IsSuperWorker],  # IsWorkerOrNobodyTask | IsCustomerTask | IsSuperWorker
+                                    'partial_update': [IsWorkerOrNobodyTask],
+                                    'update': [~IsRunningTask | IsCustomerTask],
+                                    'create': [IsCustomerTask | IsSuperWorker]}
 
     # def get_permissions(self):
     #     req_method = self.request.method
@@ -48,7 +42,7 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
     #     return super().get_permissions()
 
     def get_serializer_class(self):
-        serializer_classes_by_action = {
+        serializer_classes_by_method = {
             'get': TaskReadSerializer,
             'post': TaskCreateSerializer,
             'put': TaskUpdateSerializer,
@@ -56,7 +50,7 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
         }
 
         req_method = self.request.method.lower()
-        serializer_class = serializer_classes_by_action[req_method]
+        serializer_class = serializer_classes_by_method[req_method]
         return serializer_class
 
     # def get_queryset(self):
@@ -86,7 +80,6 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
     #         serializer.validated_data['customer'] = user.customer
     #
     #     serializer.save()
-
 
 # class JobViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 #                  mixins.ListModelMixin, mixins.UpdateModelMixin,
@@ -135,4 +128,3 @@ class TaskViewSet(CRUViewSet, SelectPermissionByActionMixin):
 #         user_id = get_user_id(self.request)
 #         queryset = self.queryset.filter(customer=user_id)
 #         return queryset
-
