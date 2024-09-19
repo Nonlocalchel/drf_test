@@ -28,8 +28,8 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TaskFilter
     permission_classes_by_action = {
-        'list': [IsWorker & WorkerTasksAccessPermission | IsCustomer & CustomerTasksAccessPermission],# | IsCustomer & CustomerTasksAccessPermission | IsSuperWorker
-        'retrieve': [IsWorker & WorkerTaskAccessPermission],# | IsCustomer & CustomerTaskAccessPermission | IsSuperWorker
+        'list': [IsWorker & WorkerTasksAccessPermission | IsCustomer & CustomerTasksAccessPermission | IsSuperWorker],
+        'retrieve': [IsWorker & WorkerTaskAccessPermission | IsCustomer & CustomerTaskAccessPermission | IsSuperWorker],
         'partial_update': [IsWorker & WorkerTaskAccessPermission],
         'update': [~IsRunningTask | IsCustomer & CustomerTaskAccessPermission],
         'create': [IsCustomer & CustomerTaskAccessPermission | IsSuperWorker]

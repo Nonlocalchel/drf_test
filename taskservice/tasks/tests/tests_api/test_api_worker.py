@@ -4,8 +4,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from tasks.messages.permission_denied import TaskPermissionMessages
+from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
 from tasks.tests.tests_api.test_api_jwt import APITestCaseWithJWT
+from users.messages.permission_denied import UserPermissionMessages
 from users.models import User, Customer
 
 
@@ -19,7 +21,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
     def setUpTestData(cls):
         super().setUpTestData()
         worker = cls.user.worker
-        customer = Customer.objects.last()
+        cls.customer = Customer.objects.last()
+        customer = cls.customer
         cls.task = Task.objects.create(title='Test task_1 (wait)', customer=customer)
         cls.task_in_process_1 = Task.objects.create(title='Test task_1 (in_process)', status=Task.StatusType.IN_PROCESS,
                                                     customer=customer, worker=worker)
@@ -141,7 +144,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        #сообщение об оштьбке нужен новый enum
+        validation_message = response.data['report'][0]
+        self.assertEqual(validation_message, TaskValidationMessages.EMPTY_REPORT_ERROR)
 
     def test_patch_done_task(self):
         url = reverse('tasks-detail', args=(self.task_done.id,))
@@ -151,6 +155,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        validation_message = response.data['status'][0]
+        self.assertEqual(validation_message, TaskValidationMessages.CHANGE_DONE_TASK_ERROR)
 
     def test_put(self):
         url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
@@ -160,5 +166,15 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                    content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    # def test_post(self):
-    # def test_put(self):
+        self.assertEqual(response.data, UserPermissionMessages.CUSTOMER_ACCESS)
+
+    def test_post(self):
+        url = reverse('tasks-list')
+        data = {
+            "title": "test_task",
+            "customer": self.customer.user.id
+        }
+        json_data = json.dumps(data)
+        response = self.client.post(url, data=json_data,
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

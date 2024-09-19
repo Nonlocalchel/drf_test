@@ -7,7 +7,7 @@ from .models import Task
 def validate_changes(instance):
     if instance.time_close:
         raise ValidationError(
-            {'status': TaskValidationMessages.STATUS_DONE_ERROR}
+            {'status': TaskValidationMessages.CHANGE_DONE_TASK_ERROR}
         )
 
 
@@ -15,7 +15,7 @@ def check_worker(instance):
     if not instance.worker:
         if instance.status != Task.StatusType.WAIT:
             raise ValidationError(
-                {'worker': TaskValidationMessages.CHANGE_FREE_TASK_ERROR}
+                {'worker': TaskValidationMessages.REPORT_FREE_TASK_ERROR}
             )
 
 
@@ -32,7 +32,7 @@ def validate_report(instance):
 
     if report_is_fill:
         raise ValidationError(
-            {'status': TaskValidationMessages.UNDONE_TASK_ERROR}
+            {'status': TaskValidationMessages.REPORT_RUNNING_TASK_ERROR}
         )
 
 
