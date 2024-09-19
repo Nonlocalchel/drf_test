@@ -4,18 +4,24 @@ from users.services.utils import *
 
 
 class IsWorker(permissions.BasePermission):
+    message = 'You are not a worker!'
+
     def has_permission(self, request, view):
         user = request.user
         return user.check_user_type('worker')
 
 
 class IsCustomer(permissions.BasePermission):
+    message = 'You are not a customer!'
+
     def has_permission(self, request, view):
         user = request.user
         return user.check_user_type('customer')
 
 
 class IsSuperCustomer(permissions.BasePermission):
+    message = 'You are not a customer with extra permissions!'
+
     def has_permission(self, request, view):
         user = request.user
         if user.check_user_type('customer'):
@@ -23,6 +29,8 @@ class IsSuperCustomer(permissions.BasePermission):
 
 
 class IsSuperWorker(permissions.BasePermission):
+    message = 'You are not a worker with extra permissions!'
+
     def has_permission(self, request, view):
         user = request.user
         if user.check_user_type('worker'):

@@ -3,6 +3,7 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
+from tasks.messages.permission_denied import TaskPermissionMessages
 from tasks.models import Task
 from tasks.tests.tests_api.test_api_jwt import APITestCaseWithJWT
 from users.models import User, Customer
@@ -71,11 +72,13 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         url = reverse('tasks-list') + f'?worker=37'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASKS_ACCESS)
 
     def test_get_list_all(self):
         url = reverse('tasks-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASKS_ACCESS)
 
     def test_get_detail_nobody_task(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -91,6 +94,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASK_ACCESS)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -112,6 +116,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASK_ACCESS)
 
     def test_patch_done(self):
         url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
@@ -136,6 +141,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        #сообщение об оштьбке нужен новый enum
 
     def test_patch_done_task(self):
         url = reverse('tasks-detail', args=(self.task_done.id,))
@@ -151,8 +157,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         data = {'title': 'new_title'}
         json_data = json.dumps(data)
         response = self.client.put(url, data=json_data,
-                                     content_type='application/json')
+                                   content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     # def test_post(self):
-    ## def test_put(self):
+    # def test_put(self):

@@ -1,12 +1,13 @@
 from django.core.exceptions import ValidationError
 
-from tasks.models import Task
+from .messages.validation_error import TaskValidationMessages
+from .models import Task
 
 
 def validate_changes(instance):
     if instance.time_close:
         raise ValidationError(
-            {'status': 'Завершенную задачу изменить нельзя!'}
+            {'status': TaskValidationMessages.STATUS_DONE_ERROR}
         )
 
 
@@ -14,7 +15,7 @@ def check_worker(instance):
     if not instance.worker:
         if instance.status != Task.StatusType.WAIT:
             raise ValidationError(
-                {'worker': 'Задача должна кем-то выполняться!'}
+                {'worker': TaskValidationMessages.CHANGE_FREE_TASK_ERROR}
             )
 
 
@@ -24,19 +25,19 @@ def validate_report(instance):
     if instance.status == Task.StatusType.DONE:
         if not report_is_fill:
             raise ValidationError(
-                {'report': 'Отчет не может быть пустым'}
+                {'report': TaskValidationMessages.EMPTY_REPORT_ERROR}
             )
 
         return
 
     if report_is_fill:
         raise ValidationError(
-            {'status': 'Задачу нужно завершить'}
+            {'status': TaskValidationMessages.UNDONE_TASK_ERROR}
         )
 
 
 def validate_type_field(user_type, type_data):
     if user_type == 'customer' and type_data:
         raise ValidationError(
-            {'customer': 'Нельзя назначать заказчика'}
+            {'customer': TaskValidationMessages.CANT_SET_CUSTOMER_ERROR}
         )

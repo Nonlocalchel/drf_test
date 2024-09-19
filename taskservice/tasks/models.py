@@ -1,9 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from services.ModelWithSelfCleaning import ModelWithSelfCleaning
+from services.ValidationErrorsCollector import ValidationErrorsCollector
 
-from tasks.services.collector import *
 from users.models import Worker, Customer
+from .services.utils import collect_validators
 
 
 # Create your models here.
@@ -23,12 +25,15 @@ class Task(ModelWithSelfCleaning, models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL,
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
 
+    error_collector = ValidationErrorsCollector()
+
     def __str__(self):
         return self.title
 
     def clean(self):
-        validators = collect_all_validators()
-        errors = collect_all_errors(validators, self)
+        error_collector = self.error_collector
+        error_collector.validators = collect_validators()
+        errors = error_collector.collect_errors(self)
         if errors:
             raise ValidationError(errors)
 

@@ -1,16 +1,14 @@
-from http import HTTPMethod
-
 from rest_framework import permissions
 
-from users.permissions import *
+from services.exception_class_decorator import raise_permission_denied, exc_decorator
+from tasks.messages.permission_denied import TaskPermissionMessages
 
 
-class WorkerTasksAccessPermission(IsWorker):
+@raise_permission_denied(['has_permission'])
+class WorkerTasksAccessPermission(permissions.BasePermission):
+    message = TaskPermissionMessages.WORKER_TASKS_ACCESS
+
     def has_permission(self, request, view):
-        has_base_perm = super().has_permission(request, view)
-        if not has_base_perm:
-            return False
-
         worker_ids_in_params = request.GET.get('worker')
         if worker_ids_in_params is not None:
             worker_ids = worker_ids_in_params.split(',')
@@ -21,12 +19,11 @@ class WorkerTasksAccessPermission(IsWorker):
             return True
 
 
-class CustomerTasksAccessPermission(IsCustomer):
-    def has_permission(self, request, view):
-        has_base_perm = super().has_permission(request, view)
-        if not has_base_perm:
-            return False
+@raise_permission_denied(['has_permission'])
+class CustomerTasksAccessPermission(permissions.BasePermission):
+    message = TaskPermissionMessages.CUSTOMER_TASKS_ACCESS
 
+    def has_permission(self, request, view):
         customer_id_in_params = request.GET.get('customer')
         if customer_id_in_params is not None:
             customer_id = customer_id_in_params[0]
@@ -34,38 +31,29 @@ class CustomerTasksAccessPermission(IsCustomer):
                 return True
 
 
-class IsWorkerOrNobodyTask(IsWorker):
-    def has_object_permission(self, request, view, obj):
-        has_base_perm = super().has_permission(request, view)
-        if not has_base_perm:
-            return False
+@raise_permission_denied(['has_object_permission'])
+class WorkerTaskAccessPermission(permissions.BasePermission):
+    message = TaskPermissionMessages.WORKER_TASK_ACCESS
 
+    def has_object_permission(self, request, view, obj):
         if obj.worker is not None:
             return obj.worker == request.user.worker
 
         return True
 
 
-class PatchThatIfIsWorkerOrNobodyTask(IsWorkerOrNobodyTask):
+@raise_permission_denied(['has_object_permission'])
+class CustomerTaskAccessPermission(permissions.BasePermission):
+    message = TaskPermissionMessages.CUSTOMER_TASK_ACCESS
+
     def has_object_permission(self, request, view, obj):
-        has_base_perm = super().has_permission(request, view)
-        if not has_base_perm:
-            return False
-
-        if request.method == HTTPMethod.PATCH:
-            return True
+        return obj.customer == request.user.customer
 
 
-class IsCustomerTask(IsCustomer):
-    def has_object_permission(self, request, view, obj):
-        has_base_perm = super().has_permission(request, view)
-        if not has_base_perm:
-            return False
-
-        if obj.customer is not None:
-            return obj.customer == request.user.customer
-
-
+# @raise_permission_denied(['has_object_permission'])
 class IsRunningTask(permissions.BasePermission):
+    message = TaskPermissionMessages.RUNNING_TASK_ACCESS
+
+    @exc_decorator(message)
     def has_object_permission(self, request, view, obj):
         return obj.status == 'in_process'
