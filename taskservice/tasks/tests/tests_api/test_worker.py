@@ -71,6 +71,19 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                 worker = task['worker']
                 self.assertIn(worker, [user_id, None])
 
+    def test_get_list_search(self):
+        url = reverse('tasks-list') + f'?worker={self.user.id},null&search=done'
+        response = self.client.get(url)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        user_id = self.user.id
+        task_list = response.data
+        for task in task_list:
+            with self.subTest(task=task):
+                worker = task['worker']
+                self.assertIn(worker, [user_id, None])
+
     def test_get_list_other_worker(self):
         url = reverse('tasks-list') + f'?worker=37'
         response = self.client.get(url)

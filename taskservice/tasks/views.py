@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -26,13 +27,14 @@ class CRUViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter] #
     filterset_class = TaskFilter
+    search_fields = ['title','status']
     permission_classes_by_action = {
         'list': [IsWorker & WorkerTasksAccessPermission | IsCustomer & CustomerTasksAccessPermission | IsSuperWorker],
         'retrieve': [IsWorker & WorkerTaskAccessPermission | IsCustomer & CustomerTaskAccessPermission | IsSuperWorker],
         'partial_update': [IsWorker & WorkerTaskAccessPermission],
-        'update': [IsNotRunningTask & IsCustomer & CustomerTaskAccessPermission],#~IsRunningTask & IsCustomer & CustomerTaskAccessPermission
+        'update': [IsNotRunningTask & IsCustomer & CustomerTaskAccessPermission],
         'create': [IsCustomer & CustomerTaskAccessPermission | IsSuperWorker]
     }
 

@@ -126,7 +126,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['customer'], self.user.id)
 
-    def test_post_with_cusrtomer_id(self):
+    def test_post_with_customer_id(self):
         url = reverse('tasks-list')
         data = {
             "title": "test_task",

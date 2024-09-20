@@ -62,20 +62,73 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
-    def test_get_list(self):
-        url = reverse('tasks-list') + f'?worker={self.user.id},null'
-        response = self.client.get(url)
+    # test [self.user.id, 37, 'null']
+
+    def test_get_list_1(self):
+        search_param = {'worker': f'37,{self.user.id},null'}
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=search_param)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_list_other_worker(self):
-        url = reverse('tasks-list') + f'?worker=37'
-        response = self.client.get(url)
+        task_list = response.data
+        self.assertEqual(task_list[0]['worker'], 37)
+        self.assertEqual(task_list[1]['worker'], 57)
+        self.assertEqual(task_list[-1]['worker'], None)
+
+        for task in task_list:
+            with self.subTest(task=task):
+                worker = task['worker']
+                if worker is not None:
+                    self.assertIn(str(worker), [*search_param['worker'].split(',')])
+
+    def test_get_list_2(self):
+        search_param = {'worker': f'37,null'}
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=search_param,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task_list = response.data
+        self.assertEqual(task_list[0]['worker'], 37)
+        self.assertEqual(task_list[-1]['worker'], None)
+        for task in task_list:
+            with self.subTest(task=task):
+                worker = task['worker']
+                if worker is not None:
+                    self.assertIn(str(worker), [*search_param['worker'].split(',')])
+
+    def test_get_list_other_worker(self):
+        search_param = {'worker': f'37'}
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=search_param,
+                                   content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task_list = response.data
+        for task in task_list:
+            with self.subTest(task=task):
+                worker = task['worker']
+                self.assertEqual(worker, int(search_param['worker']))
 
     def test_get_list_all(self):
         url = reverse('tasks-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 7)
+
+    def test_get_list_search(self):
+        search_param = {'search': 'done'}
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=search_param)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task_list = response.data
+        for task in task_list:
+            with self.subTest(task=task):
+                search_place = task['title'] + task['status']
+                self.assertRegex(search_place.lower(), 'done')
 
     def test_get_detail_nobody_task(self):
         url = reverse('tasks-detail', args=(self.task.id,))
