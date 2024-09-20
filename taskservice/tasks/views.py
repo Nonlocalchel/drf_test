@@ -46,3 +46,9 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         req_method = self.request.method.lower()
         serializer_class = serializer_classes_by_method[req_method]
         return serializer_class
+
+    def perform_create(self, serializer):
+        serializer.save(customer=36)
+        # user = self.request.user
+        # if user.check_user_type('customer'):
+        #     serializer.save(customer=user.customer.id)

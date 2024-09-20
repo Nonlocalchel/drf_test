@@ -13,12 +13,4 @@ def django_error_handler(exc, context):
         """
         return Response(status=400, data=exc.message_dict)
 
-    if isinstance(exc, PermissionDenied):
-        """
-        Обработка исключений которые выкидывают сериализаторы,
-        чтобы вывести сообщение message т.к. при (При IsFirstPermission | IsSecondPermission) message, 
-        определенные в коде - игнорируются
-        """
-        return Response(status=status.HTTP_403_FORBIDDEN, data=str(exc))
-
     return response

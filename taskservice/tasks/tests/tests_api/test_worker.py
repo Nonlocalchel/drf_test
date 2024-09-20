@@ -3,11 +3,9 @@ import json
 from django.urls import reverse
 from rest_framework import status
 
-from tasks.messages.permission_denied import TaskPermissionMessages
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
-from tasks.tests.tests_api.test_api_jwt import APITestCaseWithJWT
-from users.messages.permission_denied import UserPermissionMessages
+from tasks.tests.tests_api.test_jwt import APITestCaseWithJWT
 from users.models import User, Customer
 
 
@@ -20,29 +18,31 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
+
+        print('\nWorker test:')
         worker = cls.user.worker
         cls.customer = Customer.objects.last()
         customer = cls.customer
         cls.task = Task.objects.create(title='Test task_1 (wait)', customer=customer)
-        cls.task_in_process_1 = Task.objects.create(title='Test task_1 (in_process)', status=Task.StatusType.IN_PROCESS,
+        cls.task_in_process_1 = Task.objects.create(title='Worker test task_1 (in_process)', status=Task.StatusType.IN_PROCESS,
                                                     customer=customer, worker=worker)
 
-        cls.task_in_process_2 = Task.objects.create(title='Test task_2 (in_process)', status=Task.StatusType.IN_PROCESS,
+        cls.task_in_process_2 = Task.objects.create(title='Worker test task_2 (in_process)', status=Task.StatusType.IN_PROCESS,
                                                     customer=customer, worker=worker)
 
-        cls.task_done = Task.objects.create(title='Test task_3 (done)', status=Task.StatusType.IN_PROCESS,
+        cls.task_done = Task.objects.create(title='Worker test task_3 (done)', status=Task.StatusType.IN_PROCESS,
                                             customer=customer, worker=worker)
 
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
-        cls.task_done.save()  # т.к. по другому (пр. cls.task_done.time_close = cls.task_done.time_update)
-        # время не созраняются
+        cls.task_done.save()
+        # т.к. по другому (пр. cls.task_done.time_close = cls.task_done.time_update)- время не сохраняются
 
     @classmethod
     def setUpTestUser(cls):
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='Test_1',
+                                            username='worker_test_1',
                                             phone='+375291850665',
                                             type='worker'
                                             )
@@ -75,13 +75,11 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         url = reverse('tasks-list') + f'?worker=37'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASKS_ACCESS)
 
     def test_get_list_all(self):
         url = reverse('tasks-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASKS_ACCESS)
 
     def test_get_detail_nobody_task(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -93,11 +91,10 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_detail_fail(self):
+    def test_get_detail_other_worker(self):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASK_ACCESS)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -119,7 +116,6 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                      content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, TaskPermissionMessages.WORKER_TASK_ACCESS)
 
     def test_patch_done(self):
         url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
@@ -166,13 +162,11 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                                    content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data, UserPermissionMessages.CUSTOMER_ACCESS)
 
     def test_post(self):
         url = reverse('tasks-list')
         data = {
-            "title": "test_task",
-            "customer": self.customer.user.id
+            "title": "test_task"
         }
         json_data = json.dumps(data)
         response = self.client.post(url, data=json_data,

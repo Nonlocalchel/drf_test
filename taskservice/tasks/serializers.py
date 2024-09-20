@@ -9,13 +9,7 @@ class TaskReadSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
-    customer = serializers.SerializerMethodField()
-
-    def get_customer(self):
-        user = self.context['request'].user
-        if user.type == 'customer':
-            return user
-
+    #customer = HiddenField
     class Meta:
         model = Task
         fields = '__all__'

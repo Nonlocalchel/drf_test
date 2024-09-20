@@ -1,13 +1,11 @@
 from rest_framework import permissions
 
-from services.exception_class_decorator import raise_permission_denied_if_false
 from tasks.messages.permission_denied import TaskPermissionMessages
 
 
 class WorkerTasksAccessPermission(permissions.BasePermission):
     message = TaskPermissionMessages.WORKER_TASKS_ACCESS
 
-    @raise_permission_denied_if_false(message)
     def has_permission(self, request, view):
         worker_ids_in_params = request.GET.get('worker')
         if worker_ids_in_params is not None:
@@ -22,7 +20,6 @@ class WorkerTasksAccessPermission(permissions.BasePermission):
 class CustomerTasksAccessPermission(permissions.BasePermission):
     message = TaskPermissionMessages.CUSTOMER_TASKS_ACCESS
 
-    @raise_permission_denied_if_false(message)
     def has_permission(self, request, view):
         customer_id_in_params = request.GET.get('customer')
         if customer_id_in_params is not None:
@@ -34,7 +31,6 @@ class CustomerTasksAccessPermission(permissions.BasePermission):
 class WorkerTaskAccessPermission(permissions.BasePermission):
     message = TaskPermissionMessages.WORKER_TASK_ACCESS
 
-    @raise_permission_denied_if_false(message)
     def has_object_permission(self, request, view, obj):
         if obj.worker is not None:
             return obj.worker == request.user.worker
@@ -45,7 +41,6 @@ class WorkerTaskAccessPermission(permissions.BasePermission):
 class CustomerTaskAccessPermission(permissions.BasePermission):
     message = TaskPermissionMessages.CUSTOMER_TASK_ACCESS
 
-    @raise_permission_denied_if_false(message)
     def has_object_permission(self, request, view, obj):
         return obj.customer == request.user.customer
 
@@ -53,6 +48,5 @@ class CustomerTaskAccessPermission(permissions.BasePermission):
 class IsRunningTask(permissions.BasePermission):
     message = TaskPermissionMessages.RUNNING_TASK_ACCESS
 
-    @raise_permission_denied_if_false(message)
     def has_object_permission(self, request, view, obj):
         return obj.status == 'in_process'
