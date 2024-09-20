@@ -9,7 +9,6 @@ class TaskReadSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
-    #customer = HiddenField
     class Meta:
         model = Task
         fields = '__all__'
