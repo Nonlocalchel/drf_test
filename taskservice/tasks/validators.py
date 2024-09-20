@@ -34,10 +34,3 @@ def validate_report(instance):
         raise ValidationError(
             {'status': TaskValidationMessages.REPORT_RUNNING_TASK_ERROR}
         )
-
-
-def validate_type_field(user_type, type_data):
-    if user_type == 'customer' and type_data:
-        raise ValidationError(
-            {'customer': TaskValidationMessages.CANT_SET_CUSTOMER_ERROR}
-        )
