@@ -30,9 +30,9 @@ class TaskPartialUpdateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['title', 'customer']
 
-    def update(self, instance, validated_data):
-        if instance.status == Task.StatusType.WAIT:
-            user = self.context["request"].user
-            instance.worker = user.worker
-
-        return super().update(instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     if instance.status == Task.StatusType.WAIT:
+    #         user = self.context["request"].user
+    #         instance.worker = user.worker
+    #
+    #     return super().update(instance, validated_data)

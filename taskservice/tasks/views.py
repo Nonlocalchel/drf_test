@@ -57,3 +57,8 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
 
         return super().create(request, *args, **kwargs)
 
+    def partial_update(self, request, *args, **kwargs):
+        request.data['worker'] = request.user
+
+        return super().partial_update(request, *args, **kwargs)
+

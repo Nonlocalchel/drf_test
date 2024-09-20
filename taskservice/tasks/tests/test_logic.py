@@ -56,7 +56,8 @@ class BusinessTestCase(TestCase):
             self.assertEqual(str(e), 'NOT NULL constraint failed: tasks_task.customer_id')
 
     def test_update_run_waiting_task(self):
-        Task.objects.filter(id=self.waiting_task_1.id).update(status=Task.StatusType.IN_PROCESS, worker=self.worker)
+        Task.objects.filter(id=self.waiting_task_1.id).update(status=Task.StatusType.IN_PROCESS,
+                                                              worker=self.worker)
         self.waiting_task_1.refresh_from_db()
         self.assertEqual(self.waiting_task_1.status, Task.StatusType.IN_PROCESS)
 
