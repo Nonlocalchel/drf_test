@@ -62,12 +62,10 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
-    # test [self.user.id, 37, 'null']
-
-    def test_get_list_1(self):
-        search_param = {'worker': f'37,{self.user.id},null'}
+    def test_get_list_of_3_workers(self):
+        data = {'worker': f'37,{self.user.id},null'}
         url = reverse('tasks-list')
-        response = self.client.get(url, data=search_param)
+        response = self.client.get(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
@@ -79,12 +77,12 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
             with self.subTest(task=task):
                 worker = task['worker']
                 if worker is not None:
-                    self.assertIn(str(worker), [*search_param['worker'].split(',')])
+                    self.assertIn(str(worker), [*data['worker'].split(',')])
 
-    def test_get_list_2(self):
-        search_param = {'worker': f'37,null'}
+    def test_get_list_get_list_of_two_workers(self):
+        data = {'worker': f'37,null'}
         url = reverse('tasks-list')
-        response = self.client.get(url, data=search_param,
+        response = self.client.get(url, data=data,
                                    content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -96,12 +94,12 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
             with self.subTest(task=task):
                 worker = task['worker']
                 if worker is not None:
-                    self.assertIn(str(worker), [*search_param['worker'].split(',')])
+                    self.assertIn(str(worker), [*data['worker'].split(',')])
 
     def test_get_list_other_worker(self):
-        search_param = {'worker': f'37'}
+        data = {'worker': f'37'}
         url = reverse('tasks-list')
-        response = self.client.get(url, data=search_param,
+        response = self.client.get(url, data=data,
                                    content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -110,7 +108,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         for task in task_list:
             with self.subTest(task=task):
                 worker = task['worker']
-                self.assertEqual(worker, int(search_param['worker']))
+                self.assertEqual(worker, int(data['worker']))
 
     def test_get_list_all(self):
         url = reverse('tasks-list')
@@ -119,9 +117,11 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(len(response.data), 7)
 
     def test_get_list_search(self):
-        search_param = {'search': 'done'}
+        data = {'search': 'done'}
         url = reverse('tasks-list')
-        response = self.client.get(url, data=search_param)
+        response = self.client.get(url, data=data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data

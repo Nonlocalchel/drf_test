@@ -61,9 +61,33 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        url = reverse('tasks-list') + f'?customer={self.user.id}'
-        response = self.client.get(url)
+        data = {'customer': self.user.id}
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task_list = response.data
+        for task in task_list:
+            with self.subTest(task=task):
+                self.assertEqual(task['customer'], data['customer'])
+
+    def test_get_list_search(self):
+        data = {'search': 'done',
+                'customer': f'{self.user.id}'
+                }
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=data,
+                                   content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task_list = response.data
+        for task in task_list:
+            with self.subTest(task=task):
+                search_place = task['title'] + task['status']
+                self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_customer(self):
         url = reverse('tasks-list') + f'?customer=36'

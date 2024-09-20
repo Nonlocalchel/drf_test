@@ -24,10 +24,12 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         cls.customer = Customer.objects.last()
         customer = cls.customer
         cls.task = Task.objects.create(title='Test task_1 (wait)', customer=customer)
-        cls.task_in_process_1 = Task.objects.create(title='Worker test task_1 (in_process)', status=Task.StatusType.IN_PROCESS,
+        cls.task_in_process_1 = Task.objects.create(title='Worker test task_1 (in_process)',
+                                                    status=Task.StatusType.IN_PROCESS,
                                                     customer=customer, worker=worker)
 
-        cls.task_in_process_2 = Task.objects.create(title='Worker test task_2 (in_process)', status=Task.StatusType.IN_PROCESS,
+        cls.task_in_process_2 = Task.objects.create(title='Worker test task_2 (in_process)',
+                                                    status=Task.StatusType.IN_PROCESS,
                                                     customer=customer, worker=worker)
 
         cls.task_done = Task.objects.create(title='Worker test task_3 (done)', status=Task.StatusType.IN_PROCESS,
@@ -60,29 +62,37 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
+        data = {'worker': f'{self.user.id},null'}
         url = reverse('tasks-list') + f'?worker={self.user.id},null'
-        response = self.client.get(url)
+        response = self.client.get(url, data=data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        user_id = self.user.id
         task_list = response.data
+        self.assertEqual(len(task_list), 6)
+
+        user_id = self.user.id
         for task in task_list:
             with self.subTest(task=task):
                 worker = task['worker']
                 self.assertIn(worker, [user_id, None])
 
     def test_get_list_search(self):
-        url = reverse('tasks-list') + f'?worker={self.user.id},null&search=done'
-        response = self.client.get(url)
-        print(response.data)
+        data = {'search': 'done',
+                'worker': f'{self.user.id},null'
+                }
+        url = reverse('tasks-list')
+        response = self.client.get(url, data=data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        user_id = self.user.id
         task_list = response.data
         for task in task_list:
             with self.subTest(task=task):
-                worker = task['worker']
-                self.assertIn(worker, [user_id, None])
+                search_place = task['title'] + task['status']
+                self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_worker(self):
         url = reverse('tasks-list') + f'?worker=37'
