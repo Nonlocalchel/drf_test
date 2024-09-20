@@ -162,20 +162,23 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_post(self):
         url = reverse('tasks-list')
         data = {
-            "title": "test_task"
+            "title": "test_task",
+            'customer': self.customer.user.id
         }
         json_data = json.dumps(data)
         response = self.client.post(url, data=json_data,
                                     content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # def test_post(self):
-    #     url = reverse('tasks-list')
-    #     data = {
-    #         "title": "test_task",
-    #         'customer': self.customer.user.id
-    #     }
-    #     json_data = json.dumps(data)
-    #     response = self.client.post(url, data=json_data,
-    #                                 content_type='application/json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_post_without_customer(self):
+        url = reverse('tasks-list')
+        data = {
+            "title": "test_task"
+        }
+        json_data = json.dumps(data)
+        response = self.client.post(url, data=json_data,
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error_message = response.data['customer'].pop()
+        self.assertEqual(error_message, 'Обязательное поле.')

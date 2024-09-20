@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins
+from rest_framework import mixins, status
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from services.SelectPermissionByActionMixin import SelectPermissionByActionMixin
@@ -47,8 +48,11 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         serializer_class = serializer_classes_by_method[req_method]
         return serializer_class
 
-    def perform_create(self, serializer):
-        serializer.save(customer=36)
-        # user = self.request.user
-        # if user.check_user_type('customer'):
-        #     serializer.save(customer=user.customer.id)
+    def create(self, request, *args, **kwargs):
+        customer = request.data.get('customer')
+        user = request.user
+        if user.check_user_type('customer'):
+            request.data['customer'] = customer.id
+
+        return super().create(request, *args, **kwargs)
+
