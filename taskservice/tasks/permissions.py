@@ -21,10 +21,10 @@ class CustomerTasksAccessPermission(permissions.BasePermission):
     message = TaskPermissionMessages.CUSTOMER_TASKS_ACCESS
 
     def has_permission(self, request, view):
-        customer_id_in_params = request.GET.get('customer')
-        if customer_id_in_params is not None:
-            customer_id = customer_id_in_params[0]
-            if customer_id == request.user.id:
+        customer_id = request.GET.get('customer')
+        if customer_id is not None:
+            user_id = str(request.user.id)
+            if customer_id == user_id:
                 return True
 
 
@@ -45,8 +45,8 @@ class CustomerTaskAccessPermission(permissions.BasePermission):
         return obj.customer == request.user.customer
 
 
-class IsRunningTask(permissions.BasePermission):
+class IsNotRunningTask(permissions.BasePermission):
     message = TaskPermissionMessages.RUNNING_TASK_ACCESS
 
     def has_object_permission(self, request, view, obj):
-        return obj.status == 'in_process'
+        return not obj.status == 'in_process'

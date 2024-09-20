@@ -9,8 +9,8 @@ from tasks.tests.tests_api.test_jwt import APITestCaseWithJWT
 from users.models import User, Customer
 
 
-class WorkerTaskAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов работника"""
+class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
+    """Тестирование запросов работника с привилегиями"""
 
     fixtures = ['test_users_backup.json', 'test_customer_backup.json',
                 'test_worker_backup.json', 'test_tasks_backup.json']

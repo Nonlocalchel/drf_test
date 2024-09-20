@@ -32,7 +32,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         'list': [IsWorker & WorkerTasksAccessPermission | IsCustomer & CustomerTasksAccessPermission | IsSuperWorker],
         'retrieve': [IsWorker & WorkerTaskAccessPermission | IsCustomer & CustomerTaskAccessPermission | IsSuperWorker],
         'partial_update': [IsWorker & WorkerTaskAccessPermission],
-        'update': [~IsRunningTask | IsCustomer & CustomerTaskAccessPermission],
+        'update': [IsNotRunningTask & IsCustomer & CustomerTaskAccessPermission],#~IsRunningTask & IsCustomer & CustomerTaskAccessPermission
         'create': [IsCustomer & CustomerTaskAccessPermission | IsSuperWorker]
     }
 
@@ -49,10 +49,9 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         return serializer_class
 
     def create(self, request, *args, **kwargs):
-        customer = request.data.get('customer')
         user = request.user
         if user.check_user_type('customer'):
-            request.data['customer'] = customer.id
+            request.data['customer'] = user.id
 
         return super().create(request, *args, **kwargs)
 
