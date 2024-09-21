@@ -1,43 +1,59 @@
-# from django.test import TestCase
-#
-# # Create your tests here.
-#
-# from django.core.exceptions import ValidationError
-#
-# from tasks.messages.validation_error import TaskValidationMessages
-# from tasks.models import Task
-# from users.models import Worker, Customer
-#
-#
-# class BusinessTestCase(TestCase):
-#     """Тестирование бизнесс-логики приложения"""
-#
-#     @classmethod
-#     def setUpTestData(cls):
-#         print('\nBusiness test:')
-#         cls.worker = Worker.objects.last()
-#         worker = cls.worker
-#         cls.customer = Customer.objects.last()
-#         customer = cls.customer
-#         cls.waiting_task_1 = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
-#         cls.waiting_task_2 = Task.objects.create(title='Customer test task_2 (wait)', customer=customer)
-#         cls.task_in_process_1 = Task.objects.create(title='Test task_1 (in_process)',
-#                                                     status=Task.StatusType.IN_PROCESS,
-#                                                     customer=customer, worker=worker)
-#
-#         cls.task_in_process_2 = Task.objects.create(title='Test task_2 (in_process)',
-#                                                     status=Task.StatusType.IN_PROCESS,
-#                                                     customer=customer, worker=worker)
-#
-#         cls.task_in_process_3 = Task.objects.create(title='Test task_3 (in_process)',
-#                                                     status=Task.StatusType.IN_PROCESS,
-#                                                     customer=customer, worker=worker)
-#
-#         cls.task_done = Task.objects.create(title='Test task_3 (done)',
-#                                             status=Task.StatusType.IN_PROCESS,
-#                                             customer=customer, worker=worker)
-#
-#         cls.task_done.report = 'test'
-#         cls.task_done.status = Task.StatusType.DONE
-#         cls.task_done.save()
+from django.test import TestCase
 
+# Create your tests here.
+
+from django.core.exceptions import ValidationError
+
+from tasks.messages.validation_error import TaskValidationMessages
+from tasks.models import Task
+from users.models import User
+
+
+class UserTestCase(TestCase):
+    """Тестирование бизнесс-логики авторизация приложения"""
+
+    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
+                'test_worker_backup.json', 'test_tasks_backup.json']
+
+    @classmethod
+    def setUpTestData(cls):
+        print('\nUser test:')
+
+    def test_create_default_user(self):
+        user_customer = User.objects.create_user(password='customer_super_ps_387',
+                                                 username='customer_test_1',
+                                                 phone='+375291850665'
+                                                 )
+        user_customer.refresh_from_db()
+        user_customer.save()
+        self.assertIn('pbkdf2_sha256', user_customer.password)
+        self.assertTrue(hasattr(user_customer, User.UserType.CUSTOMER))
+
+    def test_create_worker_user(self):
+        user_worker = User.objects.create_user(password='customer_super_ps_387',
+                                               username='customer_test_1',
+                                               phone='+375291850665',
+                                               type=User.UserType.WORKER
+                                               )
+        user_worker.refresh_from_db()
+        user_worker.save()
+        self.assertIn('pbkdf2_sha256', user_worker.password)
+        self.assertTrue(hasattr(user_worker, User.UserType.WORKER))
+
+    def test_change_user_type(self):
+        try:
+            user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
+            user_customer.type = User.UserType.WORKER
+            user_customer.save()
+        except ValidationError as validation_error:
+            message = dict(validation_error)['type'][0]
+            self.assertRegex(message, 'Пользователь .* уже имеет тип!')
+
+
+        # self.assertIn('pbkdf2_sha256', user.password)
+        # user.refresh_from_db()
+        # user.save()
+        # user.type = User.UserType.CUSTOMER
+        # user.refresh_from_db()
+        # user.save()
+        # print(user.type)

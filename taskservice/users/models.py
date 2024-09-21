@@ -1,13 +1,14 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.db import models
 
+from services.ValidationErrorsCollector import ValidationErrorsCollector
 from services.extended_models.ModelWithOriginal import ModelWithOriginal
-from services.extended_models.ModelWithSelfCleaning import ModelWithSelfCleaning
+from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
+from users.validators import validate_change_user_type
 
 
 # Create your models here.
-class User(AbstractUser, ModelWithOriginal, ModelWithSelfCleaning):
+class User(ModelWithSelfValidation, AbstractUser, ModelWithOriginal):
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
@@ -20,16 +21,11 @@ class User(AbstractUser, ModelWithOriginal, ModelWithSelfCleaning):
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
     type = models.CharField(max_length=50, choices=UserType, default=UserType.CUSTOMER)
 
+    error_collector = ValidationErrorsCollector
+    validators = [validate_change_user_type]
+
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type
-
-    def clean(self):
-        if 'type' in self.changed_fields and not self.pk is None:
-            raise ValidationError(
-                {'type': f'Пользователь уже имеет тип!'}
-            )
-
-        return super().clean()
 
 
 class Worker(models.Model):

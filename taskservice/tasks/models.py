@@ -4,7 +4,7 @@ from services.ValidationErrorsCollector import ValidationErrorsCollector
 from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
 
 from users.models import Worker, Customer
-from .utils import collect_validators
+from tasks.validators import validate_changes, validate_report, check_worker
 
 
 # Create your models here.
@@ -25,7 +25,7 @@ class Task(ModelWithSelfValidation, models.Model):
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
 
     error_collector = ValidationErrorsCollector
-    validators = collect_validators()
+    validators = [check_worker, validate_report, validate_changes]
 
     def __str__(self):
         return self.title

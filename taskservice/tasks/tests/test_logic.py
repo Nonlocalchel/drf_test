@@ -51,6 +51,7 @@ class BusinessTestCase(TestCase):
     def test_create_without_customer(self):
         try:
             Task.objects.create(title='Customer test task_1 (wait)')
+            self.assertEqual(1, 2)
         except Exception as e:
             self.assertEqual(str(e), 'NOT NULL constraint failed: tasks_task.customer_id')
 
@@ -65,6 +66,7 @@ class BusinessTestCase(TestCase):
             Task.objects.filter(id=self.waiting_task_2.id).update(status=Task.StatusType.IN_PROCESS)
             self.waiting_task_2.refresh_from_db()
             self.waiting_task_2.save()
+            self.assertEqual(1, 2)
         except ValidationError as e:
             message = dict(e)['worker'][0]
             self.assertEqual(message, TaskValidationMessages.REPORT_FREE_TASK_ERROR)
@@ -81,6 +83,7 @@ class BusinessTestCase(TestCase):
             Task.objects.filter(id=self.waiting_task_2.id).update(report='test_report')
             self.waiting_task_2.refresh_from_db()
             self.waiting_task_2.save()
+            self.assertEqual(1, 2)
         except ValidationError as e:
             message = dict(e)['status'][0]
             self.assertEqual(message, TaskValidationMessages.REPORT_RUNNING_TASK_ERROR)
@@ -97,15 +100,18 @@ class BusinessTestCase(TestCase):
             Task.objects.filter(id=self.task_in_process_2.id).update(status=Task.StatusType.DONE)
             self.task_in_process_2.refresh_from_db()
             self.task_in_process_2.save()
+            self.assertEqual(1, 2)
         except ValidationError as e:
             message = dict(e)['report'][0]
             self.assertEqual(message, TaskValidationMessages.EMPTY_REPORT_ERROR)
 
     def test_update_done_task(self):
         try:
-            Task.objects.filter(id=self.task_done.id).update(report='new_title')
-            self.task_in_process_1.refresh_from_db()
-            self.waiting_task_1.save()
+            task = Task.objects.filter(id=self.task_done.id)[0]
+            task.report = 'new_report'
+            self.task_done.refresh_from_db()
+            self.task_done.save()
+            self.assertEqual(1, 2)
         except ValidationError as e:
             message = dict(e)['status'][0]
             self.assertEqual(message, TaskValidationMessages.CHANGE_DONE_TASK_ERROR)
