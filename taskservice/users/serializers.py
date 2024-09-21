@@ -8,7 +8,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'phone', 'password', 'password2', )
+        fields = ('email', 'username', 'phone', 'password', 'password2',)
 
     def validate(self, attrs):
         data = super(UserCreateSerializer, self).validate(attrs)
@@ -17,7 +17,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         del data['password2']
         return data
 
-    def create(self, validated_data):
+    def create(self, validated_data):  # ?
         user = super().create(validated_data)
         user.set_password(validated_data['password'])
         user.save()
@@ -25,7 +25,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserReadSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         exclude = ["password", "last_login", "groups", "user_permissions"]

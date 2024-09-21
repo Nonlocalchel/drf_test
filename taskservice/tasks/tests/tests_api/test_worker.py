@@ -63,13 +63,14 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
 
     def test_get_list(self):
         data = {'worker': f'{self.user.id},null'}
-        url = reverse('tasks-list') + f'?worker={self.user.id},null'
+        url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        #task_query = количество записей в БД
         self.assertEqual(len(task_list), 6)
 
         user_id = self.user.id

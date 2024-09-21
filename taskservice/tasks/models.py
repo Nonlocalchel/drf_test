@@ -1,15 +1,14 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
-from services.ModelWithSelfCleaning import ModelWithSelfCleaning
 from services.ValidationErrorsCollector import ValidationErrorsCollector
+from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
 
 from users.models import Worker, Customer
-from .services.utils import collect_validators
+from .utils import collect_validators
 
 
 # Create your models here.
-class Task(ModelWithSelfCleaning, models.Model):
+class Task(ModelWithSelfValidation, models.Model):
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
         IN_PROCESS = "in_process", "In_process"
@@ -25,16 +24,9 @@ class Task(ModelWithSelfCleaning, models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL,
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
 
-    error_collector = ValidationErrorsCollector()
+    error_collector = ValidationErrorsCollector
+    validators = collect_validators()
 
     def __str__(self):
         return self.title
 
-    def clean(self):
-        error_collector = self.error_collector
-        error_collector.validators = collect_validators()
-        errors = error_collector.collect_errors(self)
-        if errors:
-            raise ValidationError(errors)
-
-        return super().clean()

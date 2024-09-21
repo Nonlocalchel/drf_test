@@ -1,5 +1,4 @@
-from unittest import TestCase
-
+from django.test import TestCase
 from django.core.exceptions import ValidationError
 
 from tasks.messages.validation_error import TaskValidationMessages
@@ -56,9 +55,9 @@ class BusinessTestCase(TestCase):
             self.assertEqual(str(e), 'NOT NULL constraint failed: tasks_task.customer_id')
 
     def test_update_run_waiting_task(self):
-        Task.objects.filter(id=self.waiting_task_1.id).update(status=Task.StatusType.IN_PROCESS,
-                                                              worker=self.worker)
+        Task.objects.filter(id=self.waiting_task_1.id).update(worker=self.worker)
         self.waiting_task_1.refresh_from_db()
+        self.waiting_task_1.save()
         self.assertEqual(self.waiting_task_1.status, Task.StatusType.IN_PROCESS)
 
     def test_update_run_waiting_task_without_worker(self):
@@ -91,6 +90,7 @@ class BusinessTestCase(TestCase):
         self.task_in_process_3.refresh_from_db()
         self.task_in_process_3.save()
         self.assertEqual(self.task_in_process_3.status, Task.StatusType.DONE)
+        self.assertIsNotNone(self.task_in_process_3.time_close)
 
     def test_update_done_running_task_without_report(self):
         try:

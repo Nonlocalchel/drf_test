@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 from .messages.permission_denied import UserPermissionMessages
-from .services.utils import *
+from users.utils import *
 
 
 class IsWorker(permissions.BasePermission):

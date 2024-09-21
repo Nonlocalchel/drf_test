@@ -2,8 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from services.ModelWithOriginal import ModelWithOriginal
-from services.ModelWithSelfCleaning import ModelWithSelfCleaning
+from services.extended_models.ModelWithOriginal import ModelWithOriginal
+from services.extended_models.ModelWithSelfCleaning import ModelWithSelfCleaning
 
 
 # Create your models here.
