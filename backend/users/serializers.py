@@ -8,20 +8,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'phone', 'password', 'password2',)
-
-    def validate(self, attrs):
-        data = super(UserCreateSerializer, self).validate(attrs)
-        if data['password'] != data['password2']:
-            raise serializers.ValidationError('Password mismatch')
-        del data['password2']
-        return data
-
-    def create(self, validated_data):  # ?
-        user = super().create(validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        fields = (
+            'username', 'phone',
+            'photo', 'type', 'email',
+            'first_name', 'last_name', 'is_super_user',
+            'password'
+        )
 
 
 class UserReadSerializer(serializers.ModelSerializer):

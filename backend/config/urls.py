@@ -1,5 +1,5 @@
 """
-URL configuration for taskservice project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -25,13 +25,11 @@ from users.views import *
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet, basename='tasks')
 
-# router.register(r'workers', WorkerViewSet, basename='workers')
-# router.register(r'customers', CustomersViewSet, basename='customers')
+router.register(r'users', UsersViewSet, basename='users')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
-    path('api/v1/users/', include('users.urls')),
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
