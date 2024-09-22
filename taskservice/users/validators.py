@@ -6,3 +6,11 @@ def validate_change_user_type(instance):
         raise ValidationError(
             {'type': f'Пользователь {instance.username} уже имеет тип!'}
         )
+
+
+def validate_worker_photo(instance):
+    if instance.type == 'worker':
+        if instance.photo is None:
+            raise ValidationError(
+                {'photo': f'Пользователь {instance.username} является работником и должен иметь фото!'}
+            )

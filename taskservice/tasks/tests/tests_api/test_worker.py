@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
@@ -38,7 +39,6 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
         cls.task_done.save()
-        # т.к. по другому (пр. cls.task_done.time_close = cls.task_done.time_update)- время не сохраняются
 
     @classmethod
     def setUpTestUser(cls):
@@ -70,8 +70,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
-        #task_query = количество записей в БД
-        self.assertEqual(len(task_list), 6)
+        task_query_length = Task.objects.filter(Q(worker=self.user.id) | Q(worker__isnull=True)).count()
+        self.assertEqual(len(task_list), task_query_length)
 
         user_id = self.user.id
         for task in task_list:
@@ -81,7 +81,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
 
     def test_get_list_search(self):
         data = {'search': 'done',
-                'worker': f'{self.user.id},null'
+                'worker': f'{self.user.id}'
                 }
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
@@ -90,6 +90,13 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        task_query_length = Task.objects.filter(
+            Q(worker=self.user.id) & (
+                Q(title__contains=data['search']) | Q(status__contains=data['search'])
+            )
+        ).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 search_place = task['title'] + task['status']
@@ -121,31 +128,31 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_take_wait_task_in_process(self):
+        url = reverse('tasks-take-in-process', args=(self.task.id,))
+        response = self.client.patch(url, content_type='application/json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.task.refresh_from_db()
+        self.assertEqual(self.user.worker, self.task.worker)
+        self.assertEqual(Task.StatusType.IN_PROCESS, self.task.status)
+
+    def test_patch_by_main_url(self):
         url = reverse('tasks-detail', args=(self.task.id,))
         data = {'status': Task.StatusType.IN_PROCESS}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.task.refresh_from_db()
-        self.assertEqual(self.user.worker, self.task.worker)
-        self.assertEqual(Task.StatusType.IN_PROCESS, self.task.status)
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
 
     def test_patch_take_process_task_in_process(self):
-        url = reverse('tasks-detail', args=(61,))
-        data = {'status': Task.StatusType.IN_PROCESS}
-        json_data = json.dumps(data)
-        response = self.client.patch(url, data=json_data,
-                                     content_type='application/json')
+        url = reverse('tasks-take-in-process', args=(61,))
+        response = self.client.patch(url, content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_done(self):
-        url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
-        data = {'status': Task.StatusType.DONE,
-                'report': 'test'
-                }
+        url = reverse('tasks-done', args=(self.task_in_process_1.id,))
+        data = {'report': 'test'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
@@ -157,8 +164,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(Task.StatusType.DONE, task_data['status'])
 
     def test_patch_done_without_report(self):
-        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
-        data = {'status': Task.StatusType.DONE}
+        url = reverse('tasks-done', args=(self.task_in_process_2.id,))
+        data = {'report': ''}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
@@ -168,7 +175,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(validation_message, TaskValidationMessages.EMPTY_REPORT_ERROR)
 
     def test_patch_done_task(self):
-        url = reverse('tasks-detail', args=(self.task_done.id,))
+        url = reverse('tasks-done', args=(self.task_done.id,))
         data = {'report': 'test23435467'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
@@ -196,3 +203,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.post(url, data=json_data,
                                     content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete(self):
+        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
+        response = self.client.delete(url, content_type='application/json')
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)

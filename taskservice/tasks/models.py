@@ -1,6 +1,5 @@
 from django.db import models
 
-from services.ValidationErrorsCollector import ValidationErrorsCollector
 from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
 
 from users.models import Worker, Customer
@@ -9,6 +8,8 @@ from tasks.validators import validate_changes, validate_report, check_worker
 
 # Create your models here.
 class Task(ModelWithSelfValidation, models.Model):
+    validators = [check_worker, validate_report, validate_changes]
+
     class StatusType(models.TextChoices):
         WAIT = "wait", "Wait"
         IN_PROCESS = "in_process", "In_process"
@@ -24,9 +25,5 @@ class Task(ModelWithSelfValidation, models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL,
                                null=True, blank=True, related_name='task', verbose_name="Исполнитель")
 
-    error_collector = ValidationErrorsCollector
-    validators = [check_worker, validate_report, validate_changes]
-
     def __str__(self):
         return self.title
-

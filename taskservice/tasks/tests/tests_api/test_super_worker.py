@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
@@ -62,25 +63,8 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
-    def test_get_list_of_3_workers(self):
-        data = {'worker': f'37,{self.user.id},null'}
-        url = reverse('tasks-list')
-        response = self.client.get(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        task_list = response.data
-        self.assertEqual(task_list[0]['worker'], 37)
-        self.assertEqual(task_list[1]['worker'], 57)
-        self.assertEqual(task_list[-1]['worker'], None)
-
-        for task in task_list:
-            with self.subTest(task=task):
-                worker = task['worker']
-                if worker is not None:
-                    self.assertIn(str(worker), [*data['worker'].split(',')])
-
-    def test_get_list_get_list_of_two_workers(self):
-        data = {'worker': f'37,null'}
+    def test_get_list_of_two_workers(self):
+        data = {'worker': f'37,57'}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -88,8 +72,9 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
-        self.assertEqual(task_list[0]['worker'], 37)
-        self.assertEqual(task_list[-1]['worker'], None)
+        task_query_length = Task.objects.filter(Q(worker__in=data['worker'].split(','))).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 worker = task['worker']
@@ -105,6 +90,9 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        task_query_length = Task.objects.filter(Q(worker=data['worker'])).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 worker = task['worker']
@@ -114,7 +102,10 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         url = reverse('tasks-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 7)
+
+        task_list = response.data
+        task_query_length = Task.objects.all().count()
+        self.assertEqual(len(task_list), task_query_length)
 
     def test_get_list_search(self):
         data = {'search': 'done'}
@@ -125,6 +116,11 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        task_query_length = Task.objects.filter(
+            Q(title__contains=data['search']) | Q(status__contains=data['search'])
+        ).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 search_place = task['title'] + task['status']
@@ -146,31 +142,31 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_patch_take_wait_task_in_process(self):
+        url = reverse('tasks-take-in-process', args=(self.task.id,))
+        response = self.client.patch(url, content_type='application/json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.task.refresh_from_db()
+        self.assertEqual(self.user.worker, self.task.worker)
+        self.assertEqual(Task.StatusType.IN_PROCESS, self.task.status)
+
+    def test_patch_by_main_url(self):
         url = reverse('tasks-detail', args=(self.task.id,))
         data = {'status': Task.StatusType.IN_PROCESS}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.task.refresh_from_db()
-        self.assertEqual(self.user.worker, self.task.worker)
-        self.assertEqual(Task.StatusType.IN_PROCESS, self.task.status)
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
 
     def test_patch_take_process_task_in_process(self):
-        url = reverse('tasks-detail', args=(61,))
-        data = {'status': Task.StatusType.IN_PROCESS}
-        json_data = json.dumps(data)
-        response = self.client.patch(url, data=json_data,
-                                     content_type='application/json')
+        url = reverse('tasks-take-in-process', args=(61,))
+        response = self.client.patch(url, content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_done(self):
-        url = reverse('tasks-detail', args=(self.task_in_process_1.id,))
-        data = {'status': Task.StatusType.DONE,
-                'report': 'test'
-                }
+        url = reverse('tasks-done', args=(self.task_in_process_1.id,))
+        data = {'report': 'test'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
@@ -182,8 +178,8 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(Task.StatusType.DONE, task_data['status'])
 
     def test_patch_done_without_report(self):
-        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
-        data = {'status': Task.StatusType.DONE}
+        url = reverse('tasks-done', args=(self.task_in_process_2.id,))
+        data = {'report': ''}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
@@ -193,7 +189,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(validation_message, TaskValidationMessages.EMPTY_REPORT_ERROR)
 
     def test_patch_done_task(self):
-        url = reverse('tasks-detail', args=(self.task_done.id,))
+        url = reverse('tasks-done', args=(self.task_done.id,))
         data = {'report': 'test23435467'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
@@ -235,3 +231,8 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error_message = response.data['customer'].pop()
         self.assertEqual(error_message, 'Обязательное поле.')
+
+    def test_delete(self):
+        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
+        response = self.client.delete(url, content_type='application/json')
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)

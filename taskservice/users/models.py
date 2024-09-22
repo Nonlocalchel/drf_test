@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from services.ValidationErrorsCollector import ValidationErrorsCollector
 from services.extended_models.ModelWithOriginal import ModelWithOriginal
 from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
 from users.validators import validate_change_user_type
@@ -9,6 +8,8 @@ from users.validators import validate_change_user_type
 
 # Create your models here.
 class User(ModelWithSelfValidation, AbstractUser, ModelWithOriginal):
+    validators = [validate_change_user_type]
+
     class Meta:
         verbose_name = "Пользователи"
         verbose_name_plural = "Пользователи"
@@ -20,9 +21,6 @@ class User(ModelWithSelfValidation, AbstractUser, ModelWithOriginal):
     phone = models.CharField(max_length=50, unique=True, null=True, verbose_name="Номер телефона")
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True, null=True, verbose_name="Фотография")
     type = models.CharField(max_length=50, choices=UserType, default=UserType.CUSTOMER)
-
-    error_collector = ValidationErrorsCollector
-    validators = [validate_change_user_type]
 
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type

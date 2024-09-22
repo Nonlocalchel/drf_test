@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
@@ -69,6 +70,9 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        task_query_length = Task.objects.filter(customer=self.user.id).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 self.assertEqual(task['customer'], data['customer'])
@@ -84,6 +88,13 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
+        task_query_length = Task.objects.filter(
+            Q(customer=self.user.id) & (
+                    Q(title__contains=data['search']) | Q(status__contains=data['search'])
+            )
+        ).count()
+        self.assertEqual(len(task_list), task_query_length)
+
         for task in task_list:
             with self.subTest(task=task):
                 search_place = task['title'] + task['status']
@@ -110,7 +121,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_task(self):
-        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
+        url = reverse('tasks-take-in-process', args=(self.task,))
         data = {'title': 'new_title'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,
@@ -162,3 +173,9 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['customer'], self.user.id)
+
+
+    def test_delete(self):
+        url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
+        response = self.client.delete(url, content_type='application/json')
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
