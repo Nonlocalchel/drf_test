@@ -2,12 +2,12 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from services.mixins.models import SelfCleaningAndValidationMixin, WithOriginalMixin, FieldTrackerMixin
-from users.validators import validate_change_user_type
+from users.validators import validate_change_user_type, validate_add_user_role_data
 
 
 # Create your models here.
 class User(SelfCleaningAndValidationMixin, FieldTrackerMixin, AbstractUser):
-    validators = [validate_change_user_type]
+    validators = [validate_change_user_type, validate_add_user_role_data]
 
     class Meta:
         verbose_name = "Пользователи"

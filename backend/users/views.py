@@ -15,10 +15,7 @@ class UsersViewSet(mixins.CreateModelMixin,
     permission_classes = [IsSuperWorkerOrReadOnly]
     serializer_class = UserSerializer
 
-    def get_serializer_class(self):
-        user = self.request.user
-        if user.check_user_type('worker'):
-            return
+
 
 
 # class UsersViewSet(mixins.CreateModelMixin,

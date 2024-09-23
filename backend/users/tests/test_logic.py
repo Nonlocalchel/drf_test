@@ -1,10 +1,11 @@
+from django.db import utils
 from django.test import TestCase
 
 # Create your tests here.
 
 from django.core.exceptions import ValidationError
 
-from users.models import User
+from users.models import User, Customer, Worker
 
 
 class UserTestCase(TestCase):
@@ -39,19 +40,42 @@ class UserTestCase(TestCase):
         self.assertTrue(hasattr(user_worker, User.UserType.WORKER))
 
     def test_change_user_type(self):
-        try:
-            user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
-            user_customer.type = User.UserType.WORKER
-            user_customer.save()
-            self.assertEqual(12, 2)
-        except ValidationError as validation_error:
-            message = dict(validation_error)['type'][0]
-            self.assertRegex(message, 'Пользователь .* уже имеет тип!')
+        user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
+        user_customer.type = User.UserType.WORKER
+        self.assertRaisesRegex(
+            ValidationError,
+            r'Пользователь .* уже имеет тип!',
+            user_customer.save
+        )
 
-        # self.assertIn('pbkdf2_sha256', user.password)
-        # user.refresh_from_db()
-        # user.save()
-        # user.type = User.UserType.CUSTOMER
-        # user.refresh_from_db()
-        # user.save()
-        # print(user.type)
+    def test_create_worker(self):
+        self.assertRaisesRegex(
+            utils.IntegrityError,
+            r'NOT NULL constraint failed:',
+            Worker.objects.create
+        )
+
+    def test_create_customer(self):
+        self.assertRaisesRegex(
+            utils.IntegrityError,
+            r'NOT NULL constraint failed:',
+            Customer.objects.create
+        )
+
+    def test_add_user_role_data(self):
+        user_worker = User.objects.filter(type=User.UserType.WORKER).last()
+        user_worker.customer = Customer.objects.create(user=user_worker)
+        self.assertRaisesRegex(
+            ValidationError,
+            r'Пользователь .* является \bworker\b|\bcustomer\b',
+            user_worker.save
+        )
+
+    def test_change_user_role_data(self):
+        user_worker = User.objects.filter(type=User.UserType.WORKER).last()
+        self.assertRaisesRegex(
+            utils.IntegrityError,
+            r'UNIQUE constraint failed',
+            Worker.objects.create,
+            user=user_worker
+        )
