@@ -1,13 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from services.extended_models.ModelWithOriginal import ModelWithOriginal
-from services.extended_models.ModelWithSelfCleanngAndValidation import ModelWithSelfValidation
+from services.mixins.models import SelfCleaningAndValidationMixin, WithOriginalMixin, FieldTrackerMixin
 from users.validators import validate_change_user_type
 
 
 # Create your models here.
-class User(ModelWithSelfValidation, AbstractUser, ModelWithOriginal):
+class User(SelfCleaningAndValidationMixin, FieldTrackerMixin, AbstractUser):
     validators = [validate_change_user_type]
 
     class Meta:

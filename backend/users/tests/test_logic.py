@@ -4,8 +4,6 @@ from django.test import TestCase
 
 from django.core.exceptions import ValidationError
 
-from tasks.messages.validation_error import TaskValidationMessages
-from tasks.models import Task
 from users.models import User
 
 
@@ -45,10 +43,10 @@ class UserTestCase(TestCase):
             user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
             user_customer.type = User.UserType.WORKER
             user_customer.save()
+            self.assertEqual(12, 2)
         except ValidationError as validation_error:
             message = dict(validation_error)['type'][0]
             self.assertRegex(message, 'Пользователь .* уже имеет тип!')
-
 
         # self.assertIn('pbkdf2_sha256', user.password)
         # user.refresh_from_db()

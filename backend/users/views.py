@@ -13,6 +13,7 @@ class UsersViewSet(mixins.CreateModelMixin,
                    GenericViewSet):
     queryset = User.objects.all()
     permission_classes = [IsSuperWorkerOrReadOnly]
+    serializer_class = UserSerializer
 
     def get_serializer_class(self):
         user = self.request.user

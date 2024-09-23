@@ -9,7 +9,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from services.SelectPermissionByActionMixin import SelectPermissionByActionMixin
+from services.mixins.SelectPermissionByActionMixin import SelectPermissionByActionMixin
 from .filters import TaskFilter
 from .models import Task
 from users.permissions import *
@@ -58,20 +58,13 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
             permission_classes=[IsWorker & WorkerTaskAccessPermission])
     def take_in_process(self, request, pk=None):
         request.data['worker'] = request.user
-        return self._partial_update_status(request.data)
+        return self.update(request, partial=True)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
             permission_classes=[IsWorker & WorkerTaskAccessPermission])
     def done(self, request, pk=None):
         request.data['status'] = Task.StatusType.DONE
-        return self._partial_update_status(request.data)
-
-    def _partial_update_status(self, request_data: Request) -> Response:
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request_data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+        return self.update(request, partial=True)
 
     def create(self, request, *args, **kwargs):
         user = request.user
