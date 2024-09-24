@@ -4,15 +4,20 @@ from .models import *
 
 
 class WorkerSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(required=False)
+
     class Meta:
         model = Worker
-        exclude = ['user']
+        fields = '__all__'
+        read_only = ['user']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(required=False)
+
     class Meta:
         model = Customer
-        exclude = ['user']
+        fields = '__all__'
 
 
 class UserSerializer(WritableNestedModelSerializer):

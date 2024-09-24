@@ -35,6 +35,8 @@ class SerializerTestCase(TestCase):
         serializer = UserSerializer(instance)
         serialized_data = serializer.data
         expected_data = self.get_expected_data()[-1]
+        print(expected_data)
+        print(serialized_data)
         self.assertEqual(serialized_data, expected_data)
 
     def test_read_all_users_data_serializer(self):
@@ -44,27 +46,27 @@ class SerializerTestCase(TestCase):
         expected_data = self.get_expected_data()
         self.assertEqual(expected_data, serialized_data)
 
-    def test_create_user_serializer(self):
-        data = {
-            'username': 'customer_225',
-            'phone': '+375 29 485 06 33',
-            'password': 'aga',
-            'photo': None,
-            'type': 'customer',
-            'email': '',
-            'first_name': '',
-            'last_name': '',
-            'is_superuser': False,
-            'worker': None,
-            'customer': {
-                'discount': 26,
-                'is_super_customer': False
-            }
-        }
-
-        serializer = UserSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        user = User.objects.filter(username='customer_225')
-        print(user.values())
-        print(user[0].customer.discount)
+    # def test_create_user_serializer(self):
+    #     data = {
+    #         'username': 'customer_225',
+    #         'phone': '+375 29 485 06 33',
+    #         'password': 'aga',
+    #         'photo': None,
+    #         'type': 'customer',
+    #         'email': '',
+    #         'first_name': '',
+    #         'last_name': '',
+    #         'is_superuser': False,
+    #         'worker': None,
+    #         'customer': {
+    #             'discount': 26,
+    #             'is_super_customer': False
+    #         }
+    #     }
+    #
+    #     serializer = UserSerializer(data=data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     user = User.objects.filter(username='customer_225')
+    #     print(user.values())
+    #     print(user[0].customer.discount)

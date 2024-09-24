@@ -30,14 +30,8 @@ class Worker(models.Model):
     exp = models.IntegerField(blank=True, null=True)
     is_super_worker = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.user.username
-
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='customer')
     discount = models.IntegerField(blank=True, null=True)
     is_super_customer = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.user.username
