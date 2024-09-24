@@ -6,11 +6,11 @@
       "title": "сделать дз",
       "time_create": "2024-07-19T21:53:21.974Z",
       "time_update": "2024-08-11T13:48:20.788Z",
-      "time_close": "2024-08-11T13:47:54.403Z",
+      "time_close": "2024-08-11T13:48:20.788Z",
       "status": "done",
       "report": "na-na-na",
-      "customer": 36,
-      "worker": 37
+      "customer": 1,
+      "worker": 1
     }
   },
   {
@@ -20,11 +20,11 @@
       "title": "записать песню",
       "time_create": "2024-07-19T21:53:41.748Z",
       "time_update": "2024-07-22T20:00:38.351Z",
-      "time_close": "2024-07-19T22:24:47.508Z",
+      "time_close": "2024-07-22T20:00:38.351Z",
       "status": "done",
       "report": "sdzfgxh",
-      "customer": 36,
-      "worker": 37
+      "customer": 1,
+      "worker": 1
     }
   },
   {
@@ -37,7 +37,7 @@
       "time_close": null,
       "status": "wait",
       "report": "",
-      "customer": 36,
+      "customer": 2,
       "worker": null
     }
   },
@@ -48,11 +48,11 @@
       "title": "обрезать кабель",
       "time_create": "2024-07-19T21:55:31.850Z",
       "time_update": "2024-07-21T11:39:05.913Z",
-      "time_close": "2024-07-19T21:55:31.851Z",
+      "time_close": "2024-07-21T11:39:05.913Z",
       "status": "done",
       "report": "test",
-      "customer": 36,
-      "worker": 37
+      "customer": 3,
+      "worker": 1
     }
   },
   {
@@ -62,11 +62,11 @@
       "title": "согнуть паковку",
       "time_create": "2024-07-19T21:56:19.680Z",
       "time_update": "2024-08-27T22:22:06.429Z",
-      "time_close": "2024-07-21T19:26:36.675Z",
+      "time_close": "2024-08-27T22:22:06.429Z",
       "status": "done",
       "report": "согнул",
-      "customer": 36,
-      "worker": 37
+      "customer": 5,
+      "worker": 2
     }
   },
   {
@@ -76,11 +76,11 @@
       "title": "новая",
       "time_create": "2024-07-20T16:53:35.250Z",
       "time_update": "2024-08-27T22:16:14.386Z",
-      "time_close": "2024-07-20T16:53:52.170Z",
+      "time_close": "2024-08-27T22:16:14.386Z",
       "status": "done",
       "report": "цукwewe",
-      "customer": 36,
-      "worker": 37
+      "customer": 4,
+      "worker": 1
     }
   },
   {
@@ -90,11 +90,11 @@
       "title": "test",
       "time_create": "2024-08-11T14:39:05.846Z",
       "time_update": "2024-08-27T20:11:20.319Z",
-      "time_close": "2024-08-27T20:10:18.972Z",
+      "time_close": "2024-08-27T20:11:20.319Z",
       "status": "done",
       "report": "test",
-      "customer": 36,
-      "worker": 37
+      "customer": 6,
+      "worker": 1
     }
   },
   {
@@ -107,7 +107,7 @@
       "time_close": null,
       "status": "wait",
       "report": "",
-      "customer": 36,
+      "customer": 4,
       "worker": null
     }
   },
@@ -121,7 +121,7 @@
       "time_close": null,
       "status": "wait",
       "report": "",
-      "customer": 36,
+      "customer": 5,
       "worker": null
     }
   }

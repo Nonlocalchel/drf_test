@@ -38,7 +38,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
 
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
-        cls.task_done.save()
+        #cls.task_done.save()
 
     @classmethod
     def setUpTestUser(cls):

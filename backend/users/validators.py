@@ -9,7 +9,7 @@ def validate_change_user_type(instance):
 
 
 def validate_add_user_role_data(instance):
-    if hasattr(instance, 'customer') and hasattr(instance, 'worker'):
+    if hasattr(instance.customer, 'pk') and hasattr(instance.worker, 'pk'):
         raise ValidationError(
             {'type': f'Пользователь {instance.username} является {instance.type}!'}
         )

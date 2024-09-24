@@ -1,40 +1,54 @@
 [
   {
     "model": "users.customer",
-    "pk": 36,
+    "pk": 1,
     "fields": {
+      "user": 1,
       "discount": null,
       "is_super_customer": false
     }
   },
   {
     "model": "users.customer",
-    "pk": 55,
+    "pk": 2,
     "fields": {
-      "discount": null,
-      "is_super_customer": true
-    }
-  },
-  {
-    "model": "users.customer",
-    "pk": 57,
-    "fields": {
+      "user": 36,
       "discount": null,
       "is_super_customer": false
     }
   },
   {
     "model": "users.customer",
-    "pk": 58,
+    "pk": 3,
     "fields": {
+      "user": 55,
       "discount": null,
       "is_super_customer": false
     }
   },
   {
     "model": "users.customer",
-    "pk": 75,
+    "pk": 4,
     "fields": {
+      "user": 57,
+      "discount": null,
+      "is_super_customer": false
+    }
+  },
+  {
+    "model": "users.customer",
+    "pk": 5,
+    "fields": {
+      "user": 58,
+      "discount": null,
+      "is_super_customer": false
+    }
+  },
+  {
+    "model": "users.customer",
+    "pk": 6,
+    "fields": {
+      "user": 75,
       "discount": null,
       "is_super_customer": false
     }
