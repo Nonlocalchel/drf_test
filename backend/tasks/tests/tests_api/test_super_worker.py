@@ -13,13 +13,16 @@ from users.models import User, Customer
 class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов работника с привилегиями"""
 
-    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
-                'test_worker_backup.json', 'test_tasks_backup.json']
+    fixtures = [
+        'only_users_backup.json',
+        'customers_data_backup.json', 'workers_data_backup.json',
+        'task_test_backup.json'
+    ]
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        print('\nSuper worker test:')
+        print('\nSuper worker task test:')
         worker = cls.user.worker
         cls.customer = Customer.objects.last()
         customer = cls.customer

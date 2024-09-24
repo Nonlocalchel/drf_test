@@ -13,12 +13,15 @@ from users.models import Worker, Customer
 class SerializerTestCase(TestCase):
     """Тестирование сериализаторов приложения"""
 
-    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
-                'test_worker_backup.json', 'test_tasks_backup.json']
+    fixtures = [
+        'users/tests/fixtures/only_users_backup.json',
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
+        'tasks/tests/fixtures/task_test_backup.json'
+    ]
 
     @classmethod
     def setUpTestData(cls):
-        print('\nSerializer test:')
+        print('\nTask serializer test:')
         cls.worker = Worker.objects.last()
         cls.customer = Customer.objects.last()
         customer = cls.customer
@@ -38,21 +41,21 @@ class SerializerTestCase(TestCase):
                          'time_create': serialized_data['time_create'],
                          'time_update': serialized_data['time_update'],
                          'time_close': None, 'status': 'wait',
-                         'report': '', 'customer': 55, 'worker': None}
+                         'report': '', 'customer': 6, 'worker': None}
 
         self.assertEqual(serialized_data, expected_data)
 
     def test_create_serializer(self):
         data = {
             "title": "test_task",
-            'customer': self.customer.user.id
+            'customer': self.customer.id
         }
 
         serializer = TaskCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         expected_data = {'title': 'test_task',
                          'time_close': None,
-                         'customer': 55,
+                         'customer': 6,
                          'worker': None}
 
         self.assertEqual(serializer.data, expected_data)
@@ -70,7 +73,7 @@ class SerializerTestCase(TestCase):
                          'time_update': serialized_data['time_update'],
                          'time_close': None,
                          'status': 'wait', 'report': '',
-                         'customer': 55, 'worker': None}
+                         'customer': 6, 'worker': None}
 
         self.assertEqual(serialized_data, expected_data)
 
@@ -78,7 +81,7 @@ class SerializerTestCase(TestCase):
         instance = Task.objects.filter(id=self.waiting_task_3.id)[0]
         data = {
             'status': 'in_process',
-            'worker': self.worker
+            'worker': self.worker.id
         }
 
         serializer = TaskPartialUpdateSerializer(instance, data=data, partial=True)
@@ -91,6 +94,6 @@ class SerializerTestCase(TestCase):
                          'time_create': serialized_data['time_create'],
                          'time_update': serialized_data['time_update'],
                          'time_close': None, 'report': '',
-                         'customer': 55, 'worker': 56}
+                         'customer': 6, 'worker': 2}
 
         self.assertEqual(serialized_data, expected_data)

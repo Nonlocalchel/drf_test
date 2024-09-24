@@ -9,9 +9,11 @@ class WorkerTasksAccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         worker_ids_in_params = request.GET.get('worker')
         if worker_ids_in_params is not None:
-            worker_ids = worker_ids_in_params.split(',')
-            for worker_id in worker_ids:
-                if worker_id not in [str(request.user.id), 'null']:
+            request_worker_ids = worker_ids_in_params.split(',')
+
+            user_worker_id = str(request.user.worker.id)
+            for request_worker_id in request_worker_ids:
+                if request_worker_id not in [user_worker_id, 'null']:
                     return False
 
             return True
@@ -23,8 +25,8 @@ class CustomerTasksAccessPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         customer_id = request.GET.get('customer')
         if customer_id is not None:
-            user_id = str(request.user.id)
-            if customer_id == user_id:
+            user_customer_id = str(request.user.customer.id)
+            if customer_id == user_customer_id:
                 return True
 
 

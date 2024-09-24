@@ -7,21 +7,24 @@ from rest_framework import status
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
 from tasks.tests.tests_api.test_jwt import APITestCaseWithJWT
-from users.models import User, Customer
+from users.models import User, Customer, Worker
 
 
 class WorkerTaskAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов работника"""
 
-    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
-                'test_worker_backup.json', 'test_tasks_backup.json']
+    fixtures = [
+        'users/tests/fixtures/only_users_backup.json',
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
+        'tasks/tests/fixtures/task_test_backup.json'
+    ]
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
-        print('\nWorker test:')
-        worker = cls.user.worker
+        print('\nWorker tasks test:')
+        cls.worker = cls.user.worker
+        worker = cls.worker
         cls.customer = Customer.objects.last()
         customer = cls.customer
         cls.task = Task.objects.create(title='Test task_1 (wait)', customer=customer)
@@ -38,7 +41,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
 
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
-        #cls.task_done.save()
+        cls.task_done.save()
 
     @classmethod
     def setUpTestUser(cls):
@@ -62,7 +65,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        data = {'worker': f'{self.user.id},null'}
+        worker_id = self.worker.id
+        data = {'worker': f'{worker_id},null'}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -70,18 +74,19 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
-        task_query_length = Task.objects.filter(Q(worker=self.user.id) | Q(worker__isnull=True)).count()
+        task_query_length = Task.objects.filter(Q(worker=worker_id) | Q(worker__isnull=True)).count()
         self.assertEqual(len(task_list), task_query_length)
+        self.assertEqual(6, len(task_list))
 
-        user_id = self.user.id
         for task in task_list:
             with self.subTest(task=task):
                 worker = task['worker']
-                self.assertIn(worker, [user_id, None])
+                self.assertIn(worker, [worker_id, None])
 
     def test_get_list_search(self):
+        worker_id = self.worker.id
         data = {'search': 'done',
-                'worker': f'{self.user.id}'
+                'worker': f'{worker_id}'
                 }
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
@@ -91,8 +96,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
 
         task_list = response.data
         task_query_length = Task.objects.filter(
-            Q(worker=self.user.id) & (
-                Q(title__contains=data['search']) | Q(status__contains=data['search'])
+            Q(worker=worker_id) & (
+                    Q(title__contains=data['search']) | Q(status__contains=data['search'])
             )
         ).count()
         self.assertEqual(len(task_list), task_query_length)
@@ -103,7 +108,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                 self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_worker(self):
-        url = reverse('tasks-list') + f'?worker=37'
+        url = reverse('tasks-list') + f'?worker=1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -123,7 +128,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_detail_other_worker(self):
-        url = reverse('tasks-detail', args=(61,))
+        url = reverse('tasks-detail', args=(27,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -160,7 +165,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         task_data = response.data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.task.refresh_from_db()
-        self.assertEqual(self.user.id, task_data['worker'])
+        self.assertEqual(self.worker.id, task_data['worker'])
         self.assertEqual(Task.StatusType.DONE, task_data['status'])
 
     def test_patch_done_without_report(self):

@@ -57,7 +57,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     @action(detail=True, methods=[HTTPMethod.PATCH],
             permission_classes=[IsWorker & WorkerTaskAccessPermission])
     def take_in_process(self, request, pk=None):
-        request.data['worker'] = request.user
+        request.data['worker'] = request.user.worker.id
         return self.update(request, partial=True)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
@@ -69,7 +69,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     def create(self, request, *args, **kwargs):
         user = request.user
         if user.check_user_type('customer'):
-            request.data['customer'] = user.id
+            request.data['customer'] = user.customer.id
 
         return super().create(request, *args, **kwargs)
 

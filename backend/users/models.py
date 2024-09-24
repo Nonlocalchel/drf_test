@@ -26,12 +26,12 @@ class User(SelfCleaningAndValidationMixin, FieldTrackerMixin, AbstractUser):
 
 
 class Worker(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='worker', null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='worker')
     exp = models.IntegerField(blank=True, null=True)
     is_super_worker = models.BooleanField(default=False)
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer', null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
     discount = models.IntegerField(blank=True, null=True)
     is_super_customer = models.BooleanField(default=False)

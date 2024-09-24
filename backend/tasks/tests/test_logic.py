@@ -10,12 +10,15 @@ from users.models import Worker, Customer
 class BusinessTestCase(TestCase):
     """Тестирование бизнесс-логики приложения"""
 
-    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
-                'test_worker_backup.json', 'test_tasks_backup.json']
+    fixtures = [
+        'users/tests/fixtures/only_users_backup.json',
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
+        'tasks/tests/fixtures/task_test_backup.json'
+    ]
 
     @classmethod
     def setUpTestData(cls):
-        print('\nBusiness test:')
+        print('\nTask business-logic test:')
         cls.worker = Worker.objects.last()
         worker = cls.worker
         cls.customer = Customer.objects.last()

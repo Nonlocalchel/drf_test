@@ -11,12 +11,15 @@ from users.models import User, Customer, Worker
 class UserTestCase(TestCase):
     """Тестирование бизнесс-логики авторизация приложения"""
 
-    fixtures = ['test_users_backup.json', 'test_customer_backup.json',
-                'test_worker_backup.json', 'test_tasks_backup.json']
+    fixtures = [
+        'only_users_backup.json',
+        'customers_data_backup.json', 'workers_data_backup.json',
+        'task_test_backup.json'
+    ]
 
     @classmethod
     def setUpTestData(cls):
-        print('\nUser test:')
+        print('\nUser business-logic test:')
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',

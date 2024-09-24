@@ -6,7 +6,7 @@ from .models import *
 
 # перенести жто в userManager
 @receiver(pre_save, sender=User)
-def create_special_profile(sender, instance, **kwargs):
+def create_profile(sender, instance, **kwargs):
     """Шифрование пароля при его изменении"""
     user_password = instance.password
     if user_password.startswith('pbkdf2_sha256'):
