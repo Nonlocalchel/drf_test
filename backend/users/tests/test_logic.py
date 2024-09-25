@@ -12,9 +12,9 @@ class UserTestCase(TestCase):
     """Тестирование бизнесс-логики авторизация приложения"""
 
     fixtures = [
-        'only_users_backup.json',
-        'customers_data_backup.json', 'workers_data_backup.json',
-        'task_test_backup.json'
+        'users/tests/fixtures/only_users_backup.json',
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
+        'tasks/tests/fixtures/task_test_backup.json'
     ]
 
     @classmethod

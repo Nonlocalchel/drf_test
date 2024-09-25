@@ -14,9 +14,9 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
 
     fixtures = [
-        'only_users_backup.json',
-        'customers_data_backup.json', 'workers_data_backup.json',
-        'task_test_backup.json'
+        'users/tests/fixtures/only_users_backup.json',
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
+        'tasks/tests/fixtures/task_test_backup.json'
     ]
 
     @classmethod
@@ -65,7 +65,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        data = {'customer': self.user.id}
+        data = {'customer': self.customer.id}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -73,8 +73,9 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
-        task_query_length = Task.objects.filter(customer=self.user.id).count()
+        task_query_length = Task.objects.filter(customer=self.customer.id).count()
         self.assertEqual(len(task_list), task_query_length)
+        self.assertEqual(len(task_list), 4)
 
         for task in task_list:
             with self.subTest(task=task):
@@ -82,7 +83,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
 
     def test_get_list_search(self):
         data = {'search': 'done',
-                'customer': f'{self.user.id}'
+                'customer': f'{self.customer.id}'
                 }
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
@@ -92,11 +93,12 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
 
         task_list = response.data
         task_query_length = Task.objects.filter(
-            Q(customer=self.user.id) & (
+            Q(customer=self.customer.id) & (
                     Q(title__contains=data['search']) | Q(status__contains=data['search'])
             )
         ).count()
         self.assertEqual(len(task_list), task_query_length)
+        self.assertEqual(len(task_list), 1)
 
         for task in task_list:
             with self.subTest(task=task):
@@ -104,7 +106,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
                 self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_customer(self):
-        url = reverse('tasks-list') + f'?customer=36'
+        url = reverse('tasks-list') + f'?customer=3'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -143,6 +145,15 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.task.refresh_from_db()
         self.assertEqual(data['title'], self.task.title)
 
+    def test_patch(self):
+        url = reverse('tasks-detail', args=(self.task.id,))
+        data = {'title': 'new_title'}
+        json_data = json.dumps(data)
+        response = self.client.patch(url, data=json_data,
+                                     content_type='application/json')
+
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
+
     def test_put_running_task(self):
         url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
         data = {'title': 'new_title'}
@@ -162,21 +173,20 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
                                     content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['customer'], self.user.id)
+        self.assertEqual(response.data['customer'], self.customer.id)
 
     def test_post_with_customer_id(self):
         url = reverse('tasks-list')
         data = {
             "title": "test_task",
-            'customer': self.user.id
+            'customer': self.customer.id
         }
         json_data = json.dumps(data)
         response = self.client.post(url, data=json_data,
                                     content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['customer'], self.user.id)
-
+        self.assertEqual(response.data['customer'], data['customer'])
 
     def test_delete(self):
         url = reverse('tasks-detail', args=(self.task_in_process_2.id,))

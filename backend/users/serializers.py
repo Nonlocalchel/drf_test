@@ -4,20 +4,16 @@ from .models import *
 
 
 class WorkerSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(required=False)
 
     class Meta:
         model = Worker
-        fields = '__all__'
-        read_only = ['user']
+        fields = ['pk', 'exp', 'is_super_worker']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(required=False)
-
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = ['pk', 'discount', 'is_super_customer']
 
 
 class UserSerializer(WritableNestedModelSerializer):
@@ -28,6 +24,7 @@ class UserSerializer(WritableNestedModelSerializer):
     class Meta:
         model = User
         fields = (
+            'pk',
             'username', 'phone',
             'photo', 'type', 'email',
             'first_name', 'last_name', 'is_superuser',
