@@ -1,5 +1,6 @@
 import json
 
+
 from django.test import TestCase
 
 from users.models import Worker, Customer, User
@@ -50,8 +51,8 @@ class SerializerTestCase(TestCase):
         instance = User.objects.get(worker=self.worker.id)
         serializer = UserSerializer(instance)
         serialized_data = serializer.data
-        expected_data = self.get_expected_data()[4]
-        self.assertEqual(serialized_data, expected_data)
+        expected_data = self.get_expected_data()
+        self.assertEqual(serialized_data, expected_data[4])
 
     @staticmethod
     def representation_expected_data(data: dict) -> dict:

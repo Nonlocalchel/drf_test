@@ -9,6 +9,9 @@ class IsWorker(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
+        if user.is_anonymous:
+            return False
+
         return user.check_user_type('worker')
 
 
@@ -17,6 +20,9 @@ class IsCustomer(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
+        if user.is_anonymous:
+            return False
+
         return user.check_user_type('customer')
 
 
@@ -25,24 +31,30 @@ class IsSuperCustomer(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
+        user_is_customer = super().has_permission(request, view)
+        if not user_is_customer:
+            return False
+
         if user.check_user_type('customer'):
             return is_super_customer(user)
 
 
-class IsSuperWorker(permissions.BasePermission):
+class IsSuperWorker(IsWorker):
     message = UserPermissionMessages.SUPER_WORKER_ACCESS
 
     def has_permission(self, request, view):
         user = request.user
+        user_is_worker = super().has_permission(request, view)
+        if not user_is_worker:
+            return False
+
         if user.check_user_type('worker'):
             return is_super_worker(user)
 
 
-class IsSuperWorkerOrReadOnly(permissions.BasePermission):
+class IsSuperWorkerOrReadOnly(IsSuperWorker):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        user = request.user
-        if user.check_user_type('worker'):
-            return is_super_worker(user)
+        return super().has_permission(request, view)

@@ -91,6 +91,7 @@ dj-drf-venv/
 db.sqlite3
 
 media/*
+static/*
 
 #pyCharm
 .idea/
