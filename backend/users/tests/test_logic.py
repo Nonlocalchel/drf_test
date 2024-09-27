@@ -20,6 +20,8 @@ class UserTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         print('\nUser business-logic test:')
+        cls.last_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
+        cls.last_worker = User.objects.filter(type=User.UserType.WORKER).last()
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
@@ -32,8 +34,8 @@ class UserTestCase(TestCase):
         self.assertTrue(hasattr(user_customer, User.UserType.CUSTOMER))
 
     def test_create_worker_user(self):
-        user_worker = User.objects.create_user(password='customer_super_ps_387',
-                                               username='customer_test_1',
+        user_worker = User.objects.create_user(password='customer_worker_ps_387',
+                                               username='worker_test_1',
                                                phone='+375291850665',
                                                type=User.UserType.WORKER
                                                )
@@ -66,19 +68,25 @@ class UserTestCase(TestCase):
         )
 
     def test_add_user_role_data(self):
-        user_worker = User.objects.filter(type=User.UserType.WORKER).last()
-        user_worker.customer = Customer.objects.create(user=user_worker)
+        Customer.objects.create(user=self.last_worker)
         self.assertRaisesRegex(
             ValidationError,
             r'Пользователь .* является \bworker\b|\bcustomer\b',
-            user_worker.save
+            self.last_worker.save
         )
 
     def test_change_user_role_data(self):
-        user_worker = User.objects.filter(type=User.UserType.WORKER).last()
         self.assertRaisesRegex(
             utils.IntegrityError,
             r'UNIQUE constraint failed',
             Worker.objects.create,
-            user=user_worker
+            user=self.last_worker
         )
+
+    def test_create_worker_user_with_customer_data(self):
+        customer = Customer.objects.create(user=self.last_worker)
+        customer.save()
+
+    def test_create_customer_user_with_worker_data(self):
+        worker = Worker.objects.create(user=self.last_customer)
+        worker.save()
