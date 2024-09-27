@@ -1,13 +1,13 @@
 from django.db import models
 
-from services.mixins.models import SelfCleaningAndValidationMixin
+from services.mixins.models import SelfValidationMixin
 
 from users.models import Worker, Customer
 from tasks.validators import validate_changes, validate_report, check_worker
 
 
 # Create your models here.
-class Task(SelfCleaningAndValidationMixin, models.Model):
+class Task(SelfValidationMixin, models.Model):
     validators = [check_worker, validate_report, validate_changes]
 
     class StatusType(models.TextChoices):

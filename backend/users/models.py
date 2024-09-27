@@ -1,13 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from services.mixins.models import SelfCleaningAndValidationMixin, WithOriginalMixin, FieldTrackerMixin
-from users.validators import validate_change_user_type, validate_add_user_role_data
+from services.mixins.models import SelfValidationMixin, FieldTrackerMixin, GetFieldRelatedNameMixin
+from users.validators import validate_change_user_type, validate_add_worker_data_to_user, validate_worker_photo
 
 
 # Create your models here.
-class User(SelfCleaningAndValidationMixin, FieldTrackerMixin, AbstractUser):
-    validators = [validate_change_user_type, validate_add_user_role_data]
+class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
+    validators = [validate_change_user_type, validate_worker_photo]
 
     class Meta:
         verbose_name = "Пользователи"
@@ -25,13 +25,17 @@ class User(SelfCleaningAndValidationMixin, FieldTrackerMixin, AbstractUser):
         return self.type == verifiable_type
 
 
-class Worker(models.Model):
+class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
+    validators = [validate_add_worker_data_to_user]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='worker')
     exp = models.IntegerField(blank=True, null=True)
     is_super_worker = models.BooleanField(default=False)
 
 
-class Customer(models.Model):
+class Customer(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
+    validators = [validate_add_worker_data_to_user]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
     discount = models.IntegerField(blank=True, null=True)
     is_super_customer = models.BooleanField(default=False)

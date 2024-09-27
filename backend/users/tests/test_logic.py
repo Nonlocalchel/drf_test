@@ -20,8 +20,8 @@ class UserTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         print('\nUser business-logic test:')
-        cls.last_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
-        cls.last_worker = User.objects.filter(type=User.UserType.WORKER).last()
+        cls.user_last_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
+        cls.user_last_worker = User.objects.filter(type=User.UserType.WORKER).last()
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
@@ -67,26 +67,26 @@ class UserTestCase(TestCase):
             Customer.objects.create
         )
 
-    def test_add_user_role_data(self):
-        Customer.objects.create(user=self.last_worker)
-        self.assertRaisesRegex(
-            ValidationError,
-            r'Пользователь .* является \bworker\b|\bcustomer\b',
-            self.last_worker.save
-        )
-
     def test_change_user_role_data(self):
         self.assertRaisesRegex(
             utils.IntegrityError,
             r'UNIQUE constraint failed',
             Worker.objects.create,
-            user=self.last_worker
+            user=self.user_last_worker
         )
 
     def test_create_worker_user_with_customer_data(self):
-        customer = Customer.objects.create(user=self.last_worker)
-        customer.save()
+        self.assertRaisesRegex(
+            ValidationError,
+            r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
+            Customer.objects.create,
+            user=self.user_last_worker
+        )
 
     def test_create_customer_user_with_worker_data(self):
-        worker = Worker.objects.create(user=self.last_customer)
-        worker.save()
+        self.assertRaisesRegex(
+            ValidationError,
+            r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
+            Worker.objects.create,
+            user=self.user_last_customer
+        )

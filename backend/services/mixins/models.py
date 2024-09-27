@@ -11,7 +11,7 @@ class SelfCleaningMixin:
         super().save(*args, **kwargs)
 
 
-class SelfCleaningAndValidationMixin(SelfCleaningMixin):
+class SelfValidationMixin(SelfCleaningMixin):
     """Модель которая запускает заданные функции валидации перед сохранением"""
 
     error_collector: ValidationErrorsCollector = ValidationErrorsCollector
@@ -76,3 +76,15 @@ class FieldTrackerMixin(WithOriginalMixin):
 
     def previous(self, field):
         return self.original[field]
+
+
+class GetFieldRelatedNameMixin:
+
+    def get_field_related_name(self, field):
+        fields_meta = self._meta.fields
+        for field_meta in fields_meta:
+            field_name = field_meta.name
+            if field_name == field:
+                return field_meta._related_name
+
+        raise Exception(f'Field with name {field} is not found(')
