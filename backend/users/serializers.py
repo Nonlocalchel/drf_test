@@ -20,11 +20,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class UserSerializer(WritableNestedModelSerializer):
     password = serializers.CharField(write_only=True)  # , style={'input_type': 'password'}
-    worker = WorkerSerializer(allow_null=True)
-    customer = CustomerSerializer(allow_null=True)
-    # photo = serializers.SerializerMethodField()
-
-    # os.path.join(MEDIA_ROOT, menu.img.url)
+    worker = WorkerSerializer(allow_null=True, default=None)
+    customer = CustomerSerializer(allow_null=True, default=None)
 
     class Meta:
         model = User

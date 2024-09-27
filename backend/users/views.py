@@ -1,11 +1,10 @@
 from rest_framework import mixins
-from rest_framework.permissions import SAFE_METHODS, AllowAny
-from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
 
 from .models import *
 from .serializers import *
-from .permissions import IsSuperWorker, IsSuperCustomer, IsSuperWorkerOrReadOnly
+from .permissions import IsSuperWorkerOrReadOnly
 
 
 class UsersViewSet(mixins.CreateModelMixin,
