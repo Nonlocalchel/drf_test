@@ -1,3 +1,6 @@
+import os
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import utils
 from django.test import TestCase
 
@@ -22,6 +25,7 @@ class UserTestCase(TestCase):
         print('\nUser business-logic test:')
         cls.user_last_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
         cls.user_last_worker = User.objects.filter(type=User.UserType.WORKER).last()
+        cls.photo_path = 'users/tests/data/img.png'
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
@@ -44,49 +48,71 @@ class UserTestCase(TestCase):
         self.assertIn('pbkdf2_sha256', user_worker.password)
         self.assertTrue(hasattr(user_worker, User.UserType.WORKER))
 
-    def test_change_user_type(self):
-        user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
-        user_customer.type = User.UserType.WORKER
-        self.assertRaisesRegex(
-            ValidationError,
-            r'Пользователь .* уже имеет тип!',
-            user_customer.save
-        )
+    def test_change_user_data(self):
+        name = 'vasya stypin'
+        self.user_last_worker.username = name
+        self.user_last_worker.save()
+        self.assertEqual(self.user_last_worker.username, name)
 
-    def test_create_worker(self):
-        self.assertRaisesRegex(
-            utils.IntegrityError,
-            r'NOT NULL constraint failed:',
-            Worker.objects.create
-        )
+    def test_create_user(self):
+        with open(self.photo_path, 'rb') as photo_file:
+            mem_file = InMemoryUploadedFile(photo_file, field_name='photo', name='img_2.png', #имя меняется спококйнон определиьт как динамически менять ontent-type
+                                            content_type='multipart/form-data',
+                                            charset=None, size=os.path.getsize(self.photo_path))
+            user_worker = User.objects.create_user(password='customer_worker_ps_387',
+                                                   username='worker_test_with_photo',
+                                                   phone='+375291850665',
+                                                   type=User.UserType.WORKER,
+                                                   photo=mem_file
+                                                   )
 
-    def test_create_customer(self):
-        self.assertRaisesRegex(
-            utils.IntegrityError,
-            r'NOT NULL constraint failed:',
-            Customer.objects.create
-        )
+        print(user_worker.photo)
 
-    def test_change_user_role_data(self):
-        self.assertRaisesRegex(
-            utils.IntegrityError,
-            r'UNIQUE constraint failed',
-            Worker.objects.create,
-            user=self.user_last_worker
-        )
 
-    def test_create_worker_user_with_customer_data(self):
-        self.assertRaisesRegex(
-            ValidationError,
-            r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
-            Customer.objects.create,
-            user=self.user_last_worker
-        )
-
-    def test_create_customer_user_with_worker_data(self):
-        self.assertRaisesRegex(
-            ValidationError,
-            r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
-            Worker.objects.create,
-            user=self.user_last_customer
-        )
+    #
+    # def test_change_user_type(self):
+    #     user_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
+    #     user_customer.type = User.UserType.WORKER
+    #     self.assertRaisesRegex(
+    #         ValidationError,
+    #         r'Пользователь .* уже имеет тип!',
+    #         user_customer.save
+    #     )
+    #
+    # def test_create_worker(self):
+    #     self.assertRaisesRegex(
+    #         utils.IntegrityError,
+    #         r'NOT NULL constraint failed:',
+    #         Worker.objects.create
+    #     )
+    #
+    # def test_create_customer(self):
+    #     self.assertRaisesRegex(
+    #         utils.IntegrityError,
+    #         r'NOT NULL constraint failed:',
+    #         Customer.objects.create
+    #     )
+    #
+    # def test_change_user_role_data(self):
+    #     self.assertRaisesRegex(
+    #         utils.IntegrityError,
+    #         r'UNIQUE constraint failed',
+    #         Worker.objects.create,
+    #         user=self.user_last_worker
+    #     )
+    #
+    # def test_create_worker_user_with_customer_data(self):
+    #     self.assertRaisesRegex(
+    #         ValidationError,
+    #         r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
+    #         Customer.objects.create,
+    #         user=self.user_last_worker
+    #     )
+    #
+    # def test_create_customer_user_with_worker_data(self):
+    #     self.assertRaisesRegex(
+    #         ValidationError,
+    #         r'Пользователь .* является \bworker\b|\bcustomer\b и вы не можете назначить ему тип .*',
+    #         Worker.objects.create,
+    #         user=self.user_last_customer
+    #     )

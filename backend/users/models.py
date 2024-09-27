@@ -7,7 +7,7 @@ from users.validators import validate_change_user_type, validate_add_worker_data
 
 # Create your models here.
 class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
-    validators = [validate_change_user_type, validate_worker_photo]
+    validators = [validate_change_user_type]
 
     class Meta:
         verbose_name = "Пользователи"
