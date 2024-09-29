@@ -9,7 +9,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from services.mixins.SelectPermissionByActionMixin import SelectPermissionByActionMixin
+from services.mixins.permissions import SelectPermissionByActionMixin
 from .filters import TaskFilter
 from .models import Task
 from users.permissions import *

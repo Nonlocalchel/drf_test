@@ -6,8 +6,8 @@ from rest_framework import status
 
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
-from tasks.tests.tests_api.test_jwt import APITestCaseWithJWT
-from users.models import User, Customer, Worker
+from services.APITestCaseWithJWT import APITestCaseWithJWT
+from users.models import User, Customer
 
 
 class WorkerTaskAPITestCase(APITestCaseWithJWT):

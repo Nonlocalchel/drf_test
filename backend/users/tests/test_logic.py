@@ -1,14 +1,10 @@
-import os
-
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.db import utils
 from django.test import TestCase
+from django.conf import settings
 
 # Create your tests here.
 
-from django.core.exceptions import ValidationError
-
-from users.models import User, Customer, Worker
+from users.models import User
+from users.tests.utils import get_temp_file, open_photo_file, close_photo_file
 
 
 class UserTestCase(TestCase):
@@ -26,6 +22,9 @@ class UserTestCase(TestCase):
         cls.user_last_customer = User.objects.filter(type=User.UserType.CUSTOMER).last()
         cls.user_last_worker = User.objects.filter(type=User.UserType.WORKER).last()
         cls.photo_path = 'users/tests/data/img.png'
+
+    def setUp(self):
+        settings.MEDIA_ROOT = get_temp_file()
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
@@ -55,19 +54,15 @@ class UserTestCase(TestCase):
         self.assertEqual(self.user_last_worker.username, name)
 
     def test_create_user(self):
-        with open(self.photo_path, 'rb') as photo_file:
-            mem_file = InMemoryUploadedFile(photo_file, field_name='photo', name='img_2.png', #имя меняется спококйнон определиьт как динамически менять ontent-type
-                                            content_type='multipart/form-data',
-                                            charset=None, size=os.path.getsize(self.photo_path))
-            user_worker = User.objects.create_user(password='customer_worker_ps_387',
-                                                   username='worker_test_with_photo',
-                                                   phone='+375291850665',
-                                                   type=User.UserType.WORKER,
-                                                   photo=mem_file
-                                                   )
-
-        print(user_worker.photo)
-
+        mem_file = open_photo_file(self.photo_path)
+        user_worker = User.objects.create_user(password='customer_worker_ps_387',
+                                               username='worker_test_with_photo',
+                                               phone='+375291850665',
+                                               type=User.UserType.WORKER,
+                                               photo=mem_file
+                                               )
+        close_photo_file(mem_file)
+        self.assertEqual('users/2024/09/28/img_2.png', user_worker.photo)
 
     #
     # def test_change_user_type(self):

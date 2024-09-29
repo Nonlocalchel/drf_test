@@ -4,6 +4,7 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from .models import *
+from .utils import figure_deleted_data
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -33,3 +34,9 @@ class UserSerializer(WritableNestedModelSerializer):
             'worker', 'customer',
             'password'
         )
+
+    def create(self, validated_data):
+        user_type = validated_data.get('type')
+        deleted_key = figure_deleted_data(user_type)
+        validated_data.pop(deleted_key, None)
+        return super().create(validated_data)

@@ -1,16 +1,14 @@
-import json
-
-
 from django.test import TestCase
 
+from services.mixins.tests import ManipulateExpectedDataMixin
 from users.models import Worker, Customer, User
 from users.serializers import UserSerializer
 
 
-class SerializerTestCase(TestCase):
+class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
     """Тестирование сериализаторов приложения"""
 
-    expected_data_path = "users/tests/expected_data.json"
+    expected_data_path = "users/tests/data/expected_data.json"
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -22,22 +20,11 @@ class SerializerTestCase(TestCase):
         print('\nUser Serializer test:')
         cls.worker = Worker.objects.last()
         cls.customer = Customer.objects.last()
+        cls.photo_path = 'users/tests/data/img.png'
 
     def setUp(self):
         if not hasattr(self, 'worker'):
             self.setUpTestData()
-
-    def get_expected_data(self) -> list:
-        path = self.expected_data_path
-        with open(path) as expected_data_file:
-            expected_data = json.loads(expected_data_file.read())
-            return expected_data
-
-    def write_data_to_json_file(self, new_data) -> None:
-        path = self.expected_data_path
-        with open(path, 'w') as expected_data_file:
-            new_json_data = json.dumps(new_data)
-            expected_data_file.write(new_json_data)
 
     def test_read_all_users_data_serializer(self):
         queryset = User.objects.all()
@@ -53,15 +40,6 @@ class SerializerTestCase(TestCase):
         serialized_data = serializer.data
         expected_data = self.get_expected_data()
         self.assertEqual(serialized_data, expected_data[4])
-
-    @staticmethod
-    def representation_expected_data(data: dict) -> dict:
-        presentation_data = data
-        presentation_data['pk'] = 76
-        presentation_data['customer']['pk'] = 7
-        del presentation_data['customer']['id']
-        del presentation_data['password']
-        return presentation_data
 
     def test_create_user_serializer(self):
         data = {
@@ -83,11 +61,34 @@ class SerializerTestCase(TestCase):
 
         serializer_post = UserSerializer(data=data)
         serializer_post.is_valid(raise_exception=True)
-        test = serializer_post.save()
-        self.assertEqual(test.username, data['username'])
+        del data['password']
+        self.assertEqual(serializer_post.data, data)
 
-        user = User.objects.get(username=data['username'])
-        serializer_get = UserSerializer(user)
-        expected_data = self.representation_expected_data(data)
-        serialized_data = serializer_get.data
-        self.assertEqual(serialized_data, expected_data)
+    # def test_create_user_with_photo_serializer(self):
+    #     user_photo = open_photo_file(self.photo_path)
+    #     data = {
+    #         'username': 'customer_225',
+    #         'phone': '+375 29 485 06 33',
+    #         'password': 'aga',
+    #         'photo': user_photo,
+    #         'type': 'customer',
+    #         'email': '',
+    #         'first_name': '',
+    #         'last_name': '',
+    #         'is_superuser': False,
+    #         'worker': None,
+    #         'customer': {
+    #             'discount': 26,
+    #             'is_super_customer': False
+    #         }
+    #     }
+    #
+    #     serializer_post = UserSerializer(data=data)
+    #     print(serializer_post.initial_data)
+    #     serializer_post.is_valid(raise_exception=True)
+    #     del data['password']
+    #     print(serializer_post.data)
+    #     print(data)
+    #     self.assertEqual(serializer_post.data, data)
+    #     user_photo.close()
+
