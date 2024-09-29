@@ -4,10 +4,11 @@ from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
+from services.mixins.tests import CreateImageMixin
 from users.models import User
 
 
-class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
+class SuperWorkerUsersAPITestCase(CreateImageMixin, APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
 
     fixtures = [
@@ -41,8 +42,8 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         url = reverse('token_obtain_pair')
         auth = self.client.post(url,
                                 {'username': self.user.username,
-                                 'password': self.clean_password},
-                                format='json')
+                                 'password': self.clean_password}
+                                )
 
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
@@ -52,10 +53,16 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             "username": "test_user_hz",
             'password': 'super_ps'
         }
-        json_data = json.dumps(data)
-        response = self.client.post(url, data=json_data,
-                                    content_type='application/json')
+        response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_user_with_photo(self):
         url = reverse('users-list')
+        data = {
+            'password': 'sadfgh',
+            'username': 'super_worker_test_123',
+            'photo': self.create_fake_image()
+        }
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        print(response.data)
