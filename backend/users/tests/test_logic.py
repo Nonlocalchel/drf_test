@@ -1,13 +1,12 @@
 from django.test import TestCase
-from django.conf import settings
 
+from services.mixins.tests import CreateImageMixin
 # Create your tests here.
 
 from users.models import User
-from users.tests.utils import get_temp_file, open_photo_file, close_photo_file
 
 
-class UserTestCase(TestCase):
+class UserTestCase(CreateImageMixin, TestCase):
     """Тестирование бизнесс-логики авторизация приложения"""
 
     fixtures = [
@@ -24,7 +23,7 @@ class UserTestCase(TestCase):
         cls.photo_path = 'users/tests/data/img.png'
 
     def setUp(self):
-        settings.MEDIA_ROOT = get_temp_file()
+        self.set_media_root()
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
@@ -54,15 +53,14 @@ class UserTestCase(TestCase):
         self.assertEqual(self.user_last_worker.username, name)
 
     def test_create_user(self):
-        mem_file = open_photo_file(self.photo_path)
+        user_photo = self.fake_image
         user_worker = User.objects.create_user(password='customer_worker_ps_387',
                                                username='worker_test_with_photo',
                                                phone='+375291850665',
                                                type=User.UserType.WORKER,
-                                               photo=mem_file
+                                               photo=user_photo
                                                )
-        close_photo_file(mem_file)
-        self.assertEqual('users/2024/09/28/img_2.png', user_worker.photo)
+        self.assertIn('image2.jpg', user_worker.photo.path)
 
     #
     # def test_change_user_type(self):

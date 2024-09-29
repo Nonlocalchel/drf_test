@@ -1,8 +1,11 @@
 import io
 import json
+import tempfile
 
 from PIL import Image
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+from django.conf import settings
 
 
 class ManipulateExpectedDataMixin:
@@ -21,14 +24,23 @@ class ManipulateExpectedDataMixin:
 
 
 class CreateImageMixin:
-    def create_fake_image_miniature(self):
+    def set_media_root(self):
+        settings.MEDIA_ROOT = self.temp_file
+
+    @property
+    def temp_file(self):
+        return tempfile.mkdtemp(suffix=None, prefix=None, dir=None)
+
+    @property
+    def fake_image_miniature(self):
         image = io.BytesIO()
         Image.new('RGB', (150, 150)).save(image, 'JPEG')
         image.seek(0)
         min_file = SimpleUploadedFile('image.jpg', image.getvalue())
         return min_file
 
-    def create_fake_image(self):
+    @property
+    def fake_image(self):
         image = io.BytesIO()
         Image.new('RGB', (1152, 2048)).save(image, 'JPEG')
         image.seek(0)

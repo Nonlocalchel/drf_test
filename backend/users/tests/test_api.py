@@ -1,5 +1,3 @@
-import json
-
 from django.urls import reverse
 from rest_framework import status
 
@@ -37,6 +35,7 @@ class SuperWorkerUsersAPITestCase(CreateImageMixin, APITestCaseWithJWT):
 
     def setUp(self):
         super().setUp()
+        self.set_media_root()
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
@@ -61,7 +60,7 @@ class SuperWorkerUsersAPITestCase(CreateImageMixin, APITestCaseWithJWT):
         data = {
             'password': 'sadfgh',
             'username': 'super_worker_test_123',
-            'photo': self.create_fake_image()
+            'photo': self.fake_image
         }
         response = self.client.post(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
