@@ -1,5 +1,3 @@
-import os
-
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
@@ -21,7 +19,9 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class UserSerializer(WritableNestedModelSerializer):
     password = serializers.CharField(write_only=True)  # , style={'input_type': 'password'}
+
     worker = WorkerSerializer(allow_null=True, default=None)
+
     customer = CustomerSerializer(allow_null=True, default=None)
 
     class Meta:
@@ -29,9 +29,9 @@ class UserSerializer(WritableNestedModelSerializer):
         fields = (
             'pk',
             'username', 'phone',
-            'photo', 'type', 'email',
-            'first_name', 'last_name', 'is_superuser',
-            'worker', 'customer',
+            'type', 'email',
+            # 'first_name', 'last_name', 'is_superuser',
+            'worker', 'customer', 'photo',
             'password'
         )
 
