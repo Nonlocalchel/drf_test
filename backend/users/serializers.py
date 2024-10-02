@@ -14,7 +14,7 @@ class WorkerSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['pk', 'discount', 'legal',]
+        fields = ['pk', 'discount', 'legal']
 
 
 class UserSerializer(WritableNestedModelSerializer):
@@ -30,7 +30,7 @@ class UserSerializer(WritableNestedModelSerializer):
             'pk',
             'username', 'phone', 'is_staff',
             'type', 'email',
-            # 'first_name', 'last_name', 'is_superuser',
+            'first_name', 'last_name', 'is_superuser',
             'worker', 'customer', 'photo',
             'password'
         )
