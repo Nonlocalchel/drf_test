@@ -39,10 +39,10 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
 class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
     validators = [validate_add_worker_data_to_user]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='worker')
     exp = models.IntegerField(blank=True, null=True)
     speciality = models.CharField(max_length=50, null=True, blank=True, verbose_name="Специальность")
     education = models.CharField(max_length=50, null=True, blank=True, verbose_name="Образование")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='worker')
 
 
 class Customer(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
@@ -52,6 +52,6 @@ class Customer(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
         ENTITY = "entity", "Entity"
         PERSON = "person", "Person"
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
     discount = models.IntegerField(blank=True, null=True)
     legal = models.CharField(max_length=50, choices=LegalType, default=LegalType.PERSON)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')

@@ -8,13 +8,13 @@ from .utils import figure_deleted_data
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
-        fields = ['pk', 'exp', 'is_super_worker']
+        fields = ['pk', 'exp', 'speciality', 'education']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['pk', 'discount', 'is_super_customer']
+        fields = ['pk', 'discount', 'legal',]
 
 
 class UserSerializer(WritableNestedModelSerializer):

@@ -3,136 +3,122 @@
     "pk": 1,
     "username": "adminchik",
     "phone": "+375 29 482 06 12",
-    "photo": null,
+    "is_staff": true,
     "type": "customer",
     "email": "v4slava.guk@gmail.com",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": true,
     "worker": null,
     "customer": {
       "pk": 1,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   },
   {
     "pk": 36,
     "username": "customer_1",
     "phone": "+375 29 485 06 65",
-    "photo": null,
+    "is_staff": false,
     "type": "customer",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": false,
     "worker": null,
     "customer": {
       "pk": 2,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   },
   {
     "pk": 37,
     "username": "worker_1",
     "phone": "+375 29 482 06 65",
-    "photo": null,
+    "is_staff": true,
     "type": "worker",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": false,
     "worker": {
       "pk": 1,
       "exp": null,
-      "is_super_worker": false
+      "speciality": "",
+      "education": ""
     },
-    "customer": null
+    "customer": null,
+    "photo": null
   },
   {
     "pk": 55,
     "username": "customer_2",
     "phone": "+375 29 432 06 65",
-    "photo": null,
+    "is_staff": false,
     "type": "customer",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": false,
     "worker": null,
     "customer": {
       "pk": 3,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   },
   {
     "pk": 56,
     "username": "worker_2",
     "phone": "+375 29 125 06 65",
-    "photo": null,
+    "is_staff": false,
     "type": "worker",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": false,
     "worker": {
       "pk": 2,
       "exp": null,
-      "is_super_worker": false
+      "speciality": "",
+      "education": ""
     },
-    "customer": null
+    "customer": null,
+    "photo": null
   },
   {
     "pk": 57,
     "username": "new_admin_1",
     "phone": "758938323",
-    "photo": null,
+    "is_staff": true,
     "type": "customer",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": true,
     "worker": null,
     "customer": {
       "pk": 4,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   },
   {
     "pk": 58,
     "username": "admin",
     "phone": "5478490434",
-    "photo": "/media/users/2024/09/25/2e037d6c10de68fc5fe87943b902b62d.jpg",
+    "is_staff": false,
     "type": "customer",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": true,
     "worker": null,
     "customer": {
       "pk": 5,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   },
   {
     "pk": 75,
     "username": "test",
     "phone": "43758678",
-    "photo": null,
+    "is_staff": false,
     "type": "customer",
     "email": "",
-    "first_name": "",
-    "last_name": "",
-    "is_superuser": false,
     "worker": null,
     "customer": {
       "pk": 6,
       "discount": null,
-      "is_super_customer": false
-    }
+      "legal": "person"
+    },
+    "photo": null
   }
 ]

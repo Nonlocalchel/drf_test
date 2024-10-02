@@ -23,24 +23,22 @@ class ManipulateExpectedDataMixin:
             expected_data_file.write(json.dumps(new_data))
 
 
-class CreateImageMixin:
-    def set_media_root(self):
-        settings.MEDIA_ROOT = self.temp_file
+def get_temp_file():
+    return tempfile.mkdtemp(suffix=None, prefix=None, dir=None)
 
-    @property
-    def temp_file(self):
-        return tempfile.mkdtemp(suffix=None, prefix=None, dir=None)
 
-    @property
-    def fake_image_miniature(self):
+class ImageCreator:
+
+    @staticmethod
+    def get_fake_image_miniature():
         image = io.BytesIO()
         Image.new('RGB', (150, 150)).save(image, 'JPEG')
         image.seek(0)
         min_file = SimpleUploadedFile('image.jpg', image.getvalue())
         return min_file
 
-    @property
-    def fake_image(self):
+    @staticmethod
+    def get_fake_image():
         image = io.BytesIO()
         Image.new('RGB', (1152, 2048)).save(image, 'JPEG')
         image.seek(0)

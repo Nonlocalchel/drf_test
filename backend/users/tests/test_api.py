@@ -2,11 +2,11 @@ from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from services.mixins.tests import CreateImageMixin
+from services.mixins.tests import ImageCreator
 from users.models import User
 
 
-class SuperWorkerUsersAPITestCase(CreateImageMixin, APITestCaseWithJWT):
+class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
 
     fixtures = [
@@ -60,7 +60,7 @@ class SuperWorkerUsersAPITestCase(CreateImageMixin, APITestCaseWithJWT):
         data = {
             'password': 'sadfgh',
             'username': 'super_worker_test_123',
-            'photo': self.fake_image
+            'photo': self.get_fake_image
         }
         response = self.client.post(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
