@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 from .messages.permission_denied import UserPermissionMessages
-from users.utils import *
+from .models import User
 
 
 class IsWorker(permissions.BasePermission):
@@ -12,7 +12,7 @@ class IsWorker(permissions.BasePermission):
         if user.is_anonymous:
             return False
 
-        return user.check_user_type('worker')
+        return user.check_user_type(User.UserType.WORKER)
 
 
 class IsCustomer(permissions.BasePermission):
@@ -23,7 +23,7 @@ class IsCustomer(permissions.BasePermission):
         if user.is_anonymous:
             return False
 
-        return user.check_user_type('customer')
+        return user.check_user_type(User.UserType.CUSTOMER)
 
 
 class IsSuperCustomer(permissions.BasePermission):
@@ -35,8 +35,7 @@ class IsSuperCustomer(permissions.BasePermission):
         if not user_is_customer:
             return False
 
-        if user.check_user_type('customer'):
-            return is_super_customer(user)
+        return user.is_staff
 
 
 class IsSuperWorker(IsWorker):
@@ -48,8 +47,7 @@ class IsSuperWorker(IsWorker):
         if not user_is_worker:
             return False
 
-        if user.check_user_type('worker'):
-            return is_super_worker(user)
+        return user.is_staff
 
 
 class IsSuperWorkerOrReadOnly(IsSuperWorker):

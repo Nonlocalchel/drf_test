@@ -80,7 +80,7 @@ class FieldTrackerMixin(WithOriginalMixin):
 
 class GetFieldRelatedNameMixin:
 
-    def get_field_related_name(self, field):
+    def get_related_field_name(self, field):
         fields_meta = self._meta.fields
         for field_meta in fields_meta:
             field_name = field_meta.name

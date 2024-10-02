@@ -28,7 +28,7 @@ class UserSerializer(WritableNestedModelSerializer):
         model = User
         fields = (
             'pk',
-            'username', 'phone',
+            'username', 'phone', 'is_staff',
             'type', 'email',
             # 'first_name', 'last_name', 'is_superuser',
             'worker', 'customer', 'photo',

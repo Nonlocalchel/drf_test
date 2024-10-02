@@ -26,9 +26,9 @@ def validate_worker_photo(instance):
 def validate_add_worker_data_to_user(instance):
     if hasattr(instance, 'user'):
         user = instance.user
-        model_related_field_name = instance.get_field_related_name('user')
-        if user.type != model_related_field_name:
+        related_model_field_name = instance.get_related_field_name('user')
+        if user.type != related_model_field_name:
             raise ValidationError(
                 {
-                    model_related_field_name: f'Пользователь {user.username} является {user.type} и вы не можете назначить ему тип {model_related_field_name}!'}
+                    related_model_field_name: f'Пользователь {user.username} является {user.type} и вы не можете назначить ему тип {related_model_field_name}!'}
             )

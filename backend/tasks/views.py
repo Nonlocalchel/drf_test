@@ -36,10 +36,10 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     filterset_class = TaskFilter
     search_fields = ['title', 'status']
     permission_classes_by_action = {
-        'list': [IsWorker & WorkerTasksAccessPermission | IsCustomer & CustomerTasksAccessPermission | IsSuperWorker],
-        'retrieve': [IsWorker & WorkerTaskAccessPermission | IsCustomer & CustomerTaskAccessPermission | IsSuperWorker],
-        'update': [IsNotRunningTask & IsCustomer & CustomerTaskAccessPermission],
-        'create': [IsCustomer & CustomerTaskAccessPermission | IsSuperWorker]
+        'list': [IsSuperWorker | WorkerTasksAccessPermission | CustomerTasksAccessPermission],
+        'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
+        'update': [IsNotRunningTask & CustomerTaskAccessPermission],
+        'create': [IsSuperWorker | CustomerTaskAccessPermission]
     }
 
     def get_serializer_class(self):

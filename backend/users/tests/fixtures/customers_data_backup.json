@@ -5,7 +5,7 @@
     "fields": {
       "user": 1,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   },
   {
@@ -14,7 +14,7 @@
     "fields": {
       "user": 36,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   },
   {
@@ -23,7 +23,7 @@
     "fields": {
       "user": 55,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   },
   {
@@ -32,7 +32,7 @@
     "fields": {
       "user": 57,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   },
   {
@@ -41,7 +41,7 @@
     "fields": {
       "user": 58,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   },
   {
@@ -50,7 +50,7 @@
     "fields": {
       "user": 75,
       "discount": null,
-      "is_super_customer": false
+      "legal": "person"
     }
   }
 ]

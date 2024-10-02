@@ -5,7 +5,8 @@
     "fields": {
       "user": 37,
       "exp": null,
-      "is_super_worker": false
+      "speciality": "",
+      "education": ""
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "user": 56,
       "exp": null,
-      "is_super_worker": false
+      "speciality": "",
+      "education": ""
     }
   }
 ]
