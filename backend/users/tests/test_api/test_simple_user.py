@@ -8,7 +8,7 @@ from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
 
-class CustomerUsersAPITestCase(APITestCaseWithJWT):
+class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -19,7 +19,7 @@ class CustomerUsersAPITestCase(APITestCaseWithJWT):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        print('\nCustomer tasks test:')
+        print('\nSimple user tasks test:')
 
     @classmethod
     def setUpTestUser(cls):
