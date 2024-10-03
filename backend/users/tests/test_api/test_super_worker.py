@@ -7,7 +7,7 @@ from services.mixins.tests import ImageCreator, get_temp_file
 from users.models import User
 
 
-class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
+class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
     image_creator = ImageCreator
     fixtures = [
@@ -29,7 +29,7 @@ class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
         cls.user = User.objects.create_user(password=cls.clean_password,
                                             username='super_worker_test_1',
                                             phone='+375291850665',
-                                            type='worker',
+                                            type=User.UserType.WORKER,
                                             photo=worker_photo,
                                             is_staff=True
                                             )
@@ -39,10 +39,11 @@ class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
-        auth = self.client.post(url,
-                                {'username': self.user.username,
-                                 'password': self.clean_password}
-                                )
+        data = {
+            'username': self.user.username,
+            'password': self.clean_password
+        }
+        auth = self.client.post(url, data)
 
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
@@ -66,3 +67,18 @@ class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
         response = self.client.post(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn(str(data['photo'])[:-4], response.data['photo'])
+
+    def test_get_all_users(self):
+        url = reverse('users-list')
+        response = self.client.get(url)
+        self.assertEqual(len(response.data), 9)
+
+    def test_get_user_data(self):
+        url = reverse('users-detail', args=(self.user.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_other_user_data(self):
+        url = reverse('users-detail', args=(75,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

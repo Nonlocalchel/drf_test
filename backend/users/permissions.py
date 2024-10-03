@@ -50,9 +50,20 @@ class IsSuperWorker(IsWorker):
         return user.is_staff
 
 
-class IsSuperWorkerOrReadOnly(IsSuperWorker):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
+class IsUserAccount(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.is_anonymous:
+            return False
 
-        return super().has_permission(request, view)
+        return obj == user
+
+
+class IsSuperCustomerReadWorkers(IsSuperCustomer):
+    def has_permission(self, request, view):
+        user_is_super_customer = super().has_permission(request, view)
+        if not user_is_super_customer:
+            return False
+
+        users_query_type = request.GET.get('type')
+        return users_query_type == User.UserType.WORKER
