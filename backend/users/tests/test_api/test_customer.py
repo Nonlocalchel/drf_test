@@ -8,7 +8,7 @@ from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
 
-class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
+class CustomerUsersAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -19,7 +19,7 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        print('\nSuper customer tasks test:')
+        print('\nCustomer tasks test:')
 
     @classmethod
     def setUpTestUser(cls):
@@ -28,8 +28,6 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
                                             username='super_worker_test_1',
                                             phone='+375291850665'
                                             )
-        cls.user.is_staff = True
-        cls.user.save()
 
     def setUp(self):
         super().setUp()
@@ -64,13 +62,7 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         }
         url = reverse('users-list')
         response = self.client.get(url, data=data)
-        users_list = response.data
-        self.assertEqual(len(users_list), 2)
-
-        for user in users_list:
-            with self.subTest(user=user):
-                user_type = user['type']
-                self.assertEqual(user_type, data['type'])
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_customer_users(self):
         data = {
@@ -87,10 +79,5 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
 
     def test_get_other_user_data(self):
         url = reverse('users-detail', args=(75,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_get_worker_user_data(self):
-        url = reverse('users-detail', args=(56,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
