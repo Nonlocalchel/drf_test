@@ -1,14 +1,15 @@
+from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from services.mixins.tests import ImageCreator
+from services.mixins.tests import ImageCreator, get_temp_file
 from users.models import User
 
 
 class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
-
+    image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -17,25 +18,24 @@ class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
 
     @classmethod
     def setUpTestData(cls):
+        settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nSuper worker tasks test:')
-        cls.photo_path = 'users/tests/data/img.png'
 
     @classmethod
     def setUpTestUser(cls):
+        worker_photo = cls.image_creator.get_fake_image()
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
                                             username='super_worker_test_1',
                                             phone='+375291850665',
-                                            type='worker'
+                                            type='worker',
+                                            photo=worker_photo,
+                                            is_staff=True
                                             )
-
-        cls.user.worker.is_super_worker = True
-        cls.user.worker.save()
 
     def setUp(self):
         super().setUp()
-        self.set_media_root()
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
@@ -60,8 +60,9 @@ class SuperWorkerUsersAPITestCase(ImageCreator, APITestCaseWithJWT):
         data = {
             'password': 'sadfgh',
             'username': 'super_worker_test_123',
-            'photo': self.get_fake_image
+            'photo': self.image_creator.get_fake_image()
         }
+
         response = self.client.post(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        print(response.data)
+        self.assertIn(str(data['photo'])[:-4], response.data['photo'])

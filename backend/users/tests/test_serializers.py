@@ -19,6 +19,7 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         print('\nUser Serializer test:')
+        settings.MEDIA_ROOT = get_temp_file()
         cls.worker = Worker.objects.last()
         cls.customer = Customer.objects.last()
         cls.photo_path = 'users/tests/data/img.png'
@@ -26,8 +27,6 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
     def setUp(self):
         if not hasattr(self, 'worker'):
             self.setUpTestData()
-
-        settings.MEDIA_ROOT = get_temp_file()
 
     def test_read_all_users_data_serializer(self):
         queryset = User.objects.all()

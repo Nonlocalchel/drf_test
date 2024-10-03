@@ -16,8 +16,7 @@ class UserTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         print('\nUser business-logic test:')
-        cls.photo_path = 'users/tests/data/img.png'
-        print(User.objects.all())
+        settings.MEDIA_ROOT = get_temp_file()
         cls.user_customer = User.objects.create_user(password='customer_super_ps_387',
                                                      username='customer_test_1',
                                                      phone='+375291850665'
@@ -28,9 +27,6 @@ class UserTestCase(TestCase):
                                                    type=User.UserType.WORKER,
                                                    photo=cls.image_creator.get_fake_image()
                                                    )
-
-    def setUp(self):
-        settings.MEDIA_ROOT = get_temp_file()
 
     def test_create_default_user(self):
         user_customer = User.objects.create_user(password='customer_super_ps_387',
