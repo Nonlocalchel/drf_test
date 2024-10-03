@@ -1,9 +1,11 @@
 import json
 
+from django.conf import settings
 from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
+from services.mixins.tests import ImageCreator, get_temp_file
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
 from services.APITestCaseWithJWT import APITestCaseWithJWT
@@ -12,7 +14,7 @@ from users.models import User, Customer
 
 class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов работника с привилегиями"""
-
+    image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -21,6 +23,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
     @classmethod
     def setUpTestData(cls):
+        settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nSuper worker task test:')
         cls.worker = cls.user.worker
@@ -45,15 +48,15 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
     @classmethod
     def setUpTestUser(cls):
+        worker_photo = cls.image_creator.get_fake_image()
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
                                             username='super_worker_test_1',
                                             phone='+375291850665',
-                                            type='worker'
+                                            type='worker',
+                                            photo=worker_photo,
+                                            is_staff=True
                                             )
-
-        cls.user.worker.is_super_worker = True
-        cls.user.worker.save()
 
     def setUp(self):
         super().setUp()
