@@ -6,9 +6,8 @@ from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
 
 from services.mixins.permissions import SelectPermissionByActionMixin
-from services.mixins.viewsets import CRUViewSet
+from services.viewsets import CRUViewSet
 from .filters import TaskFilter
-from .models import Task
 from users.permissions import *
 from .permissions import *
 from .serializers import (

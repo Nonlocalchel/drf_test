@@ -29,12 +29,12 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
             regex=r'^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$',
             message="Enter a valid registration number in the format ABC123.",
             code="invalid_registration",
-        ),
-    ],
-                             unique=True,
-                             null=True,
-                             verbose_name="Номер телефона"
-                             )
+            ),
+        ],
+        unique=True,
+        null=True,
+        verbose_name="Номер телефона"
+    )
 
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type

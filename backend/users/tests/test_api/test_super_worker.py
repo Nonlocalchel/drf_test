@@ -3,7 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from services.mixins.tests import ImageCreator, get_temp_file
+from services.tests_utils import get_temp_file
+from services.ImageWorker import ImageCreator
 from users.models import User
 
 

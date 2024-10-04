@@ -5,7 +5,8 @@ from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
-from services.mixins.tests import ImageCreator, get_temp_file
+from services.tests_utils import get_temp_file
+from services.ImageWorker import ImageCreator
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
 from services.APITestCaseWithJWT import APITestCaseWithJWT

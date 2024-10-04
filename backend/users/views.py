@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from services.mixins.permissions import SelectPermissionByActionMixin
-from services.mixins.viewsets import CRViewSet
+from services.viewsets import CRViewSet
 
 from .serializers import *
 from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomerReadWorkers

@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.test import TestCase
 
-from services.mixins.tests import ManipulateExpectedDataMixin, ImageCreator, get_temp_file
+from services.mixins.tests import ManipulateExpectedDataMixin
+from services.tests_utils import get_temp_file
+from services.ImageWorker import ImageCreator
 from users.models import Worker, Customer, User
 from users.serializers import UserSerializer
 

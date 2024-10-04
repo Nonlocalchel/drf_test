@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import utils
 from django.test import TestCase
 
-from services.mixins.tests import ImageCreator, get_temp_file
+from services.tests_utils import get_temp_file
+from services.ImageWorker import ImageCreator
 # Create your tests here.
 
 from users.models import User, Worker, Customer

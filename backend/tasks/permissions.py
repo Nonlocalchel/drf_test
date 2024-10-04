@@ -18,7 +18,6 @@ class WorkerTasksAccessPermission(IsWorker):
             return False
 
         request_worker_ids = worker_ids_in_params.split(',')
-
         user_worker_id = str(request.user.worker.id)
         for request_worker_id in request_worker_ids:
             if request_worker_id not in [user_worker_id, 'null']:
