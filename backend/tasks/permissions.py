@@ -34,10 +34,10 @@ class CustomerTasksAccessPermission(IsCustomer):
         if not user_is_customer:
             return False
 
-        customer_id = request.GET.get('customer')
-        if customer_id is not None:
-            user_customer_id = str(request.user.customer.id)
-            if customer_id == user_customer_id:
+        request_user_id = request.GET.get('customer')
+        if request_user_id is not None:
+            user_customer_id = str(request.user.id)
+            if user_customer_id == user_customer_id:
                 return True
 
 

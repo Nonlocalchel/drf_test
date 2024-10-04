@@ -14,8 +14,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import sys
-
 from django.conf.urls.static import static
 
 from django.conf import settings
@@ -26,6 +24,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView,
 
 from tasks.views import *
 from users.views import *
+from .yasg import urlpatterns as doc_urls
 
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet, basename='tasks')
@@ -39,6 +38,8 @@ urlpatterns = [
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
 ]
+
+urlpatterns += doc_urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
