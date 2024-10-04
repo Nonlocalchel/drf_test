@@ -14,34 +14,15 @@ class TaskFilter(filters.FilterSet):
 
     @staticmethod
     def find_results_maybe_include_null(queryset, name, value):
-        """
-        refactor: filter_params обирает в себя значения в главном цикле
-        """
-        params_list = []
         filter_params = Q()
 
-        for get_param in value:
-            if get_param == 'null':
-                params_list.append(Q(**{f'{name}__isnull': True}))
-            else:
-                params_list.append(Q(**{name: get_param}))
-
-        for param in params_list:
-            if filter_params == Q():
-                filter_params = param
-                continue
-
-            filter_params = filter_params | param
-
-        """
-        for filter_param in value:
-            if get_param == 'null':
+        for worker_filter_param in value:
+            if worker_filter_param == 'null':
                 append_param = Q(**{f'{name}__isnull': True})
             else:
-                append_param = Q(**{name: get_param})
-                
-            filter_params = filter_params | param
-        """
+                append_param = Q(**{name: worker_filter_param})
+
+            filter_params = filter_params | append_param
 
         return queryset.filter(filter_params)
 
