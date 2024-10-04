@@ -9,7 +9,7 @@ class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
 
 
 class TaskFilter(filters.FilterSet):
-    """Filter for Books by if books are published or not"""
+    """Фильтрация задач по полю worker, чтобы иожно было фильтровать по null"""
     worker = CharFilterInFilter(field_name='worker', method='find_results_maybe_include_null')
 
     @staticmethod
