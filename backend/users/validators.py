@@ -8,13 +8,6 @@ def validate_change_user_type(instance):
         )
 
 
-# def validate_add_user_role_data(instance):
-#     if hasattr(instance, 'customer') and hasattr(instance, 'worker'):
-#         raise ValidationError(
-#             {'type': f'Пользователь {instance.username} является {instance.type}!'}
-#         )
-
-
 def validate_worker_photo(instance):
     if instance.type == 'worker':
         if not bool(instance.photo):

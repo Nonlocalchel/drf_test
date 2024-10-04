@@ -1,15 +1,13 @@
-from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from services.mixins.tests import ImageCreator, get_temp_file
 from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
 
 class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов заказчика"""
+    """Тестирование запросов данных пользователей заказчика"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -19,7 +17,7 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        print('\nSimple user tasks test:')
+        print('\nSimple user(simple worker, simple customer) tasks test:')
 
     @classmethod
     def setUpTestUser(cls):

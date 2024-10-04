@@ -1,5 +1,3 @@
-import json
-
 from django.urls import reverse
 from rest_framework import status
 
@@ -9,7 +7,7 @@ from tasks.models import Task
 
 
 class AnonimusAPITestCase(APITestCase):
-    """Тестирование запросов работника"""
+    """Тестирование запросов данных пользователей не авторизованных пользователей"""
 
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',

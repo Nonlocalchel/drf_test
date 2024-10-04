@@ -14,15 +14,17 @@ class WorkerTasksAccessPermission(IsWorker):
             return False
 
         worker_ids_in_params = request.GET.get('worker')
-        if worker_ids_in_params is not None:
-            request_worker_ids = worker_ids_in_params.split(',')
+        if worker_ids_in_params is None:
+            return False
 
-            user_worker_id = str(request.user.worker.id)
-            for request_worker_id in request_worker_ids:
-                if request_worker_id not in [user_worker_id, 'null']:
-                    return False
+        request_worker_ids = worker_ids_in_params.split(',')
 
-            return True
+        user_worker_id = str(request.user.worker.id)
+        for request_worker_id in request_worker_ids:
+            if request_worker_id not in [user_worker_id, 'null']:
+                return False
+
+        return True
 
 
 class CustomerTasksAccessPermission(IsCustomer):
@@ -48,8 +50,8 @@ class WorkerTaskAccessPermission(IsWorker):
         if not user_is_worker:
             return False
 
-        if obj.worker is not None:
-            return obj.worker == request.user.worker
+        if obj.worker_id is not None:
+            return obj.worker_id == request.user.worker.id
 
         return True
 
@@ -62,7 +64,7 @@ class CustomerTaskAccessPermission(IsCustomer):
         if not user_is_customer:
             return False
 
-        return obj.customer == request.user.customer
+        return obj.customer_id == request.user.customer.id
 
 
 class IsNotRunningTask(permissions.BasePermission):

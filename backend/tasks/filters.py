@@ -33,6 +33,16 @@ class TaskFilter(filters.FilterSet):
 
             filter_params = filter_params | param
 
+        """
+        for filter_param in value:
+            if get_param == 'null':
+                append_param = Q(**{f'{name}__isnull': True})
+            else:
+                append_param = Q(**{name: get_param})
+                
+            filter_params = filter_params | param
+        """
+
         return queryset.filter(filter_params)
 
     class Meta:

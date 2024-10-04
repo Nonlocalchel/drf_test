@@ -11,8 +11,8 @@ def validate_changes(instance):
 
 
 def check_worker(instance):
-    if not instance.worker: #instance.time_close==instance.time_update?
-        if instance.status != 'wait':
+    if instance.status != 'wait':
+        if not instance.worker_id:
             raise ValidationError(
                 {'worker': TaskValidationMessages.REPORT_FREE_TASK_ERROR}
             )

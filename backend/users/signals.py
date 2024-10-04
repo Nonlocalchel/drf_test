@@ -4,7 +4,6 @@ from django.dispatch import receiver
 from .models import *
 
 
-# перенести жто в userManager
 @receiver(pre_save, sender=User)
 def create_profile(sender, instance, **kwargs):
     """Шифрование пароля при его изменении"""

@@ -1,13 +1,12 @@
 from http import HTTPMethod
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
-from rest_framework.viewsets import GenericViewSet
 
 from services.mixins.permissions import SelectPermissionByActionMixin
+from services.mixins.viewsets import CRUViewSet
 from .filters import TaskFilter
 from .models import Task
 from users.permissions import *
@@ -21,10 +20,6 @@ from .serializers import (
 
 
 # Create your views here.
-class CRUViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                 mixins.ListModelMixin, mixins.UpdateModelMixin,
-                 GenericViewSet):
-    pass
 
 
 class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):

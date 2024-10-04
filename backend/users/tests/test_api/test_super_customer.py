@@ -1,15 +1,13 @@
-from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from services.mixins.tests import ImageCreator, get_temp_file
 from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
 
 class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов заказчика"""
+    """Тестирование запросов данных пользователей заказчика c extra правами"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -26,10 +24,9 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
                                             username='super_worker_test_1',
-                                            phone='+375291850665'
+                                            phone='+375291850665',
+                                            is_staff=True
                                             )
-        cls.user.is_staff = True
-        cls.user.save()
 
     def setUp(self):
         super().setUp()

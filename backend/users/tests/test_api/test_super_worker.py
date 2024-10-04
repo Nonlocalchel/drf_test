@@ -8,7 +8,7 @@ from users.models import User
 
 
 class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов заказчика"""
+    """Тестирование запросов данных пользователей работника с extra правами"""
     image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
