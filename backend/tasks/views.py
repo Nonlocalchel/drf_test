@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
-from users.utils import filter_user_queryset
+from .utils import filter_user_queryset
 from .filters import TaskFilter
 from users.permissions import *
 from .permissions import *
@@ -37,6 +37,10 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     }
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            # queryset just for schema generation metadata
+            return Task.objects.none()
+
         user = self.request.user
         return filter_user_queryset(user, self.queryset)
 
