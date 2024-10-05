@@ -64,26 +64,23 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list(self):
-        data = {'customer': self.customer.id}
+        customer_id = self.customer.id
         url = reverse('tasks-list')
-        response = self.client.get(url, data=data,
-                                   content_type='application/json')
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         task_list = response.data
-        task_query_length = Task.objects.filter(customer=self.customer.id).count()
+        task_query_length = Task.objects.filter(customer=customer_id).count()
         self.assertEqual(len(task_list), task_query_length)
         self.assertEqual(len(task_list), 4)
 
         for task in task_list:
             with self.subTest(task=task):
-                self.assertEqual(task['customer'], data['customer'])
+                self.assertEqual(task['customer'], customer_id)
 
     def test_get_list_search(self):
-        data = {'search': 'done',
-                'customer': f'{self.customer.id}'
-                }
+        data = {'search': 'done'}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -107,12 +104,8 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
     def test_get_list_other_customer(self):
         url = reverse('tasks-list') + f'?customer=3'
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_get_list_all(self):
-        url = reverse('tasks-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
     def test_get_detail_customer_task(self):
         url = reverse('tasks-detail', args=(self.task.id,))
@@ -122,7 +115,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
     def test_get_detail_other_customer_task(self):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_patch_task(self):
         url = reverse('tasks-take-in-process', args=(self.task,))

@@ -4,9 +4,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
+from users.utils import filter_user_queryset
 from .filters import TaskFilter
 from users.permissions import *
 from .permissions import *
@@ -28,11 +30,15 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     filterset_class = TaskFilter
     search_fields = ['title', 'status']
     permission_classes_by_action = {
-        'list': [IsSuperWorker | WorkerTasksAccessPermission | CustomerTasksAccessPermission],
+        'list': [IsAuthenticated],
         'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
         'update': [IsNotRunningTask & CustomerTaskAccessPermission],
         'create': [IsSuperWorker | CustomerTaskAccessPermission]
     }
+
+    def get_queryset(self):
+        user = self.request.user
+        return filter_user_queryset(user, self.queryset)
 
     def get_serializer_class(self):
         serializer_classes_by_method = {
