@@ -56,18 +56,6 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         serializer_class = serializer_classes_by_method[req_method]
         return serializer_class
 
-    @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
-    def take_in_process(self, request, pk=None):
-        request.data['worker'] = request.user.worker.id
-        return self.update(request, partial=True)
-
-    @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
-    def done(self, request, pk=None):
-        request.data['status'] = Task.StatusType.DONE
-        return self.update(request, partial=True)
-
     def create(self, request, *args, **kwargs):
         user = request.user
         if user.check_user_type('customer'):
@@ -77,3 +65,15 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
+
+    @action(detail=True, methods=[HTTPMethod.PATCH],
+            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+    def take_in_process(self, request):
+        request.data['worker'] = request.user.worker.id
+        return self.update(request, partial=True)
+
+    @action(detail=True, methods=[HTTPMethod.PATCH],
+            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+    def done(self, request):
+        request.data['status'] = Task.StatusType.DONE
+        return self.update(request, partial=True)

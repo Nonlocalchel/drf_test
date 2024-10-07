@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.utils.translation import gettext_lazy as _
 
-from .forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from .models import *
 
 
@@ -41,10 +41,9 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('username', 'phone', 'password1', 'password2', 'type'),
         }),
     )
-    inlines = [
-        WorkerInline,
-        CustomerInline
-    ]
 
+    def get_inline_instances(self, request, obj=None):
+        if obj.type == User.UserType.CUSTOMER:
+            return [CustomerInline(self.model, self.admin_site)]
 
-
+        return [WorkerInline(self.model, self.admin_site)]
