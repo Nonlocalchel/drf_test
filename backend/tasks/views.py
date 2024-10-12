@@ -68,12 +68,12 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
             permission_classes=[IsWorker & WorkerTaskAccessPermission])
-    def take_in_process(self, request):
+    def take_in_process(self, request, pk):
         request.data['worker'] = request.user.worker.id
         return self.update(request, partial=True)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
             permission_classes=[IsWorker & WorkerTaskAccessPermission])
-    def done(self, request):
+    def done(self, request, pk):
         request.data['status'] = Task.StatusType.DONE
         return self.update(request, partial=True)

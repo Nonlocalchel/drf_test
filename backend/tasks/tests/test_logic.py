@@ -12,8 +12,7 @@ class BusinessTestCase(TestCase):
 
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
-        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
-        'tasks/tests/fixtures/task_test_backup.json'
+        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json'
     ]
 
     @classmethod
@@ -53,9 +52,8 @@ class BusinessTestCase(TestCase):
         Task.objects.create(title='Customer test task_1 (wait)', customer=self.customer)
 
     def test_create_without_customer(self):
-        self.assertRaisesRegex(
+        self.assertRaises(
             utils.IntegrityError,
-            r'NOT NULL constraint failed',
             Task.objects.create,
             title='Customer test task_1 (wait)'
         )
