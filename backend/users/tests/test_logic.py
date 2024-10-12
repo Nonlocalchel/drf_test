@@ -89,23 +89,20 @@ class UserTestCase(TestCase):
         )
 
     def test_create_worker(self):
-        self.assertRaisesRegex(
+        self.assertRaises(
             utils.IntegrityError,
-            r'NOT NULL constraint failed:',
             Worker.objects.create
         )
 
     def test_create_customer(self):
-        self.assertRaisesRegex(
+        self.assertRaises(
             utils.IntegrityError,
-            r'NOT NULL constraint failed:',
             Customer.objects.create
         )
 
     def test_change_user_role_data(self):
-        self.assertRaisesRegex(
+        self.assertRaises(
             utils.IntegrityError,
-            r'UNIQUE constraint failed',
             Worker.objects.create,
             user=self.user_worker
         )

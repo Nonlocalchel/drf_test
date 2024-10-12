@@ -1,6 +1,5 @@
 from .base import *
-
-# DEBUG = False
+from .simple_jwt_config import SIMPLE_JWT
 
 DATABASES = {
     'default': {
@@ -8,7 +7,7 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': '127:0:0:1',
+        'HOST': 'localhost',
         'PORT': 5432,
     }
 }
