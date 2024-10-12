@@ -1,7 +1,6 @@
 echo 'start tests'
 function run_test(){
   python manage.py test "$1"
-  echo "$1-OK"
 }
 path_array=(
   tasks.tests.test_logic #логика
