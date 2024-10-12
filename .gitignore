@@ -88,8 +88,7 @@ settings.py
 migrations/
 
 dj-drf-venv/
-db.sqlite3
-test_script.sh
+db.sqlite3\
 
 media/*
 static/*
