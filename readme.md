@@ -1,23 +1,20 @@
-1.endpoints:
-    1.tasks:
-       /api/v1/tasks/{number} - one task
-       /api/v1/tasks - list task
-       /api/v1/tasks/{number}/close-task - close-task
+## 1.endpoints:
+1.tasks:
+    /api/v1/tasks/{number} - one task
+    /api/v1/tasks - list task
+    /api/v1/tasks/{number}/close-task - close-task
+2.users:
+    /api/v1/customers/{number} - one task
+    /api/v1/customers - list task
+    /api/v1/workers/{number} - one task
+    /api/v1/workers - list task
+3.authorization(tokens):
+    api/v1/token/
+    api/v1/token/refresh
 
-    2.users:
-        /api/v1/customers/{number} - one task
-        /api/v1/customers - list task
-        /api/v1/workers/{number} - one task
-        /api/v1/workers - list task
-
-    3.authorization(tokens):
-        api/v1/token/
-        api/v1/token/refresh
-
-2.settings:
-    AUTH_USER_MODEL = 'users.User'
-
-    INSTALLED_APPS = [
+## 2.settings:
+AUTH_USER_MODEL = 'users.User'
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,18 +25,17 @@
     'rest_framework',
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig'
-    ]
+]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+'DEFAULT_PERMISSION_CLASSES': [
+    'rest_framework.permissions.IsAuthenticated',
     ],
     ...
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        ...
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ...
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
-
     ...
 }
 
@@ -49,7 +45,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
-
     "ALGORITHM": "HS256",
     "SIGNING_KEY": settings.SECRET_KEY,
     "VERIFYING_KEY": "",
@@ -58,23 +53,18 @@ SIMPLE_JWT = {
     "JSON_ENCODER": None,
     "JWK_URL": None,
     "LEEWAY": 0,
-
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-
     "JTI_CLAIM": "jti",
-
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
