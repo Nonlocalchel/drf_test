@@ -12,16 +12,3 @@ def create_profile(sender, instance, **kwargs):
         return
 
     instance.set_password(user_password)
-
-
-@receiver(post_save, sender=User)
-def create_special_profile(sender, instance, created, **kwargs):
-    if not created:
-        return
-
-    if instance.type == 'customer':
-        customer = Customer.objects.create(user=instance)
-        customer.save()
-    elif instance.type == 'worker':
-        worker = Worker.objects.create(user=instance)
-        worker.save()
