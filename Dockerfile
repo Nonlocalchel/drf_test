@@ -8,6 +8,7 @@ RUN pip install --upgrade pip
 RUN pip install -r /temp/requirements.txt
 
 COPY backend /backend
+COPY test_script.sh scripts/test_run_script.sh
 WORKDIR /backend
 COPY .env /.env
 

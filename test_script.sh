@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo 'start tests'
 function run_test(){
   python manage.py test "$1"
