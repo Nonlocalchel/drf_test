@@ -20,9 +20,9 @@ class CustomerSerializer(serializers.ModelSerializer):
 class UserSerializer(WritableNestedModelSerializer):
     password = serializers.CharField(write_only=True)
 
-    worker = WorkerSerializer()
+    worker = WorkerSerializer(allow_null=True, default=None)
 
-    customer = CustomerSerializer()
+    customer = CustomerSerializer(allow_null=True, default=None)
 
     class Meta:
         model = User
