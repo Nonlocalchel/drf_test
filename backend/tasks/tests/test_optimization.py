@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.db import connection
 from django.urls import reverse
-from rest_framework import status
 
 from services.tests_utils import get_temp_file
 from services.ImageWorker import ImageCreator
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from users.models import User
+from users.models import User, Customer
+from tasks.models import Task
 
 
 class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
@@ -22,7 +21,8 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     def setUpTestData(cls):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
-        print('\nSuper worker task test:')
+        print('\nOptimization test:')
+        cls.customer = Customer.objects.last()
 
     @classmethod
     def setUpTestUser(cls):
@@ -36,8 +36,22 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
                                             is_staff=True
                                             )
 
-    def test_get_list_of_two_workers(self):
+    def test_get_all_tasks(self):
         url = reverse('tasks-list')
-
         with self.assertNumQueries(2):
-            response = self.client.get(url)
+            self.client.get(url)
+
+    def test_get_task(self):
+        url = reverse('tasks-detail', args=(61,))
+        with self.assertNumQueries(2):
+            self.client.get(url)
+
+    def test_post_task(self):
+        url = reverse('tasks-list')
+        data = {
+            "title": "test_task",
+            'customer': 6
+        }
+
+        with self.assertNumQueries(3):
+            self.client.post(url, data=data)

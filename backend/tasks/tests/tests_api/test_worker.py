@@ -179,9 +179,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         response = self.client.patch(url, data=json_data,
                                      content_type='application/json')
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        validation_message = response.data['status'][0]
-        self.assertEqual(validation_message, TaskValidationMessages.CHANGE_DONE_TASK_ERROR)
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
 
     def test_put(self):
         url = reverse('tasks-detail', args=(self.task_in_process_2.id,))

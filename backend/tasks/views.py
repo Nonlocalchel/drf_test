@@ -30,10 +30,8 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     filterset_class = TaskFilter
     search_fields = ['title', 'status']
     permission_classes_by_action = {
-        'list': [IsAuthenticated],
-        'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
-        'update': [IsNotRunningTask & CustomerTaskAccessPermission],
-        'create': [IsSuperWorker | CustomerTaskAccessPermission]
+        'update': [IsNotRunningTask & IsCustomer],
+        'create': [IsSuperWorker | IsCustomer]
     }
 
     def get_queryset(self):
@@ -58,8 +56,8 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-        if user.check_user_type('customer'):
-            request.data['customer'] = user.customer.id
+        if user.check_user_type(User.UserType.CUSTOMER):
+            request.data[User.UserType.CUSTOMER] = user.customer.id
 
         return super().create(request, *args, **kwargs)
 
@@ -67,13 +65,13 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         raise MethodNotAllowed(request.method)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+            permission_classes=[IsWorker & IsNotRunningTask]) #& WorkerTaskAccessPermission
     def take_in_process(self, request, pk):
         request.data['worker'] = request.user.worker.id
         return self.update(request, partial=True)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+            permission_classes=[IsWorker & IsProcessedTask])
     def done(self, request, pk):
         request.data['status'] = Task.StatusType.DONE
         return self.update(request, partial=True)
