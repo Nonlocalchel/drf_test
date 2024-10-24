@@ -23,6 +23,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         super().setUpTestData()
         print('\nOptimization test:')
         cls.customer = Customer.objects.last()
+        cls.task_wait = Task.objects.filter(status=Task.StatusType.WAIT)[0]
 
     @classmethod
     def setUpTestUser(cls):
@@ -55,3 +56,9 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
         with self.assertNumQueries(3):
             self.client.post(url, data=data)
+
+    def test_patch_take_wait_task_in_process(self):
+        url = reverse('tasks-take-in-process', args=(self.task_wait.id,))
+
+        with self.assertNumQueries(3):
+            self.client.patch(url, content_type='application/json')

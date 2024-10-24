@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 from tasks.messages.permission_denied import TaskPermissionMessages
-from users.permissions import IsWorker, IsCustomer
 from .models import Task
 
 

@@ -4,7 +4,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
@@ -65,7 +64,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         raise MethodNotAllowed(request.method)
 
     @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & IsNotRunningTask]) #& WorkerTaskAccessPermission
+            permission_classes=[IsWorker & IsNotRunningTask])  # & WorkerTaskAccessPermission
     def take_in_process(self, request, pk):
         request.data['worker'] = request.user.worker.id
         return self.update(request, partial=True)
@@ -75,3 +74,4 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     def done(self, request, pk):
         request.data['status'] = Task.StatusType.DONE
         return self.update(request, partial=True)
+
