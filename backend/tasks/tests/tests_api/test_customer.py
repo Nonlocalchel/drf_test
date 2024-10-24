@@ -6,7 +6,7 @@ from rest_framework import status
 
 from tasks.models import Task
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from users.models import User, Worker
+from users.models import User, Worker, Customer
 
 
 class CustomerTaskAPITestCase(APITestCaseWithJWT):
