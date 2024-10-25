@@ -2,7 +2,7 @@ from http import HTTPMethod
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rest_framework.filters import SearchFilter
 
 from services.mixins.permissions import SelectPermissionByActionMixin
@@ -55,8 +55,8 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-        if user.check_user_type(User.UserType.CUSTOMER):
-            request.data[User.UserType.CUSTOMER] = user.customer.id
+        if user.check_user_type('customer'):
+            request.data['customer'] = user.customer.id
 
         return super().create(request, *args, **kwargs)
 

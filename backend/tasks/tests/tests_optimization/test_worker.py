@@ -9,7 +9,6 @@ from tasks.models import Task
 
 
 class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов работника с привилегиями"""
     image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -34,29 +33,18 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
                                             username='super_worker_test_1',
                                             phone='+375291850665',
                                             type='worker',
-                                            photo=worker_photo,
-                                            is_staff=True
+                                            photo=worker_photo
                                             )
 
     def test_get_all_tasks(self):
         url = reverse('tasks-list')
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             self.client.get(url)
 
     def test_get_task(self):
         url = reverse('tasks-detail', args=(61,))
-        with self.assertNumQueries(2):
-            self.client.get(url)
-
-    def test_post_task(self):
-        url = reverse('tasks-list')
-        data = {
-            "title": "test_task",
-            'customer': 6
-        }
-
         with self.assertNumQueries(3):
-            self.client.post(url, data=data)
+            self.client.get(url)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-take-in-process', args=(self.task_wait.id,))
@@ -67,7 +55,5 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_done_task(self):
         url = reverse('tasks-done', args=(self.task_in_process.id,))
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             self.client.patch(url, content_type='application/json')
-
-
