@@ -7,7 +7,7 @@ from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomerReadWorker
 
 
 class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
-    queryset = User.objects.all().select_related('worker').select_related('customer')
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['type']
@@ -16,3 +16,6 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
         'retrieve': [IsUserAccount | IsSuperWorker | IsSuperCustomerReadWorkers],
         'create': [IsSuperWorker]
     }
+
+    def get_queryset(self):
+        return self.queryset.select_related(User.UserType.CUSTOMER, User.UserType.WORKER)
