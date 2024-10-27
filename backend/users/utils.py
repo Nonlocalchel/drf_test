@@ -18,3 +18,7 @@ def figure_deleted_data(user_role: str | None) -> str:
 def get_auth_users_fields(related_name) -> list[str]:
     basic_user_filds = [field.name for field in User._meta.fields]
     return basic_user_filds + [related_name + '__id']
+
+
+def get_user_types() -> list:
+    return [user_type.value for user_type in User.UserType]
