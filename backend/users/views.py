@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRViewSet
 
@@ -18,4 +19,6 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
     }
 
     def get_queryset(self):
-        return self.queryset.select_related(User.UserType.CUSTOMER, User.UserType.WORKER)
+        # super().get_queryset()
+        types = [user_type.value for user_type in User.UserType]
+        return self.queryset.select_related(*types)

@@ -49,7 +49,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-take-in-process', args=(self.task_wait.id,))
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(4):
             self.client.patch(url, content_type='application/json')
 
     def test_done_task(self):

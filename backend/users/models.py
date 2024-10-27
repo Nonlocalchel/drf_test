@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -8,6 +8,13 @@ from users.validators import (
     validate_add_worker_data_to_user,
     validate_worker_photo
 )
+
+
+class ExtendedManager(UserManager):
+    def get_queryset(self, all=None):  # , all=None
+        types = [user_type.value for user_type in User.UserType]
+        fields = [(field.name) for field in User._meta.fields] + ['worker__id', 'customer__id']
+        return super().get_queryset().select_related(*types)  # .only(*fields)
 
 
 # Create your models here.
@@ -29,15 +36,17 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
             regex=r'^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$',
             message="Enter a valid registration number in the format ABC123.",
             code="invalid_registration",
-            ),
-        ],
-        unique=True,
-        null=True,
-        verbose_name="Номер телефона"
-    )
+        ),
+    ],
+                             unique=True,
+                             null=True,
+                             verbose_name="Номер телефона"
+                             )
 
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type
+
+    # objects = ExtendedManager()
 
 
 class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):

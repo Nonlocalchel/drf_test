@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.urls import reverse
-from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
 from services.tests_utils import get_temp_file
@@ -41,6 +40,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
     def test_get_all_users(self):
         url = reverse('users-list')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(0):
             self.client.get(url)
 

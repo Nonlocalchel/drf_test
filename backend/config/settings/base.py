@@ -151,7 +151,8 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "tasks.exceptions.django_error_handler",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authenticate.Authenticate',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
