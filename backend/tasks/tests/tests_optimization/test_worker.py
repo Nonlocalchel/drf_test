@@ -8,7 +8,7 @@ from users.models import User, Customer
 from tasks.models import Task
 
 
-class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
+class WorkerOptimizationTestCase(APITestCaseWithJWT):
     image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -20,7 +20,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     def setUpTestData(cls):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
-        print('\nSuper-worker optimization test:')
+        print('\nWorker optimization test:')
         cls.customer = Customer.objects.last()
         cls.task_wait = Task.objects.filter(status=Task.StatusType.WAIT)[0]
         cls.task_in_process = Task.objects.filter(status=Task.StatusType.IN_PROCESS)[0]
@@ -38,12 +38,12 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
     def test_get_all_tasks(self):
         url = reverse('tasks-list')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.client.get(url)
 
     def test_get_task(self):
         url = reverse('tasks-detail', args=(61,))
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.client.get(url)
 
     def test_patch_take_wait_task_in_process(self):
@@ -55,5 +55,5 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_done_task(self):
         url = reverse('tasks-done', args=(self.task_in_process.id,))
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.client.patch(url, content_type='application/json')

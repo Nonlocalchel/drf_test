@@ -6,7 +6,7 @@ from services.APITestCaseWithJWT import APITestCaseWithJWT
 from users.models import User
 
 
-class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
+class CustomerOptimizationTestCase(APITestCaseWithJWT):
     """Тестирование запросов работника с привилегиями"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -26,12 +26,12 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
     def test_get_all_tasks(self):
         url = reverse('tasks-list')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.client.get(url)
 
     def test_get_task(self):
         url = reverse('tasks-detail', args=(61,))
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.client.get(url)
 
     def test_post_task(self):
@@ -41,6 +41,6 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         }
         json_data = json.dumps(data)
 
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             self.client.post(url, data=json_data,
                              content_type='application/json')

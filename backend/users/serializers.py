@@ -37,7 +37,8 @@ class UserSerializer(WritableNestedModelSerializer):
         )
 
     def create(self, validated_data):
-        return clean_user_input_data(validated_data)
+        clean_user_input_data(validated_data)
+        return super().create(validated_data)
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

@@ -5,7 +5,7 @@ def clean_user_input_data(input_validated_data: dict) -> dict:
     user_type = input_validated_data.get('type')
     deleted_key = figure_deleted_data(user_type)
     input_validated_data.pop(deleted_key, None)
-    return super().create(input_validated_data)
+    return input_validated_data
 
 
 def figure_deleted_data(user_role: str | None) -> str:

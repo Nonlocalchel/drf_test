@@ -40,6 +40,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
     def test_get_all_users(self):
         url = reverse('users-list')
 
-        with self.assertNumQueries(0):
+        with self.assertNumQueries(2):
             self.client.get(url)
 
