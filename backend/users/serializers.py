@@ -1,8 +1,9 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import figure_deleted_data
+from .utils import clean_user_input_data
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -36,7 +37,12 @@ class UserSerializer(WritableNestedModelSerializer):
         )
 
     def create(self, validated_data):
-        user_type = validated_data.get('type')
-        deleted_key = figure_deleted_data(user_type)
-        validated_data.pop(deleted_key, None)
-        return super().create(validated_data)
+        return clean_user_input_data(validated_data)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['type'] = user.type
+        return token

@@ -10,13 +10,6 @@ from users.validators import (
 )
 
 
-class ExtendedManager(UserManager):
-    def get_queryset(self, all=None):  # , all=None
-        types = [user_type.value for user_type in User.UserType]
-        fields = [(field.name) for field in User._meta.fields] + ['worker__id', 'customer__id']
-        return super().get_queryset().select_related(*types)  # .only(*fields)
-
-
 # Create your models here.
 class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
     validators = [validate_change_user_type, validate_worker_photo]
@@ -45,8 +38,6 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
 
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type
-
-    # objects = ExtendedManager()
 
 
 class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):

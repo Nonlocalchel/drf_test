@@ -12,12 +12,13 @@ class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
         Attempts to find and return a user using the given validated token.
         """
         try:
-            user_id = validated_token[api_settings.USER_ID_CLAIM]
+            payload = validated_token.payload
+            user_id = payload.pop(api_settings.USER_ID_CLAIM)
         except KeyError:
             raise InvalidToken(_("Token contained no recognizable user identification"))
 
         try:
-            user = self.get_user_orm_fetch(user_id)
+            user = self.get_user_orm_fetch(user_id, payload)
         except self.user_model.DoesNotExist:
             raise AuthenticationFailed(_("User not found"), code="user_not_found")
 
@@ -34,5 +35,5 @@ class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
 
         return user
 
-    def get_user_orm_fetch(self, user_id) -> AuthUser:
+    def get_user_orm_fetch(self, user_id, payload) -> AuthUser:
         return self.user_model.objects.get(**{api_settings.USER_ID_FIELD: user_id})
