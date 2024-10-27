@@ -1,3 +1,6 @@
+from typing import Optional, Tuple
+
+from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication, AuthUser
 from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken
@@ -7,6 +10,12 @@ from rest_framework_simplejwt.utils import get_md5_hash_password
 
 
 class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
+    request_path = None
+
+    def authenticate(self, request: Request) -> Optional[Tuple[AuthUser, Token]]:
+        self.request_path = request.path
+        return super().authenticate(request)
+
     def get_user(self, validated_token: Token) -> AuthUser:
         """
         Attempts to find and return a user using the given validated token.

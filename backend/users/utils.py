@@ -15,9 +15,10 @@ def figure_deleted_data(user_role: str | None) -> str:
     return User.UserType.WORKER
 
 
-def get_auth_users_fields(related_name) -> list[str]:
+def get_auth_users_fields(related_names) -> list[str]:
     basic_user_filds = [field.name for field in User._meta.fields]
-    return basic_user_filds + [related_name + '__id']
+    extended_fields = [related_name + '__id' for related_name in related_names]
+    return basic_user_filds + extended_fields
 
 
 def get_user_types() -> list:

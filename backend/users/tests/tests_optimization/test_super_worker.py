@@ -46,5 +46,5 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
     def test_get_user_account(self):
         url = reverse('users-detail', args=(self.user.id,))
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1):
             self.client.get(url)
