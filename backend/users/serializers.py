@@ -26,14 +26,20 @@ class UserSerializer(WritableNestedModelSerializer):
     customer = CustomerSerializer(allow_null=True, default=None)
 
     def get_fields(self):
+        """Eliminates unnecessary profile data requests"""
         fields = super().get_fields()
-        instance = self.instance
+        current_user_type = None
+
         action = self._context['view'].action
         if action != 'list':
             user_types = get_user_types()
-            create_user_type = instance.type
+            if action == 'create':
+                current_user_type = self._kwargs['data']['type']
+            else:
+                current_user_type = self.instance.type #isnt works
+
             for user_type in user_types:
-                if user_type == create_user_type:
+                if current_user_type == user_type:
                     continue
 
                 fields.pop(user_type)

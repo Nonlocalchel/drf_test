@@ -58,27 +58,27 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         with self.assertNumQueries(2):
             self.client.get(url)
 
-    # def test_create_user(self):
-    #     url = reverse('users-list')
-    #     data = {
-    #         'username': 'new_customer',
-    #         'phone': '341 8 7698-1576-189 9888 55',
-    #         'type': 'customer',
-    #         'worker': {
-    #             'exp': 922337203600,
-    #             'speciality': 'string',
-    #             'education': 'string'
-    #         },
-    #         'customer': {
-    #             'discount': 9223372034776000,
-    #             'legal': 'entity'
-    #         },
-    #         'password': 'string'
-    #     }
-    #
-    #     with self.assertNumQueries(3):
-    #         response = self.client.post(url, data=data, format='json')
-    #         print(response.data)
+    def test_create_user(self):
+        url = reverse('users-list')
+        data = {
+            'username': 'new_customer',
+            'phone': '341 8 7698-1576-189 9888 55',
+            'type': 'customer',
+            'worker': {
+                'exp': 922337203600,
+                'speciality': 'string',
+                'education': 'string'
+            },
+            'customer': {
+                'discount': 9223372034776000,
+                'legal': 'entity'
+            },
+            'password': 'string'
+        }
+
+        with self.assertNumQueries(3):
+            response = self.client.post(url, data=data, format='json')
+            print(response.data)
 
 '''
 {

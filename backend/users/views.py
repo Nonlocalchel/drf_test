@@ -6,7 +6,7 @@ from services.viewsets import CRViewSet
 
 from .serializers import *
 from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomerReadWorkers
-from .utils import get_user_types, format_data_dict
+from .utils import get_user_types
 
 
 class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
@@ -32,8 +32,3 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
 
         serializer = self.get_serializer(user)
         return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        # format_data_dict(data)
-        return super().create(request, *args, **kwargs)
