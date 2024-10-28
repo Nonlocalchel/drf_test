@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
+from .utils import get_user_types
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -23,6 +24,21 @@ class UserSerializer(WritableNestedModelSerializer):
     worker = WorkerSerializer(allow_null=True, default=None)
 
     customer = CustomerSerializer(allow_null=True, default=None)
+
+    def get_fields(self):
+        fields = super().get_fields()
+        instance = self.instance
+        action = self._context['view'].action
+        if action != 'list':
+            user_types = get_user_types()
+            create_user_type = instance.type
+            for user_type in user_types:
+                if user_type == create_user_type:
+                    continue
+
+                fields.pop(user_type)
+
+        return fields
 
     class Meta:
         model = User

@@ -46,3 +46,4 @@ class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
 
     def get_user_orm_fetch(self, user_id, payload) -> AuthUser:
         return self.user_model.objects.get(**{api_settings.USER_ID_FIELD: user_id})
+

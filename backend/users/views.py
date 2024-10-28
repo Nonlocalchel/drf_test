@@ -25,13 +25,15 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
         return self.queryset.select_related(*types)
 
     def retrieve(self, request, *args, **kwargs):
+        current_user_id = self.kwargs['pk']
         user = request.user
+        if current_user_id != str(user.id):
+            return super().retrieve(request, *args, **kwargs)
+
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         data = self.request.data
-        format_data_dict(data)
-
-        # self.request.data['customer'] = {'discount': 9223372034776000, 'legal': 'entity'}
+        # format_data_dict(data)
         return super().create(request, *args, **kwargs)
