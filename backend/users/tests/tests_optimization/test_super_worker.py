@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -48,3 +50,43 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
 
         with self.assertNumQueries(1):
             self.client.get(url)
+
+    def test_create_user(self):
+        url = reverse('users-list')
+        data = {
+            'username': 'new_customer',
+            'phone': '341 8 7698-1576-189 9888 55',
+            'type': 'customer',
+            # 'customer': {
+            #     'discount': 9223372034776000,
+            #     'legal': 'entity'
+            # },
+            'password': 'string'
+        }
+
+        with self.assertNumQueries(3):
+            self.client.post(url, data=data, format='json')
+
+
+'''
+{
+  "username": "enAbzk2Eojjsb0nQhjOWVVs+Vafjm7omrhqM21rINfHEk",
+  "phone": "341 8 7698-1576-189 9888 55",
+  "is_staff": true,
+  "type": "customer",
+  "email": "user@example.com",
+  "first_name": "string",
+  "last_name": "string",
+  "is_superuser": true,
+  "worker": {
+    "exp": 9223372036854776000,
+    "speciality": "string",
+    "education": "string"
+  },
+  "customer": {
+    "discount": 9223372036854776000,
+    "legal": "entity"
+  },
+  "password": "string"
+}
+'''

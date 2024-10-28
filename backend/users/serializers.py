@@ -3,7 +3,6 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import clean_user_input_data
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -35,10 +34,6 @@ class UserSerializer(WritableNestedModelSerializer):
             'worker', 'customer', 'photo',
             'password'
         )
-
-    def create(self, validated_data):
-        clean_user_input_data(validated_data)
-        return super().create(validated_data)
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

@@ -52,7 +52,8 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         url = reverse('users-list')
         data = {
             "username": "test_user_hz",
-            'password': 'super_ps'
+            'phone': '+23424904920',
+            'password': 'super_ps',
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

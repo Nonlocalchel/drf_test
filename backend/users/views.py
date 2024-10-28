@@ -6,7 +6,7 @@ from services.viewsets import CRViewSet
 
 from .serializers import *
 from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomerReadWorkers
-from .utils import get_user_types
+from .utils import get_user_types, format_data_dict
 
 
 class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
@@ -25,13 +25,13 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
         return self.queryset.select_related(*types)
 
     def retrieve(self, request, *args, **kwargs):
-        # user = request.user.prefetch_related('worker__exp')
-        # user = User.objects.all(request.user)
-        # req_user =
         user = request.user
-        # user = User.objects.get(id=re)
-        # user['customer'] = customer_data
-        # print(request)
-        # return super().retrieve(request, *args, **kwargs)
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        data = self.request.data
+        format_data_dict(data)
+
+        # self.request.data['customer'] = {'discount': 9223372034776000, 'legal': 'entity'}
+        return super().create(request, *args, **kwargs)

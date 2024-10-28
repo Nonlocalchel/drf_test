@@ -55,7 +55,7 @@ class SuperWorkerOptimizationTestCase(APITestCaseWithJWT):
             'customer': 6
         }
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(0):
             self.client.post(url, data=data)
 
     def test_patch_take_wait_task_in_process(self):
