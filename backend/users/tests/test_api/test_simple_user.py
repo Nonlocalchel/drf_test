@@ -7,7 +7,7 @@ from users.models import User
 
 
 class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов данных пользователей заказчика"""
+    """Testing customer user data requests"""
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
         'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
@@ -31,6 +31,7 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         super().setUp()
 
     def test_api_jwt(self):
+        """Authorized with user jwt"""
         url = reverse('token_obtain_pair')
         auth = self.client.post(url,
                                 {'username': self.user.username,
@@ -40,6 +41,7 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_create_user(self):
+        """Create user"""
         url = reverse('users-list')
         data = {
             "username": "test_user_hz",
@@ -50,11 +52,13 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.data['detail'], str(UserPermissionMessages.SUPER_WORKER_ACCESS))
 
     def test_get_all_users(self):
+        """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_worker_users(self):
+        """Get users list with type worker"""
         data = {
             'type': User.UserType.WORKER
         }
@@ -63,6 +67,7 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_customer_users(self):
+        """Get users list with type customer"""
         data = {
             'type': User.UserType.CUSTOMER
         }
@@ -71,11 +76,13 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_user_data(self):
+        """Get user"""
         url = reverse('users-detail', args=(self.user.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_other_user_data(self):
+        """Get other user"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
