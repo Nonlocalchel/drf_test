@@ -8,6 +8,7 @@ from .models import *
 
 
 class WorkerInline(admin.StackedInline):
+    """User worker profile data view on admin panel"""
     verbose_name = "Worker"
     verbose_name_plural = verbose_name
     can_delete = False
@@ -15,6 +16,7 @@ class WorkerInline(admin.StackedInline):
 
 
 class CustomerInline(admin.StackedInline):
+    """User customer profile data view on admin panel"""
     verbose_name = "Consumer"
     verbose_name_plural = verbose_name
     can_delete = False
@@ -23,6 +25,7 @@ class CustomerInline(admin.StackedInline):
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
+    """User view on admin panel"""
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
@@ -43,6 +46,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
     def get_inline_instances(self, request, obj=None):
+        """Hide unnecessary profile data"""
         if obj.type == User.UserType.CUSTOMER:
             return [CustomerInline(self.model, self.admin_site)]
 

@@ -7,4 +7,5 @@ class UsersConfig(AppConfig):
     name = 'users'
 
     def ready(self):
+        """Launch signals"""
         from users import signals

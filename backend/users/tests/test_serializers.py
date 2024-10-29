@@ -10,7 +10,7 @@ from users.utils import format_repr
 
 
 class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
-    """Тестирование сериализаторов приложения"""
+    """Testing user app serializer"""
 
     image_creator = ImageCreator
     expected_data_path = "users/tests/data/expected_data.json"
@@ -32,6 +32,7 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
             self.setUpTestData()
 
     def test_read_all_users_data_serializer(self):
+        """Get all users"""
         queryset = User.objects.all()
         serializer = UserSerializer(queryset, many=True)
         serialized_data = serializer.data
@@ -40,6 +41,7 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
         self.assertEqual(expected_data, serialized_data)
 
     def test_read_one_user_data_serializer(self):
+        """Get one user data(retrieve)"""
         instance = User.objects.get(worker=self.worker.id)
         serializer = UserSerializer(instance)
         serialized_data = serializer.data
@@ -47,6 +49,7 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
         self.assertEqual(serialized_data, expected_data[4])
 
     def test_create_user_serializer(self):
+        """Create user data"""
         data = {
             'username': 'customer_21',
             'phone': '+375 29 485 06 33',

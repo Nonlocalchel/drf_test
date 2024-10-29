@@ -10,6 +10,7 @@ from .utils import get_user_types
 
 
 class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
+    """Users app view"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
@@ -21,10 +22,12 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
     }
 
     def get_queryset(self):
+        """Optimize get users queryset"""
         types = get_user_types()
         return self.queryset.select_related(*types)
 
     def retrieve(self, request, *args, **kwargs):
+        """Optimize get user account"""
         current_user_id = self.kwargs['pk']
         user = request.user
         if current_user_id != str(user.id):

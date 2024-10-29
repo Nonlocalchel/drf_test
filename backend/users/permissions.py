@@ -5,6 +5,7 @@ from .models import User
 
 
 class IsWorker(permissions.BasePermission):
+    """Checks that the user is a worker"""
     message = UserPermissionMessages.WORKER_ACCESS
 
     def has_permission(self, request, view):
@@ -16,6 +17,7 @@ class IsWorker(permissions.BasePermission):
 
 
 class IsCustomer(permissions.BasePermission):
+    """Checks that the user is a customer"""
     message = UserPermissionMessages.CUSTOMER_ACCESS
 
     def has_permission(self, request, view):
@@ -27,6 +29,7 @@ class IsCustomer(permissions.BasePermission):
 
 
 class IsSuperCustomer(permissions.BasePermission):
+    """Checks that the user is a customer with extra permissions"""
     message = UserPermissionMessages.SUPER_CUSTOMER_ACCESS
 
     def has_permission(self, request, view):
@@ -39,6 +42,7 @@ class IsSuperCustomer(permissions.BasePermission):
 
 
 class IsSuperWorker(IsWorker):
+    """Checks that the user is a worker with extra permissions"""
     message = UserPermissionMessages.SUPER_WORKER_ACCESS
 
     def has_permission(self, request, view):
@@ -51,6 +55,7 @@ class IsSuperWorker(IsWorker):
 
 
 class IsUserAccount(permissions.BasePermission):
+    """Checks that is object is a user account"""
     def has_object_permission(self, request, view, obj):
         user = request.user
         if user.is_anonymous:
@@ -60,6 +65,7 @@ class IsUserAccount(permissions.BasePermission):
 
 
 class IsSuperCustomerReadWorkers(IsSuperCustomer):
+    """Checks that the user is a customer with extra permissions is going to get user workers data"""
     def has_permission(self, request, view):
         user_is_super_customer = super().has_permission(request, view)
         if not user_is_super_customer:

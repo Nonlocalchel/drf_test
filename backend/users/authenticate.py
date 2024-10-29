@@ -5,8 +5,10 @@ from users.utils import get_auth_users_fields, get_user_types
 
 
 class Authenticate(JWTAuthenticationWithCustomUserGet):
+    """Task service authenticate class(to extend get_user_orm_fetch method)"""
 
     def get_user_orm_fetch(self, user_id, payload) -> AuthUser:
+        """Override method for optimize(get additional fields to orm fetch depending on request)"""
         user_type = []
         fields = []
 

@@ -6,7 +6,7 @@ from .models import *
 
 @receiver(pre_save, sender=User)
 def create_profile(sender, instance, **kwargs):
-    """Шифрование пароля при его изменении"""
+    """Encrypting a password when creating or changing it"""
     user_password = instance.password
     if user_password.startswith('pbkdf2_sha256'):
         return
@@ -16,6 +16,7 @@ def create_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def create_special_profile(sender, instance, created, **kwargs):
+    """Create professional data after save user"""
     if not created:
         return
 
