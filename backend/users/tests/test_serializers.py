@@ -6,6 +6,7 @@ from services.tests_utils import get_temp_file
 from services.ImageWorker import ImageCreator
 from users.models import Worker, Customer, User
 from users.serializers import UserSerializer
+from users.utils import format_repr
 
 
 class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
@@ -66,4 +67,5 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
         serializer_post = UserSerializer(data=data)
         serializer_post.is_valid(raise_exception=True)
         del data['password']
+        data = format_repr(data, User.UserType.CUSTOMER)
         self.assertEqual(serializer_post.data, data)

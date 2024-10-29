@@ -14,14 +14,14 @@ def create_profile(sender, instance, **kwargs):
     instance.set_password(user_password)
 
 
-# @receiver(post_save, sender=User)
-# def create_special_profile(sender, instance, created, **kwargs):
-#     if not created:
-#         return
-#
-#     if instance.type == User.UserType.CUSTOMER:
-#         customer = Customer.objects.create(user=instance)
-#         customer.save()
-#     elif instance.type == User.UserType.WORKER:
-#         worker = Worker.objects.create(user=instance)
-#         worker.save()
+@receiver(post_save, sender=User)
+def create_special_profile(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    if instance.type == User.UserType.CUSTOMER:
+        customer = Customer(user=instance) #Customer.objects.create
+        customer.save()
+    elif instance.type == User.UserType.WORKER:
+        worker = Worker(user=instance) #Worker.objects.create
+        worker.save()

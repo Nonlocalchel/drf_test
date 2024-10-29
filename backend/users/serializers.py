@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import get_user_types
+from .utils import fix_serializer_fields, format_repr
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -25,27 +25,6 @@ class UserSerializer(WritableNestedModelSerializer):
 
     customer = CustomerSerializer(allow_null=True, default=None)
 
-    def get_fields(self):
-        """Eliminates unnecessary profile data requests"""
-        fields = super().get_fields()
-        current_user_type = None
-
-        action = self._context['view'].action
-        if action != 'list':
-            user_types = get_user_types()
-            if action == 'create':
-                current_user_type = self._kwargs['data']['type']
-            else:
-                current_user_type = self.instance.type #isnt works
-
-            for user_type in user_types:
-                if current_user_type == user_type:
-                    continue
-
-                fields.pop(user_type)
-
-        return fields
-
     class Meta:
         model = User
         fields = (
@@ -56,6 +35,23 @@ class UserSerializer(WritableNestedModelSerializer):
             'worker', 'customer', 'photo',
             'password'
         )
+
+    def get_fields(self):
+        """Eliminates unnecessary profile data requests"""
+        fields = super().get_fields()
+        instance = self.instance
+        if instance is None:
+            fixed_fields = fix_serializer_fields(instance, fields, data=self.initial_data)
+        else:
+            fixed_fields = fix_serializer_fields(instance, fields)
+
+        return fixed_fields
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user_type = instance.type if not isinstance(instance, dict) else instance.get('type')
+        formatted_representation = format_repr(representation, user_type)
+        return formatted_representation
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

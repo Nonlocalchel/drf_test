@@ -76,29 +76,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             'password': 'string'
         }
 
-        with self.assertNumQueries(3):
-            response = self.client.post(url, data=data, format='json')
-            print(response.data)
+        with self.assertNumQueries(7):
+            self.client.post(url, data=data, format='json')
 
-'''
-{
-  "username": "enAbzk2Eojjsb0nQhjOWVVs+Vafjm7omrhqM21rINfHEk",
-  "phone": "341 8 7698-1576-189 9888 55",
-  "is_staff": true,
-  "type": "customer",
-  "email": "user@example.com",
-  "first_name": "string",
-  "last_name": "string",
-  "is_superuser": true,
-  "worker": {
-    "exp": 9223372036854776000,
-    "speciality": "string",
-    "education": "string"
-  },
-  "customer": {
-    "discount": 9223372036854776000,
-    "legal": "entity"
-  },
-  "password": "string"
-}
-'''
