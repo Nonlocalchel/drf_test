@@ -56,22 +56,13 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_get_worker_users(self):
-        """Get users list with type worker"""
-        data = {
-            'type': User.UserType.WORKER
-        }
-        url = reverse('users-list')
-        response = self.client.get(url, data=data)
         users_list = response.data
         self.assertEqual(len(users_list), 2)
 
         for user in users_list:
             with self.subTest(user=user):
                 user_type = user['type']
-                self.assertEqual(user_type, data['type'])
+                self.assertEqual(user_type, User.UserType.WORKER)
 
     def test_get_customer_users(self):
         """Get users list with type customer"""
@@ -80,7 +71,7 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         }
         url = reverse('users-list')
         response = self.client.get(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, [])
 
     def test_get_user_data(self):
         """Get user"""
@@ -92,10 +83,10 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         """Get other user with type customer"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_worker_user(self):
         """Get other user with type worker"""
         url = reverse('users-detail', args=(56,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN) #?
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

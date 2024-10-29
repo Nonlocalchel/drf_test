@@ -85,4 +85,4 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         """Get other user"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -62,14 +62,3 @@ class IsUserAccount(permissions.BasePermission):
             return False
 
         return obj == user
-
-
-class IsSuperCustomerReadWorkers(IsSuperCustomer):
-    """Checks that the user is a customer with extra permissions is going to get user workers data"""
-    def has_permission(self, request, view):
-        user_is_super_customer = super().has_permission(request, view)
-        if not user_is_super_customer:
-            return False
-
-        users_query_type = request.GET.get('type')
-        return users_query_type == User.UserType.WORKER

@@ -9,7 +9,7 @@ def filter_user_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
         if user.check_user_type(User.UserType.WORKER):
             return default_queryset
 
-        User.objects.filter(type=User.UserType.WORKER)
+        return User.objects.filter(type=User.UserType.WORKER)
 
     return User.objects.none()
 

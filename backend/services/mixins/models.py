@@ -30,15 +30,16 @@ class SelfValidationMixin(SelfCleaningMixin):
 class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
     """Сохраняет пердедущие значения полей экземпляра модели"""
 
-    def get_model_fields_names(self) -> list:
+    @classmethod
+    def get_model_fields(cls) -> list:
         """Get fields of model"""
-        return [field.name for field in self._meta.fields]
+        return list(cls._meta.fields)
 
     def __init__(self, *args, **kwargs):
         super(WithOriginalMixin, self).__init__(*args, **kwargs)
         # Store initial field values into self._original
         self._original = {}
-        for field in self._meta.fields:
+        for field in self.get_model_fields():
             try:
                 # for foreign keys save in _original field_id instead of field name
                 # this is for reducing database hits
@@ -52,7 +53,7 @@ class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
 
     def _get_changed_fields(self):
         changed = []
-        for field in self._meta.fields:
+        for field in self.get_model_fields():
             if hasattr(self, field.name + '_id'):
                 fname = field.name + '_id'
             else:
