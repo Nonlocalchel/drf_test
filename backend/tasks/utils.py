@@ -1,10 +1,10 @@
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from tasks.models import Task
 from users.models import User
 
 
-def filter_user_queryset(user: User, default_queryset: Task) -> Task:
+def filter_task_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
     if user.check_user_type(User.UserType.WORKER):
         if user.is_staff:
             return default_queryset

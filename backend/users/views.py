@@ -23,6 +23,7 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
 
     def get_queryset(self):
         """Optimize get users queryset"""
+        # queys
         types = get_user_types()
         return self.queryset.select_related(*types)
 

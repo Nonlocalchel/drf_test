@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
-from .utils import filter_user_queryset
+from .utils import filter_task_queryset
 from .filters import TaskFilter
 from users.permissions import *
 from .permissions import *
@@ -39,7 +39,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
             return Task.objects.none()
 
         user = self.request.user
-        return filter_user_queryset(user, self.queryset)
+        return filter_task_queryset(user, self.queryset)
 
     def get_serializer_class(self):
         serializer_classes_by_method = {
