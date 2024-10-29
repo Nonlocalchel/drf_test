@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import fix_serializer_fields, format_repr
+from .utils import fix_serializer_fields, format_repr, get_instance_type
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -49,7 +49,7 @@ class UserSerializer(WritableNestedModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        user_type = instance.type if not isinstance(instance, dict) else instance.get('type')
+        user_type = get_instance_type(instance)
         formatted_representation = format_repr(representation, user_type)
         return formatted_representation
 
