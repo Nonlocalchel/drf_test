@@ -3,7 +3,7 @@ import copy
 from django.db.models import QuerySet
 
 from users.models import User
-
+from users.utils.auth_utils import get_user_types
 
 
 def fix_serializer_fields(instance, fields: dict, data: dict | None = None) -> dict:

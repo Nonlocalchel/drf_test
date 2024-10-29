@@ -30,6 +30,10 @@ class SelfValidationMixin(SelfCleaningMixin):
 class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
     """Сохраняет пердедущие значения полей экземпляра модели"""
 
+    def get_model_fields_names(self) -> list:
+        """Get fields of model"""
+        return [field.name for field in self._meta.fields]
+
     def __init__(self, *args, **kwargs):
         super(WithOriginalMixin, self).__init__(*args, **kwargs)
         # Store initial field values into self._original

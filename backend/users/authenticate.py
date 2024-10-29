@@ -1,7 +1,6 @@
 from services.JWTAuthenticationWithCustomUserGet import JWTAuthenticationWithCustomUserGet, AuthUser, \
     api_settings
-
-from users.utils import get_auth_users_fields, get_user_types
+from users.utils.auth_utils import get_auth_users_fields, get_user_types
 
 
 class Authenticate(JWTAuthenticationWithCustomUserGet):

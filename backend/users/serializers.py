@@ -3,7 +3,10 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import fix_serializer_fields, format_repr, get_instance_type
+from .utils.serializer_utils import fix_serializer_fields, get_instance_type, format_repr
+
+
+# from .utils import fix_serializer_fields, format_repr, get_instance_type
 
 
 class WorkerSerializer(serializers.ModelSerializer):
