@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 from django.urls import reverse
 
@@ -10,7 +8,7 @@ from users.models import User
 
 
 class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов данных пользователей работника с extra правами"""
+    """Testing api worker with extra permission optimization"""
     image_creator = ImageCreator
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',

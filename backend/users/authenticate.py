@@ -1,6 +1,6 @@
 from services.JWTAuthenticationWithCustomUserGet import JWTAuthenticationWithCustomUserGet, AuthUser, \
     api_settings
-from users.utils.auth_utils import get_auth_users_fields, get_user_types
+from users.utils.auth_utils import get_auth_users_fields
 
 
 class Authenticate(JWTAuthenticationWithCustomUserGet):
@@ -18,9 +18,6 @@ class Authenticate(JWTAuthenticationWithCustomUserGet):
 
         elif str(user_id) == path_elements[-1]:
             user_type = [payload['type']]
-
-        elif str(user_id) in path_elements:
-            user_type = [*get_user_types()]
 
         user_manager = self.user_model.objects
         user_fetch = user_manager.select_related(*user_type).only(*fields)
