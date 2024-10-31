@@ -129,7 +129,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
     def test_get_detail_other_worker(self):
         url = reverse('tasks-detail', args=(27,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_take_wait_task_in_process(self):
         url = reverse('tasks-take-in-process', args=(self.task.id,))

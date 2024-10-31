@@ -29,8 +29,9 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     filterset_class = TaskFilter
     search_fields = ['title', 'status']
     permission_classes_by_action = {
-        'update': [IsNotRunningTask & IsCustomer],
-        'create': [IsSuperWorker | IsCustomer]
+        'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
+        'update': [IsNotRunningTask & CustomerTaskAccessPermission],
+        'create': [IsSuperWorker | CustomerTaskAccessPermission]
     }
 
     def get_queryset(self):
@@ -38,8 +39,12 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
             # queryset just for schema generation metadata
             return Task.objects.none()
 
-        user = self.request.user
-        return filter_task_queryset(user, self.queryset)
+        queryset = self.queryset
+        if self.action == 'list':
+            user = self.request.user
+            queryset = filter_task_queryset(user, self.queryset)
+
+        return queryset
 
     def get_serializer_class(self):
         serializer_classes_by_method = {
@@ -72,4 +77,3 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     def done(self, request, pk):
         done_task(request.data)
         return self.update(request, partial=True)
-
