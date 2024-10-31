@@ -3,11 +3,9 @@ from rest_framework import status
 
 from rest_framework.test import APITestCase
 
-from tasks.models import Task
-
 
 class AnonimusAPITestCase(APITestCase):
-    """Тестирование запросов данных пользователей не авторизованных пользователей"""
+    """Testing user data requests for unauthorized users"""
 
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -20,6 +18,7 @@ class AnonimusAPITestCase(APITestCase):
         print('\nAnonimus user test:')
 
     def test_api_jwt(self):
+        """Authorized with user jwt"""
         url = reverse('token_obtain_pair')
         auth_response = self.client.post(url,
                                          {'username': 'vasia',
@@ -29,11 +28,13 @@ class AnonimusAPITestCase(APITestCase):
         self.assertEqual(auth_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_list(self):
+        """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_user(self):
+        """Create user"""
         url = reverse('users-list')
         data = {
             "username": "test_user_hz",

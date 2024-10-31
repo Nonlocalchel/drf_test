@@ -1,23 +1,29 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
-from .utils import figure_deleted_data
+from .utils.serializer_utils import fix_serializer_fields, get_instance_type, format_repr
 
 
 class WorkerSerializer(serializers.ModelSerializer):
+    """Serialize nested profile data for worker"""
+
     class Meta:
         model = Worker
         fields = ['pk', 'exp', 'speciality', 'education']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    """Serialize nested profile data for worker"""
+
     class Meta:
         model = Customer
         fields = ['pk', 'discount', 'legal']
 
 
 class UserSerializer(WritableNestedModelSerializer):
+    """User serializer class"""
     password = serializers.CharField(write_only=True)
 
     worker = WorkerSerializer(allow_null=True, default=None)
@@ -35,8 +41,31 @@ class UserSerializer(WritableNestedModelSerializer):
             'password'
         )
 
-    def create(self, validated_data):
-        user_type = validated_data.get('type')
-        deleted_key = figure_deleted_data(user_type)
-        validated_data.pop(deleted_key, None)
-        return super().create(validated_data)
+    def get_fields(self):
+        """Remove unnecessary professional data fields(for remove unnecessary requests from db)"""
+        fields = super().get_fields()
+        instance = self.instance
+        if instance is None:
+            fixed_fields = fix_serializer_fields(instance, fields, data=self.initial_data)
+        else:
+            fixed_fields = fix_serializer_fields(instance, fields)
+
+        return fixed_fields
+
+    def to_representation(self, instance):
+        """Remove unnecessary fields and add professional_data field"""
+        representation = super().to_representation(instance)
+        user_type = get_instance_type(instance)
+        formatted_representation = format_repr(representation, user_type)
+        return formatted_representation
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Override class for extend data on payload"""
+
+    @classmethod
+    def get_token(cls, user):
+        """Add user type field to payload"""
+        token = super().get_token(user)
+        token['type'] = user.type
+        return token

@@ -6,7 +6,7 @@ from rest_framework import status
 
 from tasks.models import Task
 from services.APITestCaseWithJWT import APITestCaseWithJWT
-from users.models import User, Worker
+from users.models import User, Worker, Customer
 
 
 class CustomerTaskAPITestCase(APITestCaseWithJWT):
@@ -115,7 +115,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
     def test_get_detail_other_customer_task(self):
         url = reverse('tasks-detail', args=(61,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_task(self):
         url = reverse('tasks-take-in-process', args=(self.task,))

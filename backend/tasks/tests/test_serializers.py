@@ -11,7 +11,7 @@ from users.models import Worker, Customer
 
 
 class SerializerTestCase(TestCase):
-    """Тестирование сериализаторов приложения"""
+    """Testing task app serializer"""
 
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -34,6 +34,7 @@ class SerializerTestCase(TestCase):
             self.setUpTestData()
 
     def test_read_serializer(self):
+        """Get one task data(retrieve)"""
         instance = Task.objects.filter(id=self.waiting_task_1.id)[0]
         serializer = TaskReadSerializer(instance)
         serialized_data = serializer.data
@@ -46,6 +47,7 @@ class SerializerTestCase(TestCase):
         self.assertEqual(serialized_data, expected_data)
 
     def test_create_serializer(self):
+        """Create task data"""
         data = {
             "title": "test_task",
             'customer': self.customer.id
@@ -61,6 +63,7 @@ class SerializerTestCase(TestCase):
         self.assertEqual(serializer.data, expected_data)
 
     def test_update_serializer(self):
+        """Update(put) task data"""
         instance = Task.objects.filter(id=self.waiting_task_2.id)[0]
         data = {'title': 'new_title'}
         serializer = TaskUpdateSerializer(instance, data=data)
@@ -78,6 +81,7 @@ class SerializerTestCase(TestCase):
         self.assertEqual(serialized_data, expected_data)
 
     def test_partial_update_serializer(self):
+        """Partial update(patch) task data"""
         instance = Task.objects.filter(id=self.waiting_task_3.id)[0]
         data = {
             'status': 'in_process',

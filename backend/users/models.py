@@ -12,6 +12,7 @@ from users.validators import (
 
 # Create your models here.
 class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
+    """User model"""
     validators = [validate_change_user_type, validate_worker_photo]
 
     class Meta:
@@ -19,6 +20,7 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
         verbose_name_plural = "Пользователи"
 
     class UserType(models.TextChoices):
+        """User types Enum"""
         CUSTOMER = "customer", "Customer"
         WORKER = "worker", "Worker"
 
@@ -29,18 +31,19 @@ class User(SelfValidationMixin, FieldTrackerMixin, AbstractUser):
             regex=r'^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$',
             message="Enter a valid registration number in the format ABC123.",
             code="invalid_registration",
-            ),
-        ],
-        unique=True,
-        null=True,
-        verbose_name="Номер телефона"
-    )
+        ),
+    ],
+                             unique=True,
+                             null=True,
+                             verbose_name="Номер телефона"
+                             )
 
     def check_user_type(self, verifiable_type: str) -> bool:
         return self.type == verifiable_type
 
 
 class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
+    """User worker profile data model"""
     validators = [validate_add_worker_data_to_user]
 
     exp = models.IntegerField(blank=True, null=True)
@@ -50,9 +53,11 @@ class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
 
 
 class Customer(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
+    """User worker profile data model"""
     validators = [validate_add_worker_data_to_user]
 
     class LegalType(models.TextChoices):
+        """Customer types enum"""
         ENTITY = "entity", "Entity"
         PERSON = "person", "Person"
 

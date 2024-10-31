@@ -4,6 +4,7 @@ from .messages.validation_error import TaskValidationMessages
 
 
 def validate_changes(instance):
+    """Check that changed task isn't done"""
     if instance.time_close:
         raise ValidationError(
             {'status': TaskValidationMessages.CHANGE_DONE_TASK_ERROR}
@@ -11,6 +12,7 @@ def validate_changes(instance):
 
 
 def check_worker(instance):
+    """Does not allow an employee to intercept someone else's task"""
     if instance.status != 'wait':
         if not instance.worker_id:
             raise ValidationError(
@@ -19,6 +21,7 @@ def check_worker(instance):
 
 
 def validate_report(instance):
+    """Validate report depending on status"""
     report_is_fill = bool(instance.report)
 
     if instance.status == 'done':

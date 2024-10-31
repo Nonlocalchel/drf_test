@@ -8,7 +8,7 @@ from users.models import Worker, Customer
 
 
 class BusinessTestCase(TestCase):
-    """Тестирование бизнесс-логики приложения"""
+    """Testing business logic of task application"""
 
     fixtures = [
         'users/tests/fixtures/only_users_backup.json',
@@ -49,9 +49,11 @@ class BusinessTestCase(TestCase):
             self.setUpTestData()
 
     def test_create(self):
+        """Create task"""
         Task.objects.create(title='Customer test task_1 (wait)', customer=self.customer)
 
     def test_create_without_customer(self):
+        """Update task"""
         self.assertRaises(
             utils.IntegrityError,
             Task.objects.create,
@@ -59,12 +61,14 @@ class BusinessTestCase(TestCase):
         )
 
     def test_update_run_waiting_task(self):
+        """Run waiting task"""
         Task.objects.filter(id=self.waiting_task_1.id).update(worker=self.worker)
         self.waiting_task_1.refresh_from_db()
         self.waiting_task_1.save()
         self.assertEqual(self.waiting_task_1.status, Task.StatusType.IN_PROCESS)
 
     def test_update_run_waiting_task_without_worker(self):
+        """Run waiting task without worker"""
         Task.objects.filter(id=self.waiting_task_2.id).update(status=Task.StatusType.IN_PROCESS)
         self.waiting_task_2.refresh_from_db()
         self.assertRaisesRegex(
@@ -73,14 +77,15 @@ class BusinessTestCase(TestCase):
             self.waiting_task_2.save
         )
 
-    def test_update_change_wait_or_running_task(self):
+    def test_update_change_wait_task(self):
+        """Change waiting task name"""
         Task.objects.filter(id=self.task_in_process_2.id).update(title='new_title')
         self.task_in_process_2.refresh_from_db()
         self.waiting_task_2.save()
         self.assertEqual(self.task_in_process_2.title, 'new_title')
 
-    # @unittest.expectedFailure
     def test_update_report_waiting_or_running_task(self):
+        """Change waiting or running task report"""
         Task.objects.filter(id=self.waiting_task_2.id).update(report='test_report')
         self.waiting_task_2.refresh_from_db()
         self.assertRaisesRegex(
@@ -90,6 +95,7 @@ class BusinessTestCase(TestCase):
         )
 
     def test_update_done_running_task(self):
+        """Change done running task report"""
         Task.objects.filter(id=self.task_in_process_3.id).update(status=Task.StatusType.DONE, report='test_report')
         self.task_in_process_3.refresh_from_db()
         self.task_in_process_3.save()
@@ -97,6 +103,7 @@ class BusinessTestCase(TestCase):
         self.assertIsNotNone(self.task_in_process_3.time_close)
 
     def test_update_done_running_task_without_report(self):
+        """Change done running task without report"""
         Task.objects.filter(id=self.task_in_process_2.id).update(status=Task.StatusType.DONE)
         self.task_in_process_2.refresh_from_db()
         self.assertRaisesRegex(
@@ -106,6 +113,7 @@ class BusinessTestCase(TestCase):
         )
 
     def test_update_done_task(self):
+        """Change done task"""
         Task.objects.filter(id=self.task_done.id).update(report='new_report')
         self.task_done.refresh_from_db()
         self.assertRaisesRegex(

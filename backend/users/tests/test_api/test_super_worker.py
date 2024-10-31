@@ -39,6 +39,7 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         super().setUp()
 
     def test_api_jwt(self):
+        """Authorized with user jwt"""
         url = reverse('token_obtain_pair')
         data = {
             'username': self.user.username,
@@ -49,15 +50,18 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_create_user(self):
+        """Create user"""
         url = reverse('users-list')
         data = {
             "username": "test_user_hz",
-            'password': 'super_ps'
+            'phone': '+23424904920',
+            'password': 'super_ps',
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_user_with_photo(self):
+        """Create user with photo"""
         url = reverse('users-list')
         data = {
             'password': 'sadfgh',
@@ -70,16 +74,19 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         self.assertIn(str(data['photo'])[:-4], response.data['photo'])
 
     def test_get_all_users(self):
+        """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
         self.assertEqual(len(response.data), 9)
 
     def test_get_user_data(self):
+        """Get user"""
         url = reverse('users-detail', args=(self.user.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_other_user_data(self):
+        """Get other user"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

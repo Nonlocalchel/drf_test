@@ -4,11 +4,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
-from .utils import filter_user_queryset
+from .utils import filter_task_queryset, take_task_in_process, done_task, set_task_customer
 from .filters import TaskFilter
 from users.permissions import *
 from .permissions import *
@@ -24,27 +23,33 @@ from .serializers import (
 
 
 class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
+    """Tasks app view"""
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = TaskFilter
     search_fields = ['title', 'status']
     permission_classes_by_action = {
-        'list': [IsAuthenticated],
         'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
         'update': [IsNotRunningTask & CustomerTaskAccessPermission],
         'create': [IsSuperWorker | CustomerTaskAccessPermission]
     }
 
     def get_queryset(self):
+        """Optimize get users queryset and filter queryset for request /tasks/ and fix swagger issues"""
         if getattr(self, "swagger_fake_view", False):
             # queryset just for schema generation metadata
             return Task.objects.none()
 
-        user = self.request.user
-        return filter_user_queryset(user, self.queryset)
+        queryset = self.queryset
+        if self.action == 'list':
+            user = self.request.user
+            queryset = filter_task_queryset(user, self.queryset)
+
+        return queryset
 
     def get_serializer_class(self):
+        """Choose serializer by http method"""
         serializer_classes_by_method = {
             HTTPMethod.GET: TaskReadSerializer,
             HTTPMethod.POST: TaskCreateSerializer,
@@ -57,23 +62,22 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         return serializer_class
 
     def create(self, request, *args, **kwargs):
-        user = request.user
-        if user.check_user_type('customer'):
-            request.data['customer'] = user.customer.id
-
+        """Set customer id if customer create task"""
+        set_task_customer(request.data, request.user)
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
+        """Forbidden http method patch for /tasks/ url"""
         raise MethodNotAllowed(request.method)
 
-    @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[IsWorker])
     def take_in_process(self, request, pk):
-        request.data['worker'] = request.user.worker.id
+        """Take task in process by /tasks-take-in-process/ url"""
+        take_task_in_process(request.data, request.user)
         return self.update(request, partial=True)
 
-    @action(detail=True, methods=[HTTPMethod.PATCH],
-            permission_classes=[IsWorker & WorkerTaskAccessPermission])
+    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[WorkerTaskAccessPermission])
     def done(self, request, pk):
-        request.data['status'] = Task.StatusType.DONE
+        """Done task by /tasks-done/ url"""
+        done_task(request.data)
         return self.update(request, partial=True)

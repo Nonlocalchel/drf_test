@@ -5,37 +5,33 @@ from users.models import User
 
 
 class APITestCaseWithJWT(APITestCase):
-    """Расширение Базового класса для получения JWT access-token"""
+    """Extending the Base class to get a JWT access token"""
     clean_password = None
     user = None
 
     @classmethod
     def setUpTestData(cls):
-        """
-        Можно расширять,переопределив и вызвав в конце super().setUpTestData()
-        """
+        """Can be extended by overriding and calling super().setUpTestData() at the end"""
         cls.setUpTestUser()
 
     @classmethod
     def setUpTestUser(cls):
         """
-        Метод для создания пользователя
-        Вызывается из setUpTestData
-        Нужно переопределять(для совместимости с вашей БД)
+        Method for creating a user.
+        Called from setUpTestData.
+        Needs to be overridden (for compatibility with your DB).
         """
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password, username='Test_1')
 
     def setUp(self):
-        """
-        Можно расширять,переопределив и вызвав в конце super().setUp()
-        """
+        """Can be extended by overriding and calling super().setUp() at the end"""
         self.jwt_auth(user=self.user)
 
     def jwt_auth(self, user):
         """
-        Метод для наделения client заголовком с JWT токеном
-        Не трогать!!!
+        Method for assigning client header with JWT token
+        Don't touch!!!
         """
         url = reverse('token_obtain_pair')
         auth = self.client.post(url,

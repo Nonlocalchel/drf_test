@@ -9,6 +9,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': 'database',
-        'PORT': 5432
+        'PORT': 5432,
+        'CONN_MAX_AGE': 60
     }
 }
