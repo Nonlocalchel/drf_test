@@ -2,12 +2,12 @@ from http import HTTPMethod
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import SearchFilter
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRUViewSet
-from .utils import filter_task_queryset, take_task_in_process, done_task
+from .utils import filter_task_queryset, take_task_in_process, done_task, set_task_customer
 from .filters import TaskFilter
 from users.permissions import *
 from .permissions import *
@@ -61,14 +61,14 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     def create(self, request, *args, **kwargs):
         user = request.user
         if user.check_user_type('customer'):
-            request.data['customer'] = user.customer.id
+            set_task_customer(request.data, user)
 
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed(request.method)
 
-    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[IsWorker])  # & WorkerTaskAccessPermission
+    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[IsWorker])
     def take_in_process(self, request, pk):
         take_task_in_process(request.data, request.user)
         return self.update(request, partial=True)

@@ -37,6 +37,6 @@ def format_repr(representation: dict, current_user_type: str) -> dict:
     return repr_copy
 
 
-def get_instance_type(instance):
+def get_instance_type(instance: User | dict) -> str:
     """Get instance in to_representation method"""
     return instance.type if not isinstance(instance, dict) else instance.get('type')

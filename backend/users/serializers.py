@@ -6,9 +6,6 @@ from .models import *
 from .utils.serializer_utils import fix_serializer_fields, get_instance_type, format_repr
 
 
-# from .utils import fix_serializer_fields, format_repr, get_instance_type
-
-
 class WorkerSerializer(serializers.ModelSerializer):
     """Serialize nested profile data for worker"""
 
@@ -45,7 +42,7 @@ class UserSerializer(WritableNestedModelSerializer):
         )
 
     def get_fields(self):
-        """Remove unnecessary professional data fields(for remove unnecessary requests to db)"""
+        """Remove unnecessary professional data fields(for remove unnecessary requests from db)"""
         fields = super().get_fields()
         instance = self.instance
         if instance is None:
@@ -65,6 +62,7 @@ class UserSerializer(WritableNestedModelSerializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Override class for extend data on payload"""
+
     @classmethod
     def get_token(cls, user):
         """Add user type field to payload"""
