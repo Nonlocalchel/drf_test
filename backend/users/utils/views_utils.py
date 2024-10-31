@@ -11,7 +11,7 @@ def filter_user_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
 
         return User.objects.filter(type=User.UserType.WORKER)
 
-    return User.objects.none()
+    return User.objects.filter(id=user.pk)
 
 
 def optimize_queryset(queryset):

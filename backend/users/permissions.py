@@ -56,9 +56,20 @@ class IsSuperWorker(IsWorker):
 
 class IsUserAccount(permissions.BasePermission):
     """Checks that is object is a user account"""
+
     def has_object_permission(self, request, view, obj):
         user = request.user
         if user.is_anonymous:
             return False
 
         return obj == user
+
+
+class IsSuperCustomerReadWorkers(IsSuperCustomer):
+    """Checks that is customer with extra permissions try to get worker data"""
+    def has_object_permission(self, request, view, obj):
+        user_is_super_customer = super().has_permission(request, view)
+        if not user_is_super_customer:
+            return False
+
+        return obj.type == User.UserType.WORKER

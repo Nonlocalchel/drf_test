@@ -149,9 +149,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    "EXCEPTION_HANDLER": "tasks.exceptions.django_error_handler",
+    "EXCEPTION_HANDLER": "services.exceptions.django_error_handler",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'users.authenticate.Authenticate',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']

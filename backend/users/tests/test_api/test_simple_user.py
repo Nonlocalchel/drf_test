@@ -21,9 +21,9 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
 
     @classmethod
     def setUpTestUser(cls):
-        cls.clean_password = 'worker_super_ps_387'
+        cls.clean_password = 'customer_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='super_worker_test_1',
+                                            username='simple_worker_test_1',
                                             phone='+375291850665'
                                             )
 
@@ -55,7 +55,8 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     def test_get_worker_users(self):
         """Get users list with type worker"""
@@ -64,7 +65,8 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         }
         url = reverse('users-list')
         response = self.client.get(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
     def test_get_customer_users(self):
         """Get users list with type customer"""
@@ -73,7 +75,8 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         }
         url = reverse('users-list')
         response = self.client.get(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     def test_get_user_data(self):
         """Get user"""
@@ -85,4 +88,4 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         """Get other user"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

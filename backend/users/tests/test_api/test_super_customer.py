@@ -83,7 +83,7 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         """Get other user with type customer"""
         url = reverse('users-detail', args=(75,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_worker_user(self):
         """Get other user with type worker"""

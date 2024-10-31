@@ -5,7 +5,7 @@ from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRViewSet
 
 from .serializers import *
-from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomer
+from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomer, IsSuperCustomerReadWorkers
 from .utils.views_utils import is_user_account_request, filter_user_queryset, optimize_queryset
 
 
@@ -16,16 +16,18 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['type']
     permission_classes_by_action = {
-        'list': [IsSuperWorker | IsSuperCustomer],
-        # 'retrieve': [IsUserAccount],# | IsSuperWorker | IsSuperCustomer
+        'retrieve': [IsUserAccount | IsSuperWorker | IsSuperCustomerReadWorkers],
         'create': [IsSuperWorker]
     }
 
     def get_queryset(self):
-        """Optimize get users queryset"""
-        user = self.request.user
-        filtered_queryset = filter_user_queryset(user, self.queryset)
-        return optimize_queryset(filtered_queryset)
+        """Optimize get users queryset and filter queryset for request /users/"""
+        queryset = self.queryset
+        if self.action == 'list':
+            user = self.request.user
+            queryset = filter_user_queryset(user, self.queryset)
+
+        return optimize_queryset(queryset)
 
     def retrieve(self, request, *args, **kwargs):
         """Optimize get user account"""

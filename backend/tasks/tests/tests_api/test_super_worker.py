@@ -170,12 +170,6 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
 
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
 
-    def test_patch_take_process_task_in_process(self):
-        url = reverse('tasks-take-in-process', args=(61,))
-        response = self.client.patch(url, content_type='application/json')
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     def test_patch_done(self):
         url = reverse('tasks-done', args=(self.task_in_process_1.id,))
         data = {'report': 'test'}

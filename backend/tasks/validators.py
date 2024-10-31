@@ -3,6 +3,10 @@ from django.core.exceptions import ValidationError
 from .messages.validation_error import TaskValidationMessages
 
 
+# нельзя free менять на done
+# in_process меняется только на done
+# переделать нецминг
+
 def validate_changes(instance):
     if instance.time_close:
         raise ValidationError(
