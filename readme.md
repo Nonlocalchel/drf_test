@@ -1,76 +1,72 @@
-## 1.endpoints:
-1.tasks:
-    /api/v1/tasks/{number} - one task
-    /api/v1/tasks - list task
-    /api/v1/tasks/{number}/close-task - close-task
-2.users:
-    /api/v1/customers/{number} - one task
-    /api/v1/customers - list task
-    /api/v1/workers/{number} - one task
-    /api/v1/workers - list task
-3.authorization(tokens):
-    api/v1/token/
-    api/v1/token/refresh
+<h2 align="center">TaskService by Django</h2>
 
-## 2.settings:
-AUTH_USER_MODEL = 'users.User'
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_extensions',
-    'rest_framework',
-    'users.apps.UsersConfig',
-    'tasks.apps.TasksConfig'
-]
+Typical проект фриланс биржы на Django Rest Framework.
 
-REST_FRAMEWORK = {
-'DEFAULT_PERMISSION_CLASSES': [
-    'rest_framework.permissions.IsAuthenticated',
-    ],
-    ...
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-    ...
-    'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-    ...
-}
+### Инструменты разработки
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": False,
-    "UPDATE_LAST_LOGIN": False,
-    "ALGORITHM": "HS256",
-    "SIGNING_KEY": settings.SECRET_KEY,
-    "VERIFYING_KEY": "",
-    "AUDIENCE": None,
-    "ISSUER": None,
-    "JSON_ENCODER": None,
-    "JWK_URL": None,
-    "LEEWAY": 0,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
-    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "TOKEN_TYPE_CLAIM": "token_type",
-    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-    "JTI_CLAIM": "jti",
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
-    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
-    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
-    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
-    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
-    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
-}
+**Стек:**
+- Python >= 3.8
+- Django Rest Framework
+- Postgres
 
-остальные настройки стандартные
+## Старт
+
+#### 1) Создать образ
+
+    docker-compose build
+
+##### 2) Запустить контейнер
+
+    docker-compose up
+    
+##### 3) Перейти по адресу
+
+    http://127.0.0.1:8000/api/v1/swagger/
+
+## Сервис 
+ Чтобы воспольоваться сервисом понадобиться создать учетные записи, либо воспользоваться fixtures
+
+И воспользоваться учетными данными(username, password):
+- Работник(c extra permissions): (worker_1, worker_super_ps_387)
+- Заказчик: (customer_1, customer_super_ps_387)
+
+Для того чтобы взаимодействовать с документацие надо либо авторизоваться, либо получить jwt-токен и подставить его
+
+Вы не можете создать свой аккаунт в системе, это может сделать только worker with extra permissions
+## Разработка с Docker
+
+##### 1) Сделать форк репозитория
+
+##### 2) Клонировать репозиторий
+
+    git clone ссылка_сгенерированная_в_вашем_репозитории
+
+##### 3) В корне проекта создать .env
+
+    SECRET_KEY=some_secret_key
+    POSTGRES_DB=some_task_service_db
+    POSTGRES_USER=some_django_task_service_admin
+    POSTGRES_PASSWORD=some_task_password_3234
+    
+##### 4) Создать образ
+
+    docker-compose build
+
+##### 5) Запустить контейнер
+
+    docker-compose up
+    
+##### 6) Создать суперюзера
+
+    docker-compose run --rm backend sh -c "
+	DJANGO_SUPERUSER_USERNAME=admin2 DJANGO_SUPERUSER_PASSWORD=psw \
+    python manage.py createsuperuser --email=admin@admin.com --noinput"
+                                   
+##### 7) создаем миграции и мигрируем
+    
+    docker-compose run --rm backend sh -c "python manage.py makemigrations"    
+    docker-compose run --rm backend sh -c "python manage.py migrate"
+                     
+##### 8) Если нужно очистить БД
+
+    docker-compose down -v
