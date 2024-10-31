@@ -16,3 +16,11 @@ def filter_task_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
         queryset = default_queryset.filter(customer=user.customer.id)
 
     return queryset
+
+
+def take_task_in_process(task, user):
+    task['worker'] = user.worker.id
+
+
+def done_task(task):
+    task['status'] = Task.StatusType.DONE
