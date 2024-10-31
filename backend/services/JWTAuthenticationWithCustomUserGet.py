@@ -10,16 +10,16 @@ from rest_framework_simplejwt.utils import get_md5_hash_password
 
 
 class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
+    """Custom JWTAuthentication from SimpleJWT for optimize work with django orm"""
     request_path = None
 
     def authenticate(self, request: Request) -> Optional[Tuple[AuthUser, Token]]:
+        """Add request park to work with them into class"""
         self.request_path = request.path
         return super().authenticate(request)
 
     def get_user(self, validated_token: Token) -> AuthUser:
-        """
-        Attempts to find and return a user using the given validated token.
-        """
+        """Attempts to find and return a user using the given validated token."""
         try:
             payload = validated_token.payload
             user_id = payload.pop(api_settings.USER_ID_CLAIM)
@@ -45,5 +45,6 @@ class JWTAuthenticationWithCustomUserGet(JWTAuthentication):
         return user
 
     def get_user_orm_fetch(self, user_id, payload) -> AuthUser:
+        """Method, which can be extended to get related data to user into auth request"""
         return self.user_model.objects.get(**{api_settings.USER_ID_FIELD: user_id})
 

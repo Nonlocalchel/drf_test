@@ -4,7 +4,7 @@ from services.ValidationErrorsCollector import ValidationErrorsCollector
 
 
 class SelfCleaningMixin:
-    """Модель которая запускает метод save перед сохранением"""
+    """A model that runs the save method before saving"""
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -12,12 +12,16 @@ class SelfCleaningMixin:
 
 
 class SelfValidationMixin(SelfCleaningMixin):
-    """Модель которая запускает заданные функции валидации перед сохранением"""
+    """
+    A model that runs specified validation functions before saving.
+    Work with ValidationErrorsCollector class and his heirs
+    """
 
     error_collector: ValidationErrorsCollector = ValidationErrorsCollector
     validators: list = []
 
     def clean(self):
+        """Passes a list of errors to the exception to mark all fields in the description"""
         error_collector = self.error_collector()
         error_collector.validators = self.validators
         errors = error_collector.collect_errors(self)
@@ -27,8 +31,8 @@ class SelfValidationMixin(SelfCleaningMixin):
         return super().clean()
 
 
-class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
-    """Сохраняет пердедущие значения полей экземпляра модели"""
+class WithOriginalMixin:
+    """Stores the previous values of the model instance fields"""
 
     @classmethod
     def get_model_fields(cls) -> list:
@@ -36,6 +40,7 @@ class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
         return list(cls._meta.fields)
 
     def __init__(self, *args, **kwargs):
+        """Creating the necessary additional attributes"""
         super(WithOriginalMixin, self).__init__(*args, **kwargs)
         # Store initial field values into self._original
         self._original = {}
@@ -48,10 +53,11 @@ class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
                 else:
                     fname = field.name
                 self._original[fname] = getattr(self, fname)
-            except:  # DoesNotExist
+            except:
                 self._original[field.name] = None
 
-    def _get_changed_fields(self):
+    def _get_changed_fields(self) -> list:
+        """Returns fields that have been changed"""
         changed = []
         for field in self.get_model_fields():
             if hasattr(self, field.name + '_id'):
@@ -63,6 +69,7 @@ class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
         return changed
 
     def _get_original(self):
+        """Returns fields with previous values"""
         return self._original
 
     changed_fields = property(_get_changed_fields)
@@ -73,19 +80,24 @@ class WithOriginalMixin:  # class ModelWithOriginal(models.Model)
 
 
 class FieldTrackerMixin(WithOriginalMixin):
-    def has_changed(self, field):
+    """Extend interface for interacting with WithOriginalMixin"""
+    def has_changed(self, field) -> bool:
+        """Return True if field was changed"""
         if field in self.changed_fields and self.pk is not None:
             return True
 
         return False
 
-    def previous(self, field):
+    def previous(self, field) -> any:
+        """Return previous field value"""
         return self.original[field]
 
 
 class GetFieldRelatedNameMixin:
+    """Interface for receiving relate_name"""
 
-    def get_related_field_name(self, field):
+    def get_related_field_name(self, field) -> str:
+        """Return related name of related model"""
         fields_meta = self._meta.fields
         for field_meta in fields_meta:
             field_name = field_meta.name

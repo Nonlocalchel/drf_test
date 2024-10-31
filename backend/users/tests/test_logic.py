@@ -67,7 +67,7 @@ class UserTestCase(TestCase):
         )
 
     def test_change_user_data(self):
-        """Change user data(name)"""
+        """Change username"""
         name = 'vasya stypin'
         self.user_worker.username = name
         self.user_worker.save()
@@ -85,7 +85,7 @@ class UserTestCase(TestCase):
         self.assertIn('image2', user_worker.photo.path)
 
     def test_change_user_type(self):
-        """Change user data(type)"""
+        """Change user type"""
         user_customer = self.user_customer
         user_customer.type = User.UserType.WORKER
         self.assertRaisesRegex(
