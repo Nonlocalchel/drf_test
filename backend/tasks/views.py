@@ -23,6 +23,7 @@ from .serializers import (
 
 
 class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
+    """Tasks app view"""
     queryset = Task.objects.all()
     serializer_class = TaskReadSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
@@ -35,6 +36,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     }
 
     def get_queryset(self):
+        """Optimize get users queryset and filter queryset for request /tasks/ and fix swagger issues"""
         if getattr(self, "swagger_fake_view", False):
             # queryset just for schema generation metadata
             return Task.objects.none()
@@ -47,6 +49,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         return queryset
 
     def get_serializer_class(self):
+        """Choose serializer by http method"""
         serializer_classes_by_method = {
             HTTPMethod.GET: TaskReadSerializer,
             HTTPMethod.POST: TaskCreateSerializer,
@@ -59,21 +62,22 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         return serializer_class
 
     def create(self, request, *args, **kwargs):
-        user = request.user
-        if user.check_user_type('customer'):
-            set_task_customer(request.data, user)
-
+        """Set customer id if customer create task"""
+        set_task_customer(request.data, request.user)
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
+        """Forbidden http method patch for /tasks/ url"""
         raise MethodNotAllowed(request.method)
 
     @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[IsWorker])
     def take_in_process(self, request, pk):
+        """Take task in process by /tasks-take-in-process/ url"""
         take_task_in_process(request.data, request.user)
         return self.update(request, partial=True)
 
-    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[IsWorker])
+    @action(detail=True, methods=[HTTPMethod.PATCH], permission_classes=[WorkerTaskAccessPermission])
     def done(self, request, pk):
+        """Done task by /tasks-done/ url"""
         done_task(request.data)
         return self.update(request, partial=True)

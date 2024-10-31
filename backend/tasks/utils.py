@@ -5,6 +5,7 @@ from users.models import User
 
 
 def filter_task_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
+    """Filter task queryset by user type or id"""
     if user.check_user_type(User.UserType.WORKER):
         if user.is_staff:
             return default_queryset
@@ -17,12 +18,16 @@ def filter_task_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
 
 
 def set_task_customer(task: dict, user: User) -> None:
-    task['customer'] = user.customer.id
+    """Set task a customer"""
+    if user.check_user_type('customer'):
+        task['customer'] = user.customer.id
 
 
 def take_task_in_process(task: dict, user: User) -> None:
+    """Take task in process"""
     task['worker'] = user.worker.id
 
 
 def done_task(task: dict) -> None:
+    """Done task"""
     task['status'] = Task.StatusType.DONE

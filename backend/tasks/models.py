@@ -8,6 +8,7 @@ from tasks.validators import validate_changes, validate_report, check_worker
 
 # Create your models here.
 class Task(SelfValidationMixin, models.Model):
+    """Task model"""
     validators = [check_worker, validate_report, validate_changes]
 
     class StatusType(models.TextChoices):

@@ -9,7 +9,7 @@ class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
 
 
 class TaskFilter(filters.FilterSet):
-    """Фильтрация задач по полю worker, чтобы иожно было фильтровать по null"""
+    """Filter tasks by worker_id field,so that you can filter by null value"""
     worker = CharFilterInFilter(field_name='worker', method='find_results_maybe_include_null')
 
     @staticmethod

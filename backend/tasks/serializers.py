@@ -3,12 +3,14 @@ from .models import Task
 
 
 class TaskReadSerializer(serializers.ModelSerializer):
+    """Task serializer class for read data"""
     class Meta:
         model = Task
         fields = '__all__'
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
+    """Task serializer class for create data"""
     class Meta:
         model = Task
         fields = '__all__'
@@ -16,6 +18,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
+    """Task serializer class for update(put) data"""
     class Meta:
         model = Task
         fields = '__all__'
@@ -23,6 +26,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 
 
 class TaskPartialUpdateSerializer(serializers.ModelSerializer):
+    """Task serializer class for partial update(patch) data"""
     status = serializers.ChoiceField(choices=Task.StatusType)
 
     class Meta:

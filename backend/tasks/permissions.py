@@ -6,6 +6,7 @@ from .models import Task
 
 
 class WorkerTaskAccessPermission(IsWorker):
+    """Checks that the user is a worker who processed current task or it is nobody task"""
     message = TaskPermissionMessages.WORKER_TASK_ACCESS
 
     def has_object_permission(self, request, view, obj):
@@ -20,6 +21,7 @@ class WorkerTaskAccessPermission(IsWorker):
 
 
 class CustomerTaskAccessPermission(IsCustomer):
+    """Checks that the user is a customer who create current task"""
     message = TaskPermissionMessages.CUSTOMER_TASK_ACCESS
 
     def has_object_permission(self, request, view, obj):
@@ -31,6 +33,7 @@ class CustomerTaskAccessPermission(IsCustomer):
 
 
 class IsNotRunningTask(permissions.BasePermission):
+    """Checks that it is waiting task"""
     message = TaskPermissionMessages.RUNNING_TASK_ACCESS
 
     def has_object_permission(self, request, view, obj):

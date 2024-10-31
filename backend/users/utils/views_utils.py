@@ -5,7 +5,7 @@ from users.utils.auth_utils import get_user_types
 
 
 def filter_user_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
-    """Filter queryset by user type or id"""
+    """Filter user queryset by user type or id"""
     if user.is_staff:
         if user.check_user_type(User.UserType.WORKER):
             return default_queryset
