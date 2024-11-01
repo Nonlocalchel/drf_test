@@ -2,6 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from .models import *
+from .utils.views_utils import get_model_by_name
 
 
 @receiver(pre_save, sender=User)
@@ -20,9 +21,11 @@ def create_special_profile(sender, instance, created, **kwargs):
     if not created:
         return
 
-    if instance.type == User.UserType.CUSTOMER:
-        customer = Customer(user=instance) #Customer.objects.create
-        customer.save()
-    elif instance.type == User.UserType.WORKER:
-        worker = Worker(user=instance) #Worker.objects.create
-        worker.save()
+    user_type = instance.type
+    if hasattr(instance, user_type):
+        return
+
+    class_name = user_type.capitalize()
+    profile_data_model = get_model_by_name(class_name)
+    profile_data = profile_data_model(user=instance)
+    profile_data.save()

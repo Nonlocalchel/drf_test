@@ -74,6 +74,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             'password': 'string'
         }
 
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(8):
             self.client.post(url, data=data, format='json')
 

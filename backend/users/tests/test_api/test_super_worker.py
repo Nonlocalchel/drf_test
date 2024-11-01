@@ -60,6 +60,34 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_create_user_with_only_password_and_username(self):
+        """Create user with only password and username"""
+        url = reverse('users-list')
+        data = {
+            "username": "test_user_hz",
+            'password': 'super_ps',
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_user_with_only_password(self):
+        """Create user with only password"""
+        url = reverse('users-list')
+        data = {
+            'password': 'super_ps',
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_user_with_only_username(self):
+        """Create user with only username"""
+        url = reverse('users-list')
+        data = {
+            "username": "test_user_hz"
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_user_with_photo(self):
         """Create user with photo"""
         url = reverse('users-list')

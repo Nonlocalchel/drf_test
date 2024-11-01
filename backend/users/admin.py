@@ -47,6 +47,9 @@ class UserAdmin(BaseUserAdmin):
 
     def get_inline_instances(self, request, obj=None):
         """Hide unnecessary profile data"""
+        if obj is None:
+            return [CustomerInline(self.model, self.admin_site), WorkerInline(self.model, self.admin_site)]
+
         if obj.type == User.UserType.CUSTOMER:
             return [CustomerInline(self.model, self.admin_site)]
 

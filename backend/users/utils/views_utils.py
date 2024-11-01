@@ -1,6 +1,8 @@
+import importlib
+
 from django.db.models import QuerySet
 
-from users.models import User
+from users.models import User, Customer
 from users.utils.auth_utils import get_user_types
 
 
@@ -24,3 +26,9 @@ def optimize_queryset(queryset: QuerySet) -> QuerySet:
 def is_user_account_request(user: User, current_user_id: int) -> bool:
     """Check that it is user gonna to get account"""
     return str(user.pk) == current_user_id
+
+
+def get_model_by_name(name):
+    module = importlib.import_module('users.models')
+    cls = getattr(module, name)
+    return cls
