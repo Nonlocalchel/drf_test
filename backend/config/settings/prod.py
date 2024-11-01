@@ -13,3 +13,5 @@ DATABASES = {
         'CONN_MAX_AGE': 60
     }
 }
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
