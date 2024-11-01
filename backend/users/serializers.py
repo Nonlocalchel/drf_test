@@ -44,6 +44,9 @@ class UserSerializer(WritableNestedModelSerializer):
     def get_fields(self):
         """Remove unnecessary professional data fields(for remove unnecessary requests from db)"""
         fields = super().get_fields()
+        if not hasattr(self, 'initial_data'):
+            return fields
+
         instance = self.instance
         if instance is None:
             fixed_fields = fix_serializer_fields(instance, fields, data=self.initial_data)
