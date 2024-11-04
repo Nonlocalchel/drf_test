@@ -2,7 +2,6 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from .models import *
-from .tasks import create_profile_data
 from .utils.views_utils import get_model_by_name
 
 
@@ -22,11 +21,11 @@ def create_special_profile(sender, instance, created, **kwargs):
     if not created:
         return
 
-    create_profile_data(instance.id)
-    # user_type = instance.type
+    user_type = instance.type
+    if hasattr(instance, user_type):
+        return
 
-    # create_profile_data.delay(instance.pk, user_type)
-    # class_name = user_type.capitalize()
-    # profile_data_model = get_model_by_name(class_name)
-    # profile_data = profile_data_model(user=instance)
-    # profile_data.save()
+    class_name = user_type.capitalize()
+    profile_data_model = get_model_by_name(class_name)
+    profile_data = profile_data_model(user=instance)
+    profile_data.save()

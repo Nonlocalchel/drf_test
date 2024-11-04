@@ -53,7 +53,7 @@ class Worker(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
 
 
 class Customer(SelfValidationMixin, GetFieldRelatedNameMixin, models.Model):
-    """User worker profile data model"""
+    """User customer profile data model"""
     validators = [validate_add_worker_data_to_user]
 
     class LegalType(models.TextChoices):
