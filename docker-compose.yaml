@@ -22,3 +22,6 @@ services:
     volumes:
       - ~/.pg/pg_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
