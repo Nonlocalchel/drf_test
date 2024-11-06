@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.urls import reverse
+from rest_framework import status
 
 from services.tests_utils import get_temp_file
 from services.ImageWorker import ImageCreator
@@ -19,11 +20,13 @@ class WorkerOptimizationTestCase(APITestCaseWithJWT):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nWorker optimization test:')
-        cls.customer = Customer.objects.last()
-        cls.task_wait = Task.objects.filter(status=Task.StatusType.WAIT)[0]
-        cls.task_in_process = Task.objects.create(title='Worker test task_1 (in_process)',
-                                                  status=Task.StatusType.IN_PROCESS,
-                                                  customer=cls.customer, worker=cls.user.worker)
+        cls.user_customer = User.objects.create_user(password=cls.clean_password, username='customer_optimization_test')
+        cls.customer = cls.user_customer.customer
+        cls.worker = cls.user.worker
+        cls.task = Task.objects.create(title='Customer test task_1 (wait)', customer=cls.customer)
+        cls.task_in_process = Task.objects.create(title='Customer test task_1 (in_process)',
+                                                    status=Task.StatusType.IN_PROCESS,
+                                                    customer=cls.customer, worker=cls.worker)
 
     @classmethod
     def setUpTestUser(cls):
@@ -40,20 +43,23 @@ class WorkerOptimizationTestCase(APITestCaseWithJWT):
         """Get task list(1 request- auth + 1 request- task-list)"""
         url = reverse('tasks-list')
         with self.assertNumQueries(2):
-            self.client.get(url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_task(self):
         """Get one task(1 request- auth + 1 request- task-list)"""
-        url = reverse('tasks-detail', args=(61,))
+        url = reverse('tasks-detail', args=(self.task.id,))
         with self.assertNumQueries(2):
-            self.client.get(url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_patch_take_wait_task_in_process(self):
         """Get one task(1 request- auth + 1 request- get task + 1 request select worker + 1 request update)"""
-        url = reverse('tasks-take-in-process', args=(self.task_wait.id,))
+        url = reverse('tasks-take-in-process', args=(self.task.id,))
 
         with self.assertNumQueries(4):
-            self.client.patch(url, content_type='application/json')
+            response = self.client.patch(url, content_type='application/json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_done_task(self):
         """Get one task(1 request- auth + 1 request- get task + 1 request update)"""
@@ -62,4 +68,5 @@ class WorkerOptimizationTestCase(APITestCaseWithJWT):
         json_data = json.dumps(data)
 
         with self.assertNumQueries(3):
-            self.client.patch(url, data=json_data, content_type='application/json')
+            response = self.client.patch(url, data=json_data, content_type='application/json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)

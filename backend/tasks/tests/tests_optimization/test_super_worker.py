@@ -1,5 +1,8 @@
+import json
+
 from django.conf import settings
 from django.urls import reverse
+from rest_framework import status
 
 from services.tests_utils import get_temp_file
 from services.ImageWorker import ImageCreator
@@ -10,15 +13,20 @@ from tasks.models import Task
 
 class SuperWorkerOptimizationTestCase(APITestCaseWithJWT):
     """Тестирование запросов работника с привилегиями"""
+    image_creator = ImageCreator
 
     @classmethod
     def setUpTestData(cls):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nSuper-worker optimization test:')
-        cls.customer = Customer.objects.last()
-        cls.task_wait = Task.objects.filter(status=Task.StatusType.WAIT)[0]
-        cls.task_in_process = Task.objects.filter(status=Task.StatusType.IN_PROCESS)[0]
+        cls.user_customer = User.objects.create_user(password=cls.clean_password, username='customer_optimization_test')
+        cls.customer = cls.user_customer.customer
+        cls.worker = cls.user.worker
+        cls.task = Task.objects.create(title='Customer test task_1 (wait)', customer=cls.customer)
+        cls.task_in_process = Task.objects.create(title='Customer test task_1 (in_process)',
+                                                  status=Task.StatusType.IN_PROCESS,
+                                                  customer=cls.customer, worker=cls.worker)
 
     @classmethod
     def setUpTestUser(cls):
@@ -35,33 +43,42 @@ class SuperWorkerOptimizationTestCase(APITestCaseWithJWT):
     def test_get_all_tasks(self):
         url = reverse('tasks-list')
         with self.assertNumQueries(2):
-            self.client.get(url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_task(self):
-        url = reverse('tasks-detail', args=(61,))
+        url = reverse('tasks-detail', args=(self.task.id,))
         with self.assertNumQueries(2):
-            self.client.get(url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_task(self):
         url = reverse('tasks-list')
         data = {
             "title": "test_task",
-            'customer': 6
+            'customer': self.customer.id
         }
 
         with self.assertNumQueries(3):
-            self.client.post(url, data=data)
+            response = self.client.post(url, data=data)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_patch_take_wait_task_in_process(self):
-        url = reverse('tasks-take-in-process', args=(self.task_wait.id,))
+        url = reverse('tasks-take-in-process', args=(self.task.id,))
 
-        with self.assertNumQueries(4): #?
-            self.client.patch(url, content_type='application/json')
+        with self.assertNumQueries(4):
+            response = self.client.patch(url, content_type='application/json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_done_task(self):
         url = reverse('tasks-done', args=(self.task_in_process.id,))
 
-        with self.assertNumQueries(2):
-            self.client.patch(url, content_type='application/json')
+        with self.assertNumQueries(3):
+            data = {'report': 'test'}
+            json_data = json.dumps(data)
+            response = self.client.patch(url, data=json_data,
+                                         content_type='application/json')
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
