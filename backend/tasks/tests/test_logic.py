@@ -2,21 +2,24 @@ from django.db import utils
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
+from services.ImageWorker import ImageCreator
 from tasks.messages.validation_error import TaskValidationMessages
 from tasks.models import Task
-from users.models import Worker, Customer
+from users.models import User
 
 
 class BusinessTestCase(TestCase):
     """Testing business logic of task application"""
+    image_creator = ImageCreator
 
     @classmethod
     def setUpTestData(cls):
         print('\nTask business-logic test:')
-        cls.worker = Worker.objects.last()
-        worker = cls.worker
-        cls.customer = Customer.objects.last()
-        customer = cls.customer
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='task_logic_test_customer_1')
+        cls.user_worker = User.objects.create(password='worker_super_ps_387', username='task_logic_test_worker_1',
+                                              type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+        worker = cls.user_worker.worker
+        customer = cls.user_customer.customer
         cls.waiting_task_1 = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
         cls.waiting_task_2 = Task.objects.create(title='Customer test task_2 (wait)', customer=customer)
         cls.task_in_process_1 = Task.objects.create(title='Test task_1 (in_process)',
@@ -40,12 +43,13 @@ class BusinessTestCase(TestCase):
         cls.task_done.save()
 
     def setUp(self):
-        if not hasattr(self, 'worker'):
-            self.setUpTestData()
+        pass
+        # if not hasattr(self, 'worker'):
+        #     self.setUpTestData()
 
     def test_create(self):
         """Create task"""
-        Task.objects.create(title='Customer test task_1 (wait)', customer=self.customer)
+        Task.objects.create(title='Customer test task_1 (wait)', customer=self.user_customer.customer)
 
     def test_create_without_customer(self):
         """Update task"""
@@ -57,7 +61,7 @@ class BusinessTestCase(TestCase):
 
     def test_update_run_waiting_task(self):
         """Run waiting task"""
-        Task.objects.filter(id=self.waiting_task_1.id).update(worker=self.worker)
+        Task.objects.filter(id=self.waiting_task_1.id).update(worker=self.user_worker.worker)
         self.waiting_task_1.refresh_from_db()
         self.waiting_task_1.save()
         self.assertEqual(self.waiting_task_1.status, Task.StatusType.IN_PROCESS)
