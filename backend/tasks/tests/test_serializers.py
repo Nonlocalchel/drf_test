@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from services.ImageWorker import ImageCreator
 from tasks.models import Task
 from tasks.serializers import (
     TaskReadSerializer,
@@ -7,25 +8,29 @@ from tasks.serializers import (
     TaskUpdateSerializer,
     TaskPartialUpdateSerializer
 )
-from users.models import Worker, Customer
+from users.models import User
 
 
 class SerializerTestCase(TestCase):
     """Testing task app serializer"""
+    image_creator = ImageCreator
 
     @classmethod
     def setUpTestData(cls):
         print('\nTask serializer test:')
-        cls.worker = Worker.objects.last()
-        cls.customer = Customer.objects.last()
-        customer = cls.customer
+        cls.user_customer = User.objects.create(password='customer_super_ps_387',
+                                                username='task_serializer_test_customer_1')
+        cls.user_worker = User.objects.create(password='worker_super_ps_387',
+                                              username='task_serializer_test_worker_1',
+                                              type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+
+        customer = cls.user_customer.customer
         cls.waiting_task_1 = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
         cls.waiting_task_2 = Task.objects.create(title='Customer test task_2 (wait)', customer=customer)
         cls.waiting_task_3 = Task.objects.create(title='Customer test task_2 (wait)', customer=customer)
 
     def setUp(self):
-        if not hasattr(self, 'worker'):
-            self.setUpTestData()
+        pass
 
     def test_read_serializer(self):
         """Get one task data(retrieve)"""
@@ -36,7 +41,8 @@ class SerializerTestCase(TestCase):
                          'time_create': serialized_data['time_create'],
                          'time_update': serialized_data['time_update'],
                          'time_close': None, 'status': 'wait',
-                         'report': '', 'customer': 6, 'worker': None}
+                         'report': '', 'customer': self.user_customer.customer.id,
+                         'worker': None}
 
         self.assertEqual(serialized_data, expected_data)
 
@@ -44,14 +50,14 @@ class SerializerTestCase(TestCase):
         """Create task data"""
         data = {
             "title": "test_task",
-            'customer': self.customer.id
+            'customer': self.user_customer.customer.id
         }
 
         serializer = TaskCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         expected_data = {'title': 'test_task',
                          'time_close': None,
-                         'customer': 6,
+                         'customer': data['customer'],
                          'worker': None}
 
         self.assertEqual(serializer.data, expected_data)
@@ -70,7 +76,8 @@ class SerializerTestCase(TestCase):
                          'time_update': serialized_data['time_update'],
                          'time_close': None,
                          'status': 'wait', 'report': '',
-                         'customer': 6, 'worker': None}
+                         'customer': self.user_customer.customer.id,
+                         'worker': None}
 
         self.assertEqual(serialized_data, expected_data)
 
@@ -79,7 +86,7 @@ class SerializerTestCase(TestCase):
         instance = Task.objects.filter(id=self.waiting_task_3.id)[0]
         data = {
             'status': 'in_process',
-            'worker': self.worker.id
+            'worker': self.user_worker.worker.id
         }
 
         serializer = TaskPartialUpdateSerializer(instance, data=data, partial=True)
@@ -92,6 +99,7 @@ class SerializerTestCase(TestCase):
                          'time_create': serialized_data['time_create'],
                          'time_update': serialized_data['time_update'],
                          'time_close': None, 'report': '',
-                         'customer': 6, 'worker': 2}
+                         'customer': self.user_customer.customer.id,
+                         'worker': data['worker']}
 
         self.assertEqual(serialized_data, expected_data)

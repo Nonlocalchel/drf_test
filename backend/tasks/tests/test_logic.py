@@ -44,8 +44,6 @@ class BusinessTestCase(TestCase):
 
     def setUp(self):
         pass
-        # if not hasattr(self, 'worker'):
-        #     self.setUpTestData()
 
     def test_create(self):
         """Create task"""
