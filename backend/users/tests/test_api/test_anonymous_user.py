@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class AnonimusAPITestCase(APITestCase):
+class AnonymousAPITestCase(APITestCase):
     """Testing user data requests for unauthorized users"""
 
     @classmethod
