@@ -5,7 +5,7 @@ class ManipulateExpectedDataMixin:
     """Interface for dumping data to json and load from him"""
     expected_data_path = ''
 
-    def get_expected_data(self) -> list:
+    def get_expected_data(self) -> dict:
         """Dumping data to json"""
         path = self.expected_data_path
         with open(path) as expected_data_file:

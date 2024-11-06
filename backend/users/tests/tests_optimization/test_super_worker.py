@@ -16,6 +16,9 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nSuper worker tasks test:')
+        cls.user_customer = User.objects.create_user(password='customer_super_ps_387', username='optim_test_customer_1')
+        User.objects.create_user(password='worker_super_ps_387', username='optim_test_worker_1',
+                                 type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
 
     @classmethod
     def setUpTestUser(cls):
@@ -45,8 +48,8 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             self.client.get(url)
 
     def test_get_user(self):
-        first_user = User.objects.all().first()
-        url = reverse('users-detail', args=(first_user.id,))
+        other_user = self.user_customer
+        url = reverse('users-detail', args=(other_user.id,))
 
         with self.assertNumQueries(2):
             self.client.get(url)
@@ -58,12 +61,12 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             'phone': '341 8 7698-1576-189 9888 55',
             'type': 'customer',
             'worker': {
-                'exp': 922337203600,
+                'exp': 92233600,
                 'speciality': 'string',
                 'education': 'string'
             },
             'customer': {
-                'discount': 9223372034776000,
+                'discount': 9223770,
                 'legal': 'entity'
             },
             'password': 'string'
@@ -71,4 +74,3 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
 
         with self.assertNumQueries(8):
             self.client.post(url, data=data, format='json')
-

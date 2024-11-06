@@ -19,11 +19,11 @@ class UserTestCase(TestCase):
         print('\nUser business-logic test:')
         settings.MEDIA_ROOT = get_temp_file()
         cls.user_customer = User.objects.create_user(password='customer_super_ps_387',
-                                                     username='customer_test_1',
+                                                     username='logic_test_customer_1',
                                                      phone='+375291850665'
                                                      )
         cls.user_worker = User.objects.create_user(password='worker_super_ps_387',
-                                                   username='worker_test_1',
+                                                   username='logic_test_worker_1',
                                                    phone='+375291850625',
                                                    type=User.UserType.WORKER,
                                                    photo=cls.image_creator.get_fake_image()

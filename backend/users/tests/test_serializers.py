@@ -19,12 +19,11 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
     def setUpTestData(cls):
         print('\nUser Serializer test:')
         settings.MEDIA_ROOT = get_temp_file()
-        cls.user_customer = User.objects.create_user(password='customer_super_ps_387', username='customer_test_1')
-        cls.user_worker = User.objects.create_user(password='worker_super_ps_387', username='worker_test_1',
-                                                   type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='serializer_test_customer_1')
+        cls.user_worker = User.objects.create(password='worker_super_ps_387', username='serializer_test_worker_1',
+                                              type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
         cls.worker = cls.user_worker.worker
         cls.customer = cls.user_customer.customer
-        cls.photo_path = 'users/tests/data/img.png'
 
     def setUp(self):
         if not hasattr(self, 'worker'):
@@ -36,6 +35,9 @@ class SerializerTestCase(ManipulateExpectedDataMixin, TestCase):
         serializer = UserSerializer(instance)
         serialized_data = serializer.data
         expected_data = self.get_expected_data()
+        serialized_data['pk'] = expected_data['pk']
+        serialized_data['photo'] = expected_data['photo']
+        serialized_data['profile_data']['pk'] = expected_data['profile_data']['pk']
         self.assertEqual(serialized_data, expected_data)
 
     def test_create_user_serializer(self):

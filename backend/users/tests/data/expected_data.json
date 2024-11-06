@@ -1,6 +1,6 @@
 {
   "pk": 2,
-  "username": "worker_test_1",
+  "username": "serializer_test_worker_1",
   "phone": null,
   "is_staff": false,
   "type": "worker",

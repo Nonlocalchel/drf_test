@@ -17,6 +17,9 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
         print('\nSuper worker tasks test:')
+        cls.other_customer = User.objects.create_user(password='customer_super_ps_387', username='sw_test_customer_1')
+        cls.other_worker = User.objects.create_user(password='worker_super_ps_387', username='sw_test_worker_1',
+                                                    type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
 
     @classmethod
     def setUpTestUser(cls):
@@ -100,7 +103,7 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         """Get users list"""
         url = reverse('users-list')
         response = self.client.get(url)
-        self.assertEqual(len(response.data), 9)
+        self.assertEqual(len(response.data), 3)
 
     def test_get_user_data(self):
         """Get user"""
@@ -110,6 +113,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
 
     def test_get_other_user_data(self):
         """Get other user"""
-        url = reverse('users-detail', args=(75,))
+        url = reverse('users-detail', args=(self.other_customer.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
