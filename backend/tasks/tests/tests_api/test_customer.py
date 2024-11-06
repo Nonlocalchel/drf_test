@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.urls import reverse
 from rest_framework import status
 
+from services.ImageWorker import ImageCreator
 from tasks.models import Task
 from services.APITestCaseWithJWT import APITestCaseWithJWT
 from users.models import User, Worker, Customer
@@ -11,14 +12,21 @@ from users.models import User, Worker, Customer
 
 class CustomerTaskAPITestCase(APITestCaseWithJWT):
     """Тестирование запросов заказчика"""
+    image_creator = ImageCreator
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         print('\nCustomer tasks test:')
-        worker = Worker.objects.last()
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='task_logic_test_customer_1')
+        cls.user_worker = User.objects.create(password='worker_super_ps_387', username='task_logic_test_worker_1',
+                                              type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+
+        cls.other_customer = cls.user_customer.customer
         cls.customer = cls.user.customer
         customer = cls.customer
+        worker = cls.user_worker.worker
+        cls.other_customer_task = Task.objects.create(title='Customer test task_1 (wait)', customer=cls.other_customer)
         cls.task = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
         cls.task_in_process_1 = Task.objects.create(title='Customer test task_1 (in_process)',
                                                     status=Task.StatusType.IN_PROCESS,
@@ -96,7 +104,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
                 self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_customer(self):
-        url = reverse('tasks-list') + f'?customer=3'
+        url = reverse('tasks-list') + f'?customer={self.other_customer.id}'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
@@ -107,7 +115,7 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_detail_other_customer_task(self):
-        url = reverse('tasks-detail', args=(61,))
+        url = reverse('tasks-detail', args=(self.other_customer_task.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -161,18 +169,18 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['customer'], self.customer.id)
 
-    def test_post_with_customer_id(self):
+    def test_post_with_other_customer_id(self):
         url = reverse('tasks-list')
         data = {
             "title": "test_task",
-            'customer': self.customer.id
+            'customer': self.other_customer.id
         }
         json_data = json.dumps(data)
         response = self.client.post(url, data=json_data,
                                     content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['customer'], data['customer'])
+        self.assertNotEqual(response.data['customer'], data['customer'])
 
     def test_delete(self):
         url = reverse('tasks-detail', args=(self.task_in_process_2.id,))
