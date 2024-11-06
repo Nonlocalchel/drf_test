@@ -6,14 +6,19 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from tasks.models import Task
+from users.models import User
 
 
-class WorkerTaskAPITestCase(APITestCase):
+class AnonymousTaskAPITestCase(APITestCase):
     """Тестирование запросов работника"""
 
     @classmethod
     def setUpTestData(cls):
         print('\nAnonimus tasks test:')
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='task_logic_test_customer_1')
+
+        customer = cls.user_customer.customer
+        cls.task = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
 
     def test_api_jwt(self):
         url = reverse('token_obtain_pair')
@@ -40,8 +45,7 @@ class WorkerTaskAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_put(self):
-        task = Task.objects.last()
-        url = reverse('tasks-detail', args=(task.id,))
+        url = reverse('tasks-detail', args=(self.task.id,))
         data = {'title': 'new_title'}
         json_data = json.dumps(data)
         response = self.client.put(url, data=json_data,
@@ -50,13 +54,11 @@ class WorkerTaskAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_patch_take_wait_task_in_process(self):
-        task = Task.objects.last()
-        url = reverse('tasks-take-in-process', args=(task.id,))
+        url = reverse('tasks-take-in-process', args=(self.task.id,))
         response = self.client.patch(url, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete(self):
-        task = Task.objects.last()
-        url = reverse('tasks-detail', args=(task.id,))
+        url = reverse('tasks-detail', args=(self.task.id,))
         response = self.client.delete(url, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
