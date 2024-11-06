@@ -1,6 +1,6 @@
 import importlib
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 from users.models import User, Customer
 from users.utils.auth_utils import get_user_types
@@ -12,7 +12,7 @@ def filter_user_queryset(user: User, default_queryset: QuerySet) -> QuerySet:
         if user.check_user_type(User.UserType.WORKER):
             return default_queryset
 
-        return User.objects.filter(type=User.UserType.WORKER)
+        return User.objects.filter(Q(type=User.UserType.WORKER) | Q(id=user.pk))
 
     return User.objects.filter(id=user.pk)
 

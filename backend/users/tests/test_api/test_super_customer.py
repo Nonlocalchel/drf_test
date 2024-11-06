@@ -2,17 +2,23 @@ from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
+from services.ImageWorker import ImageCreator
 from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
 
 class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
-    """Тестирование запросов данных пользователей заказчика c extra правами"""
+    """Testing customer with extra permissions user data requests"""
+
+    image_creator = ImageCreator
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         print('\nSuper customer tasks test:')
+        cls.other_customer = User.objects.create_user(password='customer_super_ps_387', username='customer_1')
+        cls.other_worker = User.objects.create_user(password='worker_super_ps_387', username='worker_1',
+                                                    type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
 
     @classmethod
     def setUpTestUser(cls):
@@ -57,6 +63,10 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         for user in users_list:
             with self.subTest(user=user):
                 user_type = user['type']
+                if user_type == User.UserType.CUSTOMER:
+                    self.assertEqual(user['pk'], self.user.id)
+                    continue
+
                 self.assertEqual(user_type, User.UserType.WORKER)
 
     def test_get_customer_users(self):
@@ -66,7 +76,8 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
         }
         url = reverse('users-list')
         response = self.client.get(url, data=data)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     def test_get_user_data(self):
         """Get user"""
@@ -76,12 +87,12 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
 
     def test_get_other_user_data(self):
         """Get other user with type customer"""
-        url = reverse('users-detail', args=(75,))
+        url = reverse('users-detail', args=(self.other_customer.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_worker_user(self):
         """Get other user with type worker"""
-        url = reverse('users-detail', args=(56,))
+        url = reverse('users-detail', args=(self.other_worker.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
