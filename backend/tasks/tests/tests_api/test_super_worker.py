@@ -24,7 +24,8 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         print('\nSuper worker task test:')
         cls.worker = cls.user.worker
         worker = cls.worker
-        cls.customer = Customer.objects.last()
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='cu_api_test_super_worker')
+        cls.customer = cls.user_customer.customer
         customer = cls.customer
         cls.task = Task.objects.create(title='Worker test task_1 (wait)', customer=customer)
         cls.task_in_process_1 = Task.objects.create(title='Super worker test task_1 (in_process)',
@@ -41,13 +42,20 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
         cls.task_done.save()
+        cls.other_user_worker = User.objects.create(password='worker_super_ps_387', username='wu_api_test_super_worker',
+                                                    type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+
+        cls.other_worker = cls.other_user_worker.worker
+        cls.other_worker_task_in_process = Task.objects.create(title='Other worker test task_1 (in_process)',
+                                                               status=Task.StatusType.IN_PROCESS,
+                                                               customer=customer, worker=cls.other_worker)
 
     @classmethod
     def setUpTestUser(cls):
         worker_photo = cls.image_creator.get_fake_image()
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='super_worker_test_1',
+                                            username='user_super_worker_super_worker_test_1',
                                             phone='+375291850665',
                                             type='worker',
                                             photo=worker_photo,
@@ -67,7 +75,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(auth.status_code, status.HTTP_200_OK)
 
     def test_get_list_of_two_workers(self):
-        data = {'worker': f'1,2'}
+        data = {'worker': f'{self.worker.id},{self.other_worker.id}'}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -77,7 +85,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         task_list = response.data
         task_query_length = Task.objects.filter(Q(worker__in=data['worker'].split(','))).count()
         self.assertEqual(len(task_list), task_query_length)
-        self.assertEqual(len(task_list), 7)
+        self.assertEqual(len(task_list), 4)
 
         for task in task_list:
             with self.subTest(task=task):
@@ -86,7 +94,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
                     self.assertIn(str(worker), [*data['worker'].split(',')])
 
     def test_get_list_other_worker(self):
-        data = {'worker': f'1'}
+        data = {'worker': self.other_worker.id}
         url = reverse('tasks-list')
         response = self.client.get(url, data=data,
                                    content_type='application/json')
@@ -96,7 +104,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         task_list = response.data
         task_query_length = Task.objects.filter(Q(worker=data['worker'])).count()
         self.assertEqual(len(task_list), task_query_length)
-        self.assertEqual(len(task_list), 6)
+        self.assertEqual(len(task_list), 1)
 
         for task in task_list:
             with self.subTest(task=task):
@@ -111,7 +119,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         task_list = response.data
         task_query_length = Task.objects.all().count()
         self.assertEqual(len(task_list), task_query_length)
-        self.assertEqual(len(task_list), 13)
+        self.assertEqual(len(task_list), 5)
 
     def test_get_list_search(self):
         data = {'search': 'done'}
@@ -126,7 +134,6 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
             Q(title__contains=data['search']) | Q(status__contains=data['search'])
         ).count()
         self.assertEqual(len(task_list), task_query_length)
-        self.assertEqual(len(task_list), 7)
 
         for task in task_list:
             with self.subTest(task=task):
@@ -144,7 +151,7 @@ class SuperWorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_detail_other_worker(self):
-        url = reverse('tasks-detail', args=(61,))
+        url = reverse('tasks-detail', args=(self.other_worker_task_in_process.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
