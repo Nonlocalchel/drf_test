@@ -18,8 +18,8 @@ class CustomerTaskAPITestCase(APITestCaseWithJWT):
     def setUpTestData(cls):
         super().setUpTestData()
         print('\nCustomer tasks test:')
-        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='task_logic_test_customer_1')
-        cls.user_worker = User.objects.create(password='worker_super_ps_387', username='task_logic_test_worker_1',
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='cu_api_test_customer_1')
+        cls.user_worker = User.objects.create(password='worker_super_ps_387', username='cu_api_test_worker_1',
                                               type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
 
         cls.other_customer = cls.user_customer.customer

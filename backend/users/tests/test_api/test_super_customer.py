@@ -24,7 +24,7 @@ class SuperCustomerUsersAPITestCase(APITestCaseWithJWT):
     def setUpTestUser(cls):
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='super_worker_test_1',
+                                            username='user_worker_super_customer_test',
                                             phone='+375291850665',
                                             is_staff=True
                                             )

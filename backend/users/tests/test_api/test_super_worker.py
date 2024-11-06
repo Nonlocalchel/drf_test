@@ -26,7 +26,7 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         worker_photo = cls.image_creator.get_fake_image()
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='super_worker_test_1',
+                                            username='user_worker_super_worker_test',
                                             phone='+375291850665',
                                             type=User.UserType.WORKER,
                                             photo=worker_photo,

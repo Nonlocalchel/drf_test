@@ -32,7 +32,7 @@ class UserTestCase(TestCase):
     def test_create_default_user(self):
         """Create default user"""
         user_customer = User.objects.create_user(password='customer_super_ps_387',
-                                                 username='customer',
+                                                 username='user_customer_bisuness-logic_test',
                                                  phone='+375291850335'
                                                  )
         user_customer.refresh_from_db()

@@ -24,8 +24,8 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         print('\nWorker tasks test:')
         cls.worker = cls.user.worker
         worker = cls.worker
-        cls.customer = Customer.objects.last()
-        customer = cls.customer
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='wu_api_test_customer_1')
+        customer = cls.user_customer.customer
         cls.task = Task.objects.create(title='Test task_1 (wait)', customer=customer)
         cls.task_in_process_1 = Task.objects.create(title='Worker test task_1 (in_process)',
                                                     status=Task.StatusType.IN_PROCESS,
@@ -41,13 +41,20 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         cls.task_done.report = 'test'
         cls.task_done.status = Task.StatusType.DONE
         cls.task_done.save()
+        cls.other_user_worker = User.objects.create(password='worker_super_ps_387', username='cu_api_test_worker_1',
+                                                    type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
+
+        cls.other_worker = cls.other_user_worker.worker
+        cls.other_worker_task_in_process = Task.objects.create(title='Worker test task_1 (in_process)',
+                                                               status=Task.StatusType.IN_PROCESS,
+                                                               customer=customer, worker=cls.other_worker)
 
     @classmethod
     def setUpTestUser(cls):
         worker_photo = cls.image_creator.get_fake_image()
         cls.clean_password = 'worker_super_ps_387'
         cls.user = User.objects.create_user(password=cls.clean_password,
-                                            username='worker_test_1',
+                                            username='user_worker_worker_test',
                                             phone='+375291850665',
                                             type='worker',
                                             photo=worker_photo
@@ -75,7 +82,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         task_list = response.data
         task_query_length = Task.objects.filter(Q(worker=worker_id) | Q(worker__isnull=True)).count()
         self.assertEqual(len(task_list), task_query_length)
-        self.assertEqual(6, len(task_list))
+        self.assertEqual(4, len(task_list))
 
         for task in task_list:
             with self.subTest(task=task):
@@ -105,7 +112,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
                 self.assertRegex(search_place.lower(), 'done')
 
     def test_get_list_other_worker(self):
-        url = reverse('tasks-list') + f'?worker=1'
+        url = reverse('tasks-list') + f'?worker={self.other_user_worker.id}'
         response = self.client.get(url)
         empty_data = response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -122,7 +129,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_detail_other_worker(self):
-        url = reverse('tasks-detail', args=(27,))
+        url = reverse('tasks-detail', args=(self.other_worker_task_in_process.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -177,7 +184,7 @@ class WorkerTaskAPITestCase(APITestCaseWithJWT):
         self.assertNotEqual(response.status_code, status.HTTP_200_OK)
 
     def test_patch_done_other_worker_task(self):
-        url = reverse('tasks-done', args=(27,))
+        url = reverse('tasks-done', args=(self.other_worker_task_in_process.id,))
         data = {'report': 'test23435467'}
         json_data = json.dumps(data)
         response = self.client.patch(url, data=json_data,

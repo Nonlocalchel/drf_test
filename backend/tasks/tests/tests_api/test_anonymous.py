@@ -15,7 +15,7 @@ class AnonymousTaskAPITestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         print('\nAnonimus tasks test:')
-        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='task_logic_test_customer_1')
+        cls.user_customer = User.objects.create(password='customer_super_ps_387', username='anon_api_test_customer_1')
 
         customer = cls.user_customer.customer
         cls.task = Task.objects.create(title='Customer test task_1 (wait)', customer=customer)
