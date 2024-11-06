@@ -8,11 +8,6 @@ from users.models import User
 
 class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
     """Testing customer user data requests"""
-    fixtures = [
-        'users/tests/fixtures/only_users_backup.json',
-        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
-        'tasks/tests/fixtures/task_test_backup.json'
-    ]
 
     @classmethod
     def setUpTestData(cls):

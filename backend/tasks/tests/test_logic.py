@@ -10,11 +10,6 @@ from users.models import Worker, Customer
 class BusinessTestCase(TestCase):
     """Testing business logic of task application"""
 
-    fixtures = [
-        'users/tests/fixtures/only_users_backup.json',
-        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json'
-    ]
-
     @classmethod
     def setUpTestData(cls):
         print('\nTask business-logic test:')

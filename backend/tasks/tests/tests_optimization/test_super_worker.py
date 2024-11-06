@@ -10,12 +10,6 @@ from tasks.models import Task
 
 class SuperWorkerOptimizationTestCase(APITestCaseWithJWT):
     """Тестирование запросов работника с привилегиями"""
-    image_creator = ImageCreator
-    fixtures = [
-        'users/tests/fixtures/only_users_backup.json',
-        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
-        'tasks/tests/fixtures/task_test_backup.json'
-    ]
 
     @classmethod
     def setUpTestData(cls):

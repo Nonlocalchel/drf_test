@@ -7,12 +7,6 @@ from rest_framework.test import APITestCase
 class AnonimusAPITestCase(APITestCase):
     """Testing user data requests for unauthorized users"""
 
-    fixtures = [
-        'users/tests/fixtures/only_users_backup.json',
-        'users/tests/fixtures/customers_data_backup.json', 'users/tests/fixtures/workers_data_backup.json',
-        'tasks/tests/fixtures/task_test_backup.json'
-    ]
-
     @classmethod
     def setUpTestData(cls):
         print('\nAnonimus user test:')
