@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from services.APITestCaseWithJWT import APITestCaseWithJWT
+from services.ImageWorker import ImageCreator
 from users.messages.permission_denied import UserPermissionMessages
 from users.models import User
 
@@ -9,10 +10,15 @@ from users.models import User
 class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
     """Testing customer user data requests"""
 
+    image_creator = ImageCreator
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         print('\nSimple user(simple worker, simple customer) tasks test:')
+        cls.other_customer = User.objects.create_user(password='customer_super_ps_387', username='customer_1')
+        User.objects.create_user(password='worker_super_ps_387', username='worker_1',
+                                 type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
 
     @classmethod
     def setUpTestUser(cls):
@@ -64,7 +70,7 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
         self.assertEqual(len(response.data), 0)
 
     def test_get_customer_users(self):
-        """Get users list with type customer"""
+        """Get users list with type customer(in this case user get him account)"""
         data = {
             'type': User.UserType.CUSTOMER
         }
@@ -81,6 +87,6 @@ class SimpleUserUsersAPITestCase(APITestCaseWithJWT):
 
     def test_get_other_user_data(self):
         """Get other user"""
-        url = reverse('users-detail', args=(75,))
+        url = reverse('users-detail', args=(self.other_customer.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
