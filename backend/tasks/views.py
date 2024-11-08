@@ -28,7 +28,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
     serializer_class = TaskReadSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = TaskFilter
-    search_fields = ['title', 'status']
+    search_fields = ['title']
     permission_classes_by_action = {
         'retrieve': [IsSuperWorker | WorkerTaskAccessPermission | CustomerTaskAccessPermission],
         'update': [IsNotRunningTask & CustomerTaskAccessPermission],
