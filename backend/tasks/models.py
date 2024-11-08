@@ -19,12 +19,10 @@ class Task(SelfValidationMixin, models.Model):
         DONE = "done", "Done"
 
     class Meta:
+        """Indexes for optimization filter search"""
         indexes = [
-            models.Index(Upper('title'), name='title_upper_index'),
             HashIndex(fields=['title'], name='title_hash_index'),
             HashIndex(fields=['status'], name='status_hash_index'),
-            GinIndex(fields=['title'], name='title_gin_index',
-                     opclasses=['gin_trgm_ops']),
             GinIndex(OpClass(Upper('title'), name='gin_trgm_ops'),
                      name='title_upper_gin_index'),
         ]
