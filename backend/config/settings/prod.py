@@ -14,9 +14,13 @@ DATABASES = {
     }
 }
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': "django_redis.cache.RedisCache",
-#         'LOCATION': 'redis://redis:6379/1',
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        'LOCATION': 'redis://redis:6379/0',
+    }
+}
+
+INSTALLED_APPS += [
+    'cachalot'
+]
