@@ -14,6 +14,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from config.json_formatter import CustomJsonFormatter
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -152,20 +154,32 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "services.exceptions.django_error_handler",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'users.authenticate.Authenticate',
+        'config.authenticate.Authenticate',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {'class': 'logging.StreamHandler'}
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json_formatter": {
+            "()": CustomJsonFormatter
         }
-    }
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+            "formatter": "json_formatter"
+        },
+    },
+    "loggers": {
+        'django.db.backends': {
+            'handlers': ["file"],
+            'level': 'DEBUG',
+            "propagate": True
+        }
+    },
 }
