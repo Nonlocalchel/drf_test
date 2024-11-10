@@ -61,14 +61,3 @@ class UserSerializer(WritableNestedModelSerializer):
         user_type = get_instance_type(instance)
         formatted_representation = format_repr(representation, user_type)
         return formatted_representation
-
-
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Override class for extend data on payload"""
-
-    @classmethod
-    def get_token(cls, user):
-        """Add user type field to payload"""
-        token = super().get_token(user)
-        token['type'] = user.type
-        return token

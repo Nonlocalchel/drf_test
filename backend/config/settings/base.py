@@ -154,7 +154,7 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "services.exceptions.django_error_handler",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'config.authenticate.Authenticate',
+        'config.authenticate.CustomJWTAuthenticate',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }

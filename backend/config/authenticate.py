@@ -1,9 +1,11 @@
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from services.JWTAuthenticationWithCustomUserGet import JWTAuthenticationWithCustomUserGet, AuthUser, \
     api_settings
 from users.utils.auth_utils import get_auth_users_fields
 
 
-class Authenticate(JWTAuthenticationWithCustomUserGet):
+class CustomJWTAuthenticate(JWTAuthenticationWithCustomUserGet):
     """Task service authenticate class(to extend get_user_orm_fetch method)"""
 
     def get_user_orm_fetch(self, user_id, payload) -> AuthUser:
@@ -23,3 +25,14 @@ class Authenticate(JWTAuthenticationWithCustomUserGet):
         user_fetch = user_manager.select_related(*user_type).only(*fields)
         user = user_fetch.get(**{api_settings.USER_ID_FIELD: user_id})
         return user
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Override class for extend data on payload"""
+
+    @classmethod
+    def get_token(cls, user):
+        """Add user type field to payload"""
+        token = super().get_token(user)
+        token['type'] = user.type
+        return token
