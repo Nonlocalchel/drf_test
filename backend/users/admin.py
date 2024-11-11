@@ -33,16 +33,13 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = list_display[:2]
     filter_horizontal = ('groups', 'user_permissions',)
     list_filter = []
-    fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('email', 'phone', 'type', 'photo')}),
-        ('Permissions', {'fields': ('groups', 'user_permissions', 'is_superuser', 'is_staff', 'is_active')}),
-    )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'phone', 'password1', 'password2', 'type'),
+            'fields': ('username', 'phone', 'password1', 'password2', 'type', 'is_active'),
         }),
+        (_('Personal info'), {'fields': ('email', 'phone', 'type', 'photo')}),
+        ('Permissions', {'fields': ('groups', 'user_permissions', 'is_superuser', 'is_staff', 'is_active')}),
     )
 
     def get_inline_instances(self, request, obj=None):
