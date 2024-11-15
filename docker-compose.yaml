@@ -9,8 +9,7 @@ services:
       - ./backend:/backend
     env_file:
       - ./.env
-    command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+    command: gunicorn backend.config.wsgi:application --bind 0.0.0.0:8000
     depends_on:
       - database
 
@@ -21,8 +20,6 @@ services:
       - ./.env
     volumes:
       - ~/.pg/pg_data:/var/lib/postgresql/data
-    command: >
-      sudo -u postgres psql -d task_service_db -c "CREATE EXTENSION pg_trgm;"
 
   redis:
     image: redis:7.0.5-alpine
