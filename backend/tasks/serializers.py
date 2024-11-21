@@ -7,6 +7,7 @@ class TaskReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
+        read_only = ['id']
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
@@ -14,7 +15,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['report', 'worker']
+        read_only_fields = ['id', 'report', 'worker']
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
@@ -22,7 +23,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['report', 'customer', 'worker', 'status']
+        read_only_fields = ['id', 'report', 'customer', 'worker', 'status']
 
 
 class TaskPartialUpdateSerializer(serializers.ModelSerializer):
@@ -32,4 +33,4 @@ class TaskPartialUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only_fields = ['title', 'customer']
+        read_only_fields = ['id', 'title', 'customer']

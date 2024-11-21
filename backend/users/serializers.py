@@ -11,6 +11,7 @@ class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
         fields = ['pk', 'exp', 'speciality', 'education']
+        read_only = ['pk']
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -19,6 +20,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['pk', 'discount', 'legal']
+        read_only = ['pk']
 
 
 class UserSerializer(WritableNestedModelSerializer):
@@ -39,6 +41,7 @@ class UserSerializer(WritableNestedModelSerializer):
             'worker', 'customer', 'photo',
             'password'
         )
+        read_only = ['pk', 'is_staff', 'is_superuser']
 
     def get_fields(self):
         """Remove unnecessary professional data fields(for remove unnecessary requests from db)"""
