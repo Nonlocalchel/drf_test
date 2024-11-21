@@ -8,9 +8,11 @@ class UserMultiParser(CustomMultiParser):
 
     @staticmethod
     def decode_nested(decoded_data: dict) -> dict:
-        print(decoded_data)
         user_type = decoded_data.get('type', User.UserType.CUSTOMER)
-        nested_decoded_data = decoded_data[user_type]
+        nested_decoded_data = decoded_data.get(user_type)
+        if nested_decoded_data is None:
+            return decoded_data
+
         if not nested_decoded_data.startswith('{') and nested_decoded_data.endswith('}'):
             return decoded_data
 

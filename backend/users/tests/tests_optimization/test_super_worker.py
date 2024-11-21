@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -60,17 +62,17 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
             'username': 'new_customer',
             'phone': '341 8 7698-1576-189 9888 55',
             'type': 'customer',
-            'worker': {
+            'worker': json.dumps({
                 'exp': 92233600,
                 'speciality': 'string',
                 'education': 'string'
-            },
-            'customer': {
+            }),
+            'customer': json.dumps({
                 'discount': 9223770,
                 'legal': 'entity'
-            },
+            }),
             'password': 'string'
         }
 
         with self.assertNumQueries(8):
-            self.client.post(url, data=data, format='json')
+            self.client.post(url, data=data)

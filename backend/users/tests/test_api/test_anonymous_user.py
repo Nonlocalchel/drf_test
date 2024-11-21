@@ -16,8 +16,8 @@ class AnonymousAPITestCase(APITestCase):
         url = reverse('token_obtain_pair')
         auth_response = self.client.post(url,
                                          {'username': 'vasia',
-                                          'password': 'random'},
-                                         format='json')
+                                          'password': 'random'}
+                                         )
 
         self.assertEqual(auth_response.status_code, status.HTTP_401_UNAUTHORIZED)
 

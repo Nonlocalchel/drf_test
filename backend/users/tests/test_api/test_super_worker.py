@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
@@ -96,7 +98,6 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         }
 
         response = self.client.post(url, data, format='multipart')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn(str(data['photo'])[:-4], response.data['photo'])
 
@@ -117,3 +118,26 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         url = reverse('users-detail', args=(self.other_customer.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_user_with_nested_data(self):
+        url = reverse('users-list')
+        data = {
+            'username': 'new_customer',
+            'phone': '341 8 7698-1576-189 9888 55',
+            'photo': self.image_creator.get_fake_image(),
+            'type': 'customer',
+            'worker': json.dumps({
+                'exp': 92233600,
+                'speciality': 'string',
+                'education': 'string'
+            }),
+            'customer': json.dumps({
+                'discount': 9223770,
+                'legal': 'entity'
+            }),
+            'password': 'string'
+        }
+
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn(str(data['photo'])[:-4], response.data['photo'])
