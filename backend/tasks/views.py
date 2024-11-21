@@ -1,6 +1,7 @@
 from http import HTTPMethod
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import parsers
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
@@ -67,6 +68,7 @@ class TaskViewSet(SelectPermissionByActionMixin, CRUViewSet):
         set_task_customer(request.data, request.user)
         return super().create(request, *args, **kwargs)
 
+    @swagger_auto_schema(auto_schema=None)
     def partial_update(self, request, *args, **kwargs):
         """Forbidden http method patch for /tasks/ url"""
         raise MethodNotAllowed(request.method)
