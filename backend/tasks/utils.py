@@ -1,4 +1,5 @@
 from django.db.models import Q, QuerySet
+from django.http import QueryDict
 
 from tasks.models import Task
 from users.models import User
@@ -25,6 +26,9 @@ def set_task_customer(task: dict, user: User) -> None:
 
 def take_task_in_process(task: dict, user: User) -> None:
     """Take task in process"""
+    # if isinstance(task, QueryDict):
+    #     task = task.pop()
+
     task['worker'] = user.worker.id
 
 

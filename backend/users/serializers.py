@@ -1,6 +1,5 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import *
 from .utils.serializer_utils import fix_serializer_fields, get_instance_type, format_repr

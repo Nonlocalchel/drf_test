@@ -3,14 +3,16 @@ from rest_framework.response import Response
 
 from services.mixins.permissions import SelectPermissionByActionMixin
 from services.viewsets import CRViewSet
+from .parsers import UserMultiParser
 
 from .serializers import *
-from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomer, IsSuperCustomerReadWorkers
+from .permissions import IsUserAccount, IsSuperWorker, IsSuperCustomerReadWorkers
 from .utils.views_utils import is_user_account_request, filter_user_queryset, optimize_queryset
 
 
 class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
     """Users app view"""
+    parser_classes = (UserMultiParser,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
@@ -37,4 +39,3 @@ class UsersViewSet(SelectPermissionByActionMixin, CRViewSet):
             return Response(serializer.data)
 
         return super().retrieve(request, *args, **kwargs)
-

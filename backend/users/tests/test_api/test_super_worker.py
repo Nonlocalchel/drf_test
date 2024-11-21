@@ -5,7 +5,7 @@ from rest_framework import status
 from services.APITestCaseWithJWT import APITestCaseWithJWT
 from services.tests_utils import get_temp_file
 from services.ImageWorker import ImageCreator
-from users.models import User
+from users.models import User, Customer
 
 
 class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
@@ -16,7 +16,7 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
     def setUpTestData(cls):
         settings.MEDIA_ROOT = get_temp_file()
         super().setUpTestData()
-        print('\nSuper worker tasks test:')
+        print('\nSuper worker user test:')
         cls.other_customer = User.objects.create_user(password='customer_super_ps_387', username='sw_test_customer_1')
         cls.other_worker = User.objects.create_user(password='worker_super_ps_387', username='sw_test_worker_1',
                                                     type=User.UserType.WORKER, photo=cls.image_creator.get_fake_image())
@@ -96,6 +96,7 @@ class SuperWorkerUsersAPITestCase(APITestCaseWithJWT):
         }
 
         response = self.client.post(url, data, format='multipart')
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn(str(data['photo'])[:-4], response.data['photo'])
 
