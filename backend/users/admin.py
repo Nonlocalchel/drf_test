@@ -17,7 +17,7 @@ class WorkerInline(admin.StackedInline):
 
 class CustomerInline(admin.StackedInline):
     """User customer profile data view on admin panel"""
-    verbose_name = "Consumer"
+    verbose_name = "Customer"
     verbose_name_plural = verbose_name
     can_delete = False
     model = Customer
