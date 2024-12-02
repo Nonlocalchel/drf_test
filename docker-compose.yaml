@@ -8,8 +8,10 @@ services:
     volumes:
       - ./backend:/backend
     env_file:
-      - ./.env
-    command: gunicorn backend.config.wsgi:application --bind 0.0.0.0:8000
+      - ./.env.prod
+      - ./.env.prod.db
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - database
 
@@ -17,10 +19,12 @@ services:
     container_name: database
     image: postgres:17
     env_file:
-      - ./.env
-    volumes:
-      - ~/.pg/pg_data:/var/lib/postgresql/data
+      - ./.env.prod.db
+#    volumes:
+#      - ~/.pg/pg_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7.0.5-alpine
-    hostname: redis
+#  redis:
+#    image: redis:latest
+#    container_name: redis
+#    environment:
+#      - REDIS_PASSWORD=pines

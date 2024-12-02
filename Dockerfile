@@ -9,13 +9,7 @@ RUN pip install -r /temp/requirements.txt
 
 COPY backend /backend
 WORKDIR /backend
-COPY .env /.env
-COPY .entrypoint.sh ./entrypoint.sh
-
-EXPOSE 8000
 
 RUN adduser --disabled-password task-user
 
 USER task-user
-
-ENTRYPOINT ["/home/app/web/entrypoint.sh"]
