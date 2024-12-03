@@ -23,8 +23,8 @@ class Task(SelfValidationMixin, models.Model):
         indexes = [
             HashIndex(fields=['title'], name='title_hash_index'),
             HashIndex(fields=['status'], name='status_hash_index'),
-            GinIndex(OpClass(Upper('title'), name='gin_trgm_ops'),
-                     name='title_upper_gin_index'),
+            # GinIndex(OpClass(Upper('title'), name='gin_trgm_ops'),
+            #          name='title_upper_gin_index'),
         ]
 
     title = models.CharField(max_length=255, verbose_name="Заголовок")
