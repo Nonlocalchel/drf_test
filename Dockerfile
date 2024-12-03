@@ -14,6 +14,7 @@ WORKDIR /backend
 
 RUN adduser --disabled-password task-user \
     && chown -R task-user:task-user /backend
+
 USER task-user
 
 ENTRYPOINT ["/start_backend.sh"]
