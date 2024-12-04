@@ -7,9 +7,11 @@ COPY requirements.txt /temp/requirements.txt
 RUN pip install --upgrade pip \
     && pip install -r /temp/requirements.txt
 
-COPY start_backend.sh /start_backend.sh
-COPY backend /backend
+COPY start_backend.sh /usr/local/bin/start_backend.sh
+RUN chmod +x /usr/local/bin/start_backend.sh
 
+
+COPY backend /backend
 WORKDIR /backend
 
 RUN adduser --disabled-password task-user \
@@ -17,4 +19,4 @@ RUN adduser --disabled-password task-user \
 
 USER task-user
 
-ENTRYPOINT ["/start_backend.sh"]
+ENTRYPOINT ["start_backend.sh"]
