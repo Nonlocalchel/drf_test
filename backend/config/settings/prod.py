@@ -14,15 +14,15 @@ DATABASES = {
     }
 }
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': "django_redis.cache.RedisCache",
-#         'LOCATION': os.getenv('REDIS_URL'),
-#         "OPTIONS": {
-#             "PASSWORD": os.getenv('REDIS_PASSWORD'),
-#         }
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': "django_redis.cache.RedisCache",
+        'LOCATION': os.getenv('REDIS_URL'),
+        "OPTIONS": {
+            "PASSWORD": os.getenv('REDIS_PASSWORD'),
+        }
+    }
+}
 
 INSTALLED_APPS += [
     'cachalot'
