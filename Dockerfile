@@ -10,18 +10,16 @@ RUN pip install --upgrade pip \
 COPY start_backend.sh /usr/local/bin/start_backend.sh
 RUN chmod +x /usr/local/bin/start_backend.sh
 
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/backend
+ENV HOME=/home/task_app
+ENV APP_HOME=/home/task_app/backend
 
-RUN mkdir $HOME && mkdir $APP_HOME
+RUN mkdir $HOME && mkdir $APP_HOME && mkdir $HOME/static
 WORKDIR $APP_HOME
 COPY backend $APP_HOME
 
-# RUN python3 manage.py collectstatic --noinput
+# RUN adduser --disabled-password task-user \
+#     && chown -R task-user:task-user $APP_HOME
 
-RUN adduser --disabled-password task-user \
-    && chown -R task-user:task-user $APP_HOME
-
-USER task-user
+# USER task-user
 
 ENTRYPOINT ["start_backend.sh"]

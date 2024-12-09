@@ -4,7 +4,10 @@ services:
     build:
       context: .
     volumes:
-      - ./backend:/home/app/backend
+      - ./backend:/home/task_app/backend
+      - static:/home/task_app/static
+#    expose:
+#      - 8000
     ports:
       - "8000:8000"
     env_file:
@@ -36,3 +39,15 @@ services:
           echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
           redis-server /usr/local/etc/redis/redis.conf
       '
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static:/home/task_app/static
+    ports:
+      - 1337:80
+    depends_on:
+      - backend
+
+volumes:
+  static:
