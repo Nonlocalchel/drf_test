@@ -24,7 +24,7 @@ Typical проект фриланс биржы на Django Rest Framework.<br>
 
     http://127.0.0.1:8000/api/v1/swagger/
 ## Сервис 
- Чтобы воспольоваться сервисом понадобиться создать учетные записи, либо воспользоваться fixtures
+Чтобы воспольоваться сервисом понадобиться создать учетные записи, либо воспользоваться fixtures
 
 И воспользоваться учетными данными(username, password):
 - Работник(c extra permissions): (worker_1, worker_super_ps_387)
@@ -75,3 +75,16 @@ Typical проект фриланс биржы на Django Rest Framework.<br>
 ##### 8) Если нужно очистить БД
 
     docker-compose down -v
+## Unit - тесты
+- Запустить все тесты:
+  ```
+    docker exec backend python manage.py test
+  ```
+- Для приложения user:
+  ```
+    docker exec backend python manage.py test users
+  ```
+- Для приложения task:
+  ```
+    docker exec backend python manage.py test tasks
+  ```
