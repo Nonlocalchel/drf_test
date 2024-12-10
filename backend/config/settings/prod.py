@@ -2,6 +2,8 @@ from .base import *
 from .simple_jwt_config import SIMPLE_JWT
 from .swagger_config import SWAGGER_SETTINGS
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

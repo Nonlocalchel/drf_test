@@ -90,6 +90,7 @@ db.sqlite3
 
 !*media/.gitkeep
 media/*
+!*media/.gitkeep
 static/*
 
 #pyCharm
