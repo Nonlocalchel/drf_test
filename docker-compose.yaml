@@ -6,10 +6,8 @@ services:
     volumes:
       - ./backend:/home/task_app/backend
       - static:/home/task_app/static
-#    expose:
-#      - 8000
-    ports:
-      - "8000:8000"
+    expose:
+      - 8000
     env_file:
       - ./.env.prod
       - ./.env.prod.db
@@ -45,7 +43,7 @@ services:
     volumes:
       - static:/home/task_app/static
     ports:
-      - 1337:80
+      - 80:80
     depends_on:
       - backend
 
