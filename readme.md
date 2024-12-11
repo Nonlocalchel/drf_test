@@ -1,7 +1,7 @@
 <h2 align="center">TaskService by Django</h2>
 
 Typical проект фриланс биржы на Django Rest Framework.<br>
-Тест: https://real-task-tracker.chickenkiller.com/
+Тест: https://github.com/Nonlocalchel/drf_test/blob/main/manual.md
 ### Инструменты разработки
 
 **Стек:**
@@ -23,17 +23,6 @@ Typical проект фриланс биржы на Django Rest Framework.<br>
 ##### 3) Перейти по адресу
 
     http://127.0.0.1:8000/api/v1/swagger/
-## Сервис 
-Чтобы воспольоваться сервисом понадобиться создать учетные записи, либо воспользоваться fixtures
-
-И воспользоваться учетными данными(username, password):
-- Работник(c extra permissions): (worker_1, worker_super_ps_387)
-- Заказчик: (customer_1, customer_super_ps_387)
-
-Для того чтобы взаимодействовать с документацие надо либо авторизоваться, либо получить jwt-токен и подставить его
-
-Вы не можете создать свой аккаунт в системе, это может сделать только worker with extra permissions
-
 ## Разработка с Docker
 
 ##### 1) Сделать форк репозитория
