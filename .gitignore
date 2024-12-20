@@ -95,3 +95,6 @@ static/*
 
 #pyCharm
 .idea/
+
+#VSCode
+workspace.code-workspace
