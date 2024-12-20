@@ -21,8 +21,7 @@ COPY backend $APP_HOME
 WORKDIR $APP_HOME
 
 RUN adduser --disabled-password task-user \
-    && chown -R task-user:task-user $APP_HOME \
-    && chown -R task-user:task-user $HOME/static
+    && chown -R task-user:task-user $HOME
 
 USER task-user
 
