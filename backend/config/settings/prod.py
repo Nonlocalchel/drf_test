@@ -1,6 +1,7 @@
 from .base import *
 from .simple_jwt_config import SIMPLE_JWT
 from .swagger_config import SWAGGER_SETTINGS
+from .cors_headers import CORS_ALLOWED_ORIGINS, CORS_ALLOWED_ORIGIN_REGEXES, CORS_ALLOW_METHODS
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
 
