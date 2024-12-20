@@ -96,5 +96,8 @@ static/*
 #pyCharm
 .idea/
 
+### Vue.js ###
+node_modules/
+
 #VSCode
 workspace.code-workspace
